@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './pages/Login';
+import Home from './pages/Home';
 import HealthUnitsList from './pages/HealthUnitsList';
 import HealthUnitForm from './pages/HealthUnitForm';
 import InstitutionsList from './pages/InstitutionsList';
@@ -27,7 +28,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       
-      <Route path="/" element={<PrivateRoute><Layout><h1>Início</h1></Layout></PrivateRoute>} />
+      <Route path="/" element={<PrivateRoute><Layout><Home /></Layout></PrivateRoute>} />
       
       <Route path="/units" element={<PrivateRoute><Layout><HealthUnitsList /></Layout></PrivateRoute>} />
       <Route path="/units/new" element={<PrivateRoute><Layout><HealthUnitForm /></Layout></PrivateRoute>} />
