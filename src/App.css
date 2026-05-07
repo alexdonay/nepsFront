@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: #f8f9fa;
+}
+
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout-sidebar {
+  width: 250px;
+  background: #1e3a8a;
+  color: white;
+}
+
+.layout-main {
+  flex: 1;
+  padding: 1rem;
+}

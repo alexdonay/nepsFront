@@ -1,0 +1,8 @@
+"use client";
+//#region node_modules/primereact/column/column.esm.js
+var Column = function Column() {};
+Column.displayName = "Column";
+//#endregion
+export { Column };
+
+//# sourceMappingURL=primereact_column.js.map
