@@ -1,5 +1,10 @@
-import { useRef } from "react";
-import { normalizePhone, formatPhoneDigits } from "../services/utils";
+import { useRef, useState } from "react";
+import {
+  formatCNPJDigits,
+  normalizeCNPJ,
+  calculateCNPJCheckDigits,
+  validateCNPJ,
+} from "../services/utils";
 
 /**
  * Componente de input para CNPJ com máscara automática
@@ -12,42 +17,35 @@ import { normalizePhone, formatPhoneDigits } from "../services/utils";
  * @param {boolean} required - Se o campo é obrigatório
  * @param {string} className - Classes CSS adicionais
  */
-export default function CNPJInput({ value = "", onChange, label = "CNPJ", required = false, className = "", ...props }) {
+export default function CNPJInput({
+  value = "",
+  onChange,
+  label = "CNPJ",
+  required = false,
+  className = "",
+  ...props
+}) {
   const inputRef = useRef(null);
 
-  const normalizeCNPJ = (v) => (v || "").toString().replace(/\D/g, "");
-
-  const formatCNPJDigits = (digits) => {
-    if (!digits) return "";
-    const d = digits.toString().slice(0, 14); // CNPJ tem exatamente 14 dígitos
-
-    if (d.length === 0) return "";
-    if (d.length <= 2) return d;
-    if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
-    if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
-    if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
-    return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
-  };
-
   const displayValue = formatCNPJDigits(normalizeCNPJ(value));
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const input = e.target;
     const raw = input.value;
     const caret = input.selectionStart;
 
-    // Count digits before caret
-    const digitsBefore = (raw.slice(0, caret).match(/\d/g) || []).length;
+    const charsBefore = (raw.slice(0, caret).match(/[a-zA-Z0-9]/g) || [])
+      .length;
 
     const d = normalizeCNPJ(raw);
     const formatted = formatCNPJDigits(d);
 
-    // Compute new caret position based on digitsBefore
     let pos = formatted.length;
-    let digitsCount = 0;
+    let charsCount = 0;
     for (let i = 0; i < formatted.length; i++) {
-      if (/\d/.test(formatted[i])) digitsCount++;
-      if (digitsCount >= digitsBefore) {
+      if (/[a-zA-Z0-9]/.test(formatted[i])) charsCount++;
+      if (charsCount >= charsBefore) {
         pos = i + 1;
         break;
       }
@@ -56,6 +54,17 @@ export default function CNPJInput({ value = "", onChange, label = "CNPJ", requir
     // Call parent's onChange with normalized digits only
     const event = { ...e, target: { ...e.target, value: d } };
     if (onChange) onChange(event);
+
+    // Validar CNPJ se tiver 14 dígitos
+    if (d.length === 14) {
+      if (!validateCNPJ(d)) {
+        setError("CNPJ inválido. Verifique os dígitos.");
+      } else {
+        setError("");
+      }
+    } else {
+      setError("");
+    }
 
     // Restore caret after DOM update
     requestAnimationFrame(() => {
@@ -66,20 +75,43 @@ export default function CNPJInput({ value = "", onChange, label = "CNPJ", requir
     });
   };
 
+  const handleAutoCalculate = () => {
+    const normalized = normalizeCNPJ(value);
+    if (normalized.length === 12) {
+      const checkDigits = calculateCNPJCheckDigits(normalized);
+      const fullCNPJ = normalized + checkDigits;
+      const event = { target: { value: fullCNPJ } };
+      if (onChange) onChange(event);
+    }
+  };
+
   return (
     <div className="field mb-3">
       {label && <label>{label}</label>}
-      <input
-        ref={inputRef}
-        value={displayValue}
-        onChange={handleChange}
-        placeholder="XX.XXX.XXX/XXXX-XX"
-        required={required}
-        className={`p-inputtext w-full ${className}`}
-        maxLength="18"
-        {...props}
-      />
+      <div className="flex gap-2">
+        <input
+          ref={inputRef}
+          value={displayValue}
+          onChange={handleChange}
+          placeholder="XX.XXX.XXX/XXXX-XX"
+          required={required}
+          className={`p-inputtext w-full ${className}`}
+          maxLength="18"
+          {...props}
+        />
+        {normalizeCNPJ(value).length === 12 && (
+          <button
+            type="button"
+            onClick={handleAutoCalculate}
+            className="p-button p-button-sm p-button-info"
+            title="Calcular dígito verificador"
+          >
+            <span className="pi pi-calculator"></span>
+          </button>
+        )}
+      </div>
       <small className="block text-500 mt-1">Formato: XX.XXX.XXX/XXXX-XX</small>
+      {error && <small className="block text-red-500 mt-1">{error}</small>}
     </div>
   );
 }

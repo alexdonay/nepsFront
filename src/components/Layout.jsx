@@ -68,13 +68,13 @@ export default function Layout({ children }) {
           <Button
             icon="pi pi-user"
             text
-            textColor="white"
+            className="text-white"
             onClick={() => navigate("/profile")}
           />
           <Button
             icon="pi pi-sign-out"
             text
-            textColor="white"
+            className="text-white"
             onClick={() => {
               localStorage.removeItem("token");
               navigate("/login");
