@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { normalizePhone, formatPhoneDigits } from "../services/utils";
+import { formatPhoneDigits, normalizePhone } from "../services/utils";
 
 export default function PhoneInput({
   value = "",
