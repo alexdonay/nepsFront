@@ -25,7 +25,10 @@ export function formatPhoneDigits(digits) {
 
 export function normalizeCNPJ(value) {
   if (value == null) return "";
-  return value.toString().replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  return value
+    .toString()
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toUpperCase();
 }
 
 export function formatCNPJDigits(chars) {
@@ -36,7 +39,8 @@ export function formatCNPJDigits(chars) {
   if (d.length <= 2) return d;
   if (d.length <= 5) return `${d.slice(0, 2)}.${d.slice(2)}`;
   if (d.length <= 8) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5)}`;
-  if (d.length <= 12) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
+  if (d.length <= 12)
+    return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8)}`;
   return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 }
 
@@ -47,7 +51,7 @@ export function formatCNPJDigits(chars) {
  */
 export function calculateCNPJCheckDigits(cnpj) {
   const digits = cnpj.toString().replace(/\D/g, "").slice(0, 12);
-  
+
   if (digits.length !== 12) return "";
 
   // Primeiro dígito verificador
@@ -71,42 +75,42 @@ export function calculateCNPJCheckDigits(cnpj) {
 
   return `${firstCheck}${secondCheck}`;
 
-/**
- * Valida um CNPJ completo
- * @param {string} cnpj - CNPJ completo com 14 dígitos
- * @returns {boolean} True se o CNPJ é válido, false caso contrário
- */
-export function validateCNPJ(cnpj) {
-  const digits = cnpj.toString().replace(/\D/g, "");
-  
-  // Deve ter exatamente 14 dígitos
-  if (digits.length !== 14) return false;
+  /**
+   * Valida um CNPJ completo
+   * @param {string} cnpj - CNPJ completo com 14 dígitos
+   * @returns {boolean} True se o CNPJ é válido, false caso contrário
+   */
+  export function validateCNPJ(cnpj) {
+    const digits = cnpj.toString().replace(/\D/g, "");
 
-  // Não pode ter todos os dígitos iguais
-  if (/^(\d)\1{13}$/.test(digits)) return false;
+    // Deve ter exatamente 14 dígitos
+    if (digits.length !== 14) return false;
 
-  // Valida o primeiro dígito verificador
-  const firstMultipliers = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  let firstSum = 0;
-  for (let i = 0; i < 12; i++) {
-    firstSum += parseInt(digits[i]) * firstMultipliers[i];
+    // Não pode ter todos os dígitos iguais
+    if (/^(\d)\1{13}$/.test(digits)) return false;
+
+    // Valida o primeiro dígito verificador
+    const firstMultipliers = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    let firstSum = 0;
+    for (let i = 0; i < 12; i++) {
+      firstSum += parseInt(digits[i]) * firstMultipliers[i];
+    }
+    const firstRemainder = firstSum % 11;
+    const firstCheck = firstRemainder < 2 ? 0 : 11 - firstRemainder;
+
+    if (parseInt(digits[12]) !== firstCheck) return false;
+
+    // Valida o segundo dígito verificador
+    const secondMultipliers = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    let secondSum = 0;
+    for (let i = 0; i < 13; i++) {
+      secondSum += parseInt(digits[i]) * secondMultipliers[i];
+    }
+    const secondRemainder = secondSum % 11;
+    const secondCheck = secondRemainder < 2 ? 0 : 11 - secondRemainder;
+
+    if (parseInt(digits[13]) !== secondCheck) return false;
+
+    return true;
   }
-  const firstRemainder = firstSum % 11;
-  const firstCheck = firstRemainder < 2 ? 0 : 11 - firstRemainder;
-  
-  if (parseInt(digits[12]) !== firstCheck) return false;
-
-  // Valida o segundo dígito verificador
-  const secondMultipliers = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-  let secondSum = 0;
-  for (let i = 0; i < 13; i++) {
-    secondSum += parseInt(digits[i]) * secondMultipliers[i];
-  }
-  const secondRemainder = secondSum % 11;
-  const secondCheck = secondRemainder < 2 ? 0 : 11 - secondRemainder;
-  
-  if (parseInt(digits[13]) !== secondCheck) return false;
-
-  return true;
-}
 }

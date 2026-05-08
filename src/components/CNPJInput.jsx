@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import {
+  calculateCNPJCheckDigits,
   formatCNPJDigits,
   normalizeCNPJ,
-  calculateCNPJCheckDigits,
   validateCNPJ,
 } from "../services/utils";
 
