@@ -4,8 +4,8 @@
  * Uso: repository.courses.get(), repository.students.post(data), etc.
  */
 
-import { API_ROUTES } from './API_routes';
-import api from './api';
+import { API_ROUTES } from "./API_routes";
+import api from "./api";
 
 export const repository = {
   // Autenticação
