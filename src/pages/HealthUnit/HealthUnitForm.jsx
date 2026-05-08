@@ -3,6 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PhoneInput from "../../components/PhoneInput";
 import { repository } from "../../services/repository";
 
 export default function HealthUnitForm() {
@@ -85,14 +86,11 @@ export default function HealthUnitForm() {
           />
         </div>
 
-        <div className="field mb-3">
-          <label>Telefone</label>
-          <InputText
-            value={form.phone}
-            onChange={updateField("phone")}
-            className="w-full"
-          />
-        </div>
+        <PhoneInput
+          value={form.phone}
+          onChange={updateField("phone")}
+          label="Telefone"
+        />
 
         <div className="field mb-3">
           <label>Responsável</label>
@@ -103,14 +101,11 @@ export default function HealthUnitForm() {
           />
         </div>
 
-        <div className="field mb-3">
-          <label>Contato Responsável</label>
-          <InputText
-            value={form.responsible_contact}
-            onChange={updateField("responsible_contact")}
-            className="w-full"
-          />
-        </div>
+        <PhoneInput
+          value={form.responsible_contact}
+          onChange={updateField("responsible_contact")}
+          label="Contato Responsável"
+        />
 
         <div className="flex gap-2">
           <Button type="submit" label="Salvar" loading={loading} />
