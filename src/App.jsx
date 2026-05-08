@@ -1,21 +1,21 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import HealthUnitsList from './pages/HealthUnitsList';
-import HealthUnitForm from './pages/HealthUnitForm';
-import InstitutionsList from './pages/InstitutionsList';
-import InstitutionForm from './pages/InstitutionForm';
-import RegionsList from './pages/RegionsList';
-import CoursesList from './pages/CoursesList';
-import LocationsList from './pages/LocationsList';
-import EnrollmentPeriods from './pages/EnrollmentPeriods';
+import Login from './pages/Login/Login';
+import Home from './pages/Home/Home';
+import HealthUnitsList from './pages/HealthUnit/HealthUnitsList';
+import HealthUnitForm from './pages/HealthUnit/HealthUnitForm';
+import InstitutionsList from './pages/Institution/InstitutionsList';
+import InstitutionForm from './pages/Institution/InstitutionForm';
+import RegionsList from './pages/Regions/RegionsList';
+import CoursesList from './pages/Courses/CoursesList';
+import LocationsList from './pages/Location/LocationsList';
+import EnrollmentPeriods from './pages/EnrollmentPeriods/EnrollmentPeriods';
 import StudentsList from './pages/StudentsList';
 import StudentForm from './pages/StudentForm';
-import InternshipList from './pages/InternshipList';
-import InternshipForm from './pages/InternshipForm';
-import Agenda from './pages/Agenda';
+import InternshipList from './pages/Internship/InternshipList';
+import InternshipForm from './pages/Institution/InternshipForm';
+import Agenda from './pages/Schedule/Schedule';
 import './App.css';
 
 function PrivateRoute({ children }) {
