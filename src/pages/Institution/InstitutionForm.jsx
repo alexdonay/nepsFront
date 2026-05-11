@@ -4,6 +4,7 @@ import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { repository } from "../../services/repository";
+import EmailInput from "../../components/Email/EmailInput";
 
 export default function InstitutionForm() {
   const { id } = useParams();
@@ -93,14 +94,11 @@ export default function InstitutionForm() {
           />
         </div>
 
-        <div className="field mb-3">
-          <label>Email</label>
-          <InputText
-            value={form.email}
-            onChange={updateField("email")}
-            className="w-full"
-          />
-        </div>
+        <EmailInput
+          label="Email"
+          value={form.email}
+          onChange={(value) => setForm({ ...form, email: value })}
+        />
 
         <div className="flex gap-2">
           <Button type="submit" label="Salvar" loading={loading} />
