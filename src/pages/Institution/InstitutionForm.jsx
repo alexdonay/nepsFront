@@ -3,6 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PhoneInput from "../../components/PhoneInput";
 import CNPJInput from "../../components/CNPJInput";
 import { repository } from "../../services/repository";
 import EmailInput from "../../components/Email/EmailInput";
@@ -83,14 +84,11 @@ export default function InstitutionForm() {
           />
         </div>
 
-        <div className="field mb-3">
-          <label>Telefone</label>
-          <InputText
-            value={form.phone}
-            onChange={updateField("phone")}
-            className="w-full"
-          />
-        </div>
+        <PhoneInput
+          value={form.phone}
+          onChange={updateField("phone")}
+          label="Telefone"
+        />
 
         <EmailInput
           label="Email"

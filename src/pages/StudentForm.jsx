@@ -5,6 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PhoneInput from "../components/PhoneInput";
 import CpfInput from "../components/CpfInput";
 import { repository } from "../services/repository";
 import EmailInput from "../components/Email/EmailInput";
@@ -97,14 +98,11 @@ export default function StudentForm() {
           required
         />
 
-        <div className="field mb-3">
-          <label>Telefone</label>
-          <InputText
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="w-full"
-          />
-        </div>
+        <PhoneInput
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          label="Telefone"
+        />
 
         <div className="field mb-3">
           <label>Curso *</label>

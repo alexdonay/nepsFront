@@ -22,7 +22,6 @@ export function formatPhoneDigits(digits) {
   const second = d.slice(7, 11);
   return `(${area}) ${first5}-${second}`;
 }
-
 export function normalizeCNPJ(value) {
   if (value == null) return "";
   return value
