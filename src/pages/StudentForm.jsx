@@ -5,6 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import CpfInput from "../components/CpfInput";
 import { repository } from "../services/repository";
 import EmailInput from "../components/Email/EmailInput";
 
@@ -82,7 +83,7 @@ export default function StudentForm() {
 
         <div className="field mb-3">
           <label>CPF</label>
-          <InputText
+          <CpfInput
             value={form.cpf}
             onChange={(e) => setForm({ ...form, cpf: e.target.value })}
             className="w-full"
