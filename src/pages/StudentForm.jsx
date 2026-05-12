@@ -6,7 +6,9 @@ import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PhoneInput from "../components/PhoneInput";
+import CpfInput from "../components/CpfInput";
 import { repository } from "../services/repository";
+import EmailInput from "../components/Email/EmailInput";
 
 export default function StudentForm() {
   const { id } = useParams();
@@ -82,22 +84,19 @@ export default function StudentForm() {
 
         <div className="field mb-3">
           <label>CPF</label>
-          <InputText
+          <CpfInput
             value={form.cpf}
             onChange={(e) => setForm({ ...form, cpf: e.target.value })}
             className="w-full"
           />
         </div>
 
-        <div className="field mb-3">
-          <label>Email *</label>
-          <InputText
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full"
-            required
-          />
-        </div>
+        <EmailInput
+          label="Email"
+          value={form.email}
+          onChange={(value) => setForm({ ...form, email: value })}
+          required
+        />
 
         <PhoneInput
           value={form.phone}

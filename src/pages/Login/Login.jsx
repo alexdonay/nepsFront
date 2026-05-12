@@ -1,10 +1,10 @@
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { Password } from "primereact/password";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth";
+import EmailInput from "../../components/Email/EmailInput";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -37,18 +37,11 @@ export default function Login() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="field mb-3">
-            <label htmlFor="email" className="block text-900 font-medium mb-2">
-              Email
-            </label>
-            <InputText
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full"
-              required
-            />
-          </div>
+          <EmailInput
+            value={email}
+            onChange={setEmail}
+            required
+          />
 
           <div className="field mb-3">
             <label
