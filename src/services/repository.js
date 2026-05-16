@@ -15,6 +15,11 @@ export const repository = {
     register: (data) => api.post(API_ROUTES.AUTH.REGISTER, data),
     resetPassword: (email) =>
       api.post(API_ROUTES.AUTH.RESET_PASSWORD, { email }),
+    confirmReset: (hash, newPassword) =>
+      api.post(API_ROUTES.AUTH.RESET_PASSWORD_CONFIRM, {
+        reset_token: hash,
+        new_password: newPassword,
+      }),
   },
 
   // Usuários
@@ -23,82 +28,84 @@ export const repository = {
     updateMe: (data) => api.put(API_ROUTES.USERS.ME, data),
   },
 
+
   // Cursos
   courses: {
-    get: () => api.get(API_ROUTES.CADASTROS.COURSES),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.COURSES_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.CADASTROS.COURSES, data),
-    put: (id, data) => api.put(API_ROUTES.CADASTROS.COURSES_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.COURSES_BY_ID(id)),
+    get: () => api.get(API_ROUTES.COURSES.BASE),
+    getById: (id) => api.get(API_ROUTES.COURSES.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
+    put: (id, data) => api.put(API_ROUTES.COURSES.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.COURSES.BY_ID(id)),
   },
 
   // Regiões
   regions: {
-    get: () => api.get(API_ROUTES.CADASTROS.REGIONS),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.REGIONS_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.CADASTROS.REGIONS, data),
-    put: (id, data) => api.put(API_ROUTES.CADASTROS.REGIONS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.REGIONS_BY_ID(id)),
+    get: () => api.get(API_ROUTES.REGIONS.BASE),
+    getById: (id) => api.get(API_ROUTES.REGIONS.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.REGIONS.BASE, data),
+    put: (id, data) => api.put(API_ROUTES.REGIONS.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.REGIONS.BY_ID(id)),
   },
 
   // Unidades de Saúde
   healthUnits: {
-    get: () => api.get(API_ROUTES.CADASTROS.HEALTH_UNITS),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.HEALTH_UNITS_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.CADASTROS.HEALTH_UNITS, data),
+    get: () => api.get(API_ROUTES.EDUCATION_INSTITUTES.BASE),
+    getById: (id) => api.get(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.EDUCATION_INSTITUTES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.CADASTROS.HEALTH_UNITS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.HEALTH_UNITS_BY_ID(id)),
+      api.put(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id)),
   },
 
   // Instituições
   institutions: {
-    get: () => api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.CADASTROS.INSTITUTIONS, data),
+    get: () => api.get(API_ROUTES.EDUCATION_INSTITUTES.BASE),
+    getById: (id) => api.get(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.EDUCATION_INSTITUTES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id)),
+      api.put(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id)),
   },
 
   // Localizações
   locations: {
-    get: () => api.get(API_ROUTES.CADASTROS.LOCATIONS),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.LOCATIONS_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.CADASTROS.LOCATIONS, data),
-    put: (id, data) => api.put(API_ROUTES.CADASTROS.LOCATIONS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.LOCATIONS_BY_ID(id)),
+    get: () => api.get(API_ROUTES.ROOMS.BASE),
+    getById: (id) => api.get(API_ROUTES.ROOMS.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),
+    put: (id, data) => api.put(API_ROUTES.ROOMS.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.ROOMS.BY_ID(id)),
   },
 
   // Estudantes
   students: {
-    get: () => api.get(API_ROUTES.GESTAO.STUDENTS),
-    getById: (id) => api.get(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
-    put: (id, data) => api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
+    get: () => api.get(API_ROUTES.STUDENTS.BASE),
+    getById: (id) => api.get(API_ROUTES.STUDENTS.BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.STUDENTS.BASE, data),
+    put: (id, data) => api.put(API_ROUTES.STUDENTS.BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.STUDENTS.BY_ID(id)),
+    byCourse: (courseId) => api.get(API_ROUTES.STUDENTS.BY_COURSE(courseId)),
+    byInstitute: (instituteId) => api.get(API_ROUTES.STUDENTS.BY_INSTITUTE(instituteId)),
   },
 
-  // Vínculos / Estágios
-  vinculos: {
-    get: () => api.get(API_ROUTES.GESTAO.INTERNSHIPS),
-    post: (data) => api.post(API_ROUTES.GESTAO.INTERNSHIPS, data),
-  },
-
+  // Internships
   internships: {
-    get: () => api.get(API_ROUTES.GESTAO.INTERNSHIPS),
-    post: (data) => api.post(API_ROUTES.GESTAO.INTERNSHIPS, data),
+    get: () => api.get(API_ROUTES.INTERNSHIPS.BASE),
+    post: (data) => api.post(API_ROUTES.INTERNSHIPS.BASE, data),
+    getById: (id) => api.get(API_ROUTES.INTERNSHIPS.BY_ID(id)),
+    byField: (fieldId) => api.get(API_ROUTES.INTERNSHIPS.BY_FIELD(fieldId)),
+    byEducationInstitute: (eduId) => api.get(API_ROUTES.INTERNSHIPS.BY_EDU_INSTITUTE(eduId)),
+    byRoom: (roomId) => api.get(API_ROUTES.INTERNSHIPS.BY_ROOM(roomId)),
   },
 
-  // Períodos
+  // Períodos (se existir no backend)
   periods: {
-    get: () => api.get(API_ROUTES.GESTAO.PERIODS),
-    getCurrent: () => api.get(API_ROUTES.GESTAO.PERIODS_CURRENT),
-    post: (data) => api.post(API_ROUTES.GESTAO.PERIODS, data),
+    get: () => api.get("/api/v1/periods"),
+    getCurrent: () => api.get("/api/v1/periods/current"),
+    post: (data) => api.post("/api/v1/periods", data),
   },
 
   // Acompanhamento
   acompanhamento: {
-    locationsAgenda: () => api.get(API_ROUTES.ACOMPANHAMENTO.LOCATIONS_AGENDA),
+    locationsAgenda: () => api.get("/api/v1/locations-agenda"),
   },
 };

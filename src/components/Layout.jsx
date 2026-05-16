@@ -1,5 +1,6 @@
 import { Button } from "primereact/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../services/auth";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -62,25 +63,19 @@ export default function Layout({ children }) {
             ),
           )}
         </nav>
-      </aside>
-      <main className="layout-main flex-1">
-        <div className="flex justify-content-end mb-3 gap-2">
-          <Button
-            icon="pi pi-user"
-            text
-            className="text-white"
-            onClick={() => navigate("/profile")}
-          />
+        <div className="sidebar-footer mt-4">
           <Button
             icon="pi pi-sign-out"
-            text
-            className="text-white"
+            label="Sair"
+            className="p-button-plain text-white"
             onClick={() => {
-              localStorage.removeItem("token");
+              logout();
               navigate("/login");
             }}
           />
         </div>
+      </aside>
+      <main className="layout-main flex-1">        
         {children}
       </main>
     </div>

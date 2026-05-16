@@ -5,37 +5,58 @@
 
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: "/auth/login",
-    REGISTER: "/auth/register",
-    RESET_PASSWORD: "/auth/reset-password",
+    LOGIN: "/v1/auth/login",
+    REFRESH: "/v1/auth/refresh",
+    ME: "/v1/auth/me",
+    REGISTER: "/v1/auth/register",
+    RESET_PASSWORD: "/v1/auth/reset-password",
+    RESET_PASSWORD_CONFIRM: "/v1/auth/reset-password/confirm",
   },
 
   USERS: {
-    ME: "/users/me",
+    BASE: "/v1/users",
+    ME: "/v1/users/me",
+    BY_ID: (id) => `/v1/users/${id}`,
   },
 
-  CADASTROS: {
-    COURSES: "/cadastros/courses",
-    COURSES_BY_ID: (id) => `/cadastros/courses/${id}`,
-    REGIONS: "/cadastros/regions",
-    REGIONS_BY_ID: (id) => `/cadastros/regions/${id}`,
-    HEALTH_UNITS: "/cadastros/health-units",
-    HEALTH_UNITS_BY_ID: (id) => `/cadastros/health-units/${id}`,
-    INSTITUTIONS: "/cadastros/institutions",
-    INSTITUTIONS_BY_ID: (id) => `/cadastros/institutions/${id}`,
-    LOCATIONS: "/cadastros/locations",
-    LOCATIONS_BY_ID: (id) => `/cadastros/locations/${id}`,
+  COURSES: {
+    BASE: "/v1/courses",
+    BY_ID: (id) => `/v1/courses/${id}`,
   },
 
-  GESTAO: {
-    STUDENTS: "/gestao/students",
-    STUDENTS_BY_ID: (id) => `/gestao/students/${id}`,
-    INTERNSHIPS: "/gestao/internships",
-    PERIODS: "/gestao/periods",
-    PERIODS_CURRENT: "/gestao/periods/current",
+  EDUCATION_INSTITUTES: {
+    BASE: "/v1/education-institutes",
+    BY_ID: (id) => `/v1/education-institutes/${id}`,
   },
 
-  ACOMPANHAMENTO: {
-    LOCATIONS_AGENDA: "/acompanhamento/locations-agenda",
+  REGIONS: {
+    BASE: "/v1/regions",
+    BY_ID: (id) => `/v1/regions/${id}`,
+  },
+
+  INTERNSHIP_FIELD: {
+    BASE: "/v1/internship-field",
+    BY_ID: (id) => `/v1/internship-field/${id}`,
+  },
+
+  ROOMS: {
+    BASE: "/v1/rooms",
+    BY_ID: (id) => `/v1/rooms/${id}`,
+    BY_INTERNSHIP_FIELD: (fieldId) => `/v1/rooms/by-internship_field/${fieldId}`,
+  },
+
+  STUDENTS: {
+    BASE: "/v1/students",
+    BY_ID: (id) => `/v1/students/${id}`,
+    BY_COURSE: (courseId) => `/v1/students/by-course/${courseId}`,
+    BY_INSTITUTE: (instituteId) => `/v1/students/by-institute/${instituteId}`,
+  },
+
+  INTERNSHIPS: {
+    BASE: "/v1/internships",
+    BY_ID: (id) => `/v1/internships/${id}`,
+    BY_FIELD: (fieldId) => `/v1/internships/by-field/${fieldId}`,
+    BY_EDU_INSTITUTE: (eduId) => `/v1/internships/by-education-institute/${eduId}`,
+    BY_ROOM: (roomId) => `/v1/internships/by-room/${roomId}`,
   },
 };

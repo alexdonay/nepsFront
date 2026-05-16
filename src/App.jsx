@@ -12,6 +12,9 @@ import InternshipForm from "./pages/Institution/InternshipForm";
 import InternshipList from "./pages/Internship/InternshipList";
 import LocationsList from "./pages/Location/LocationsList";
 import Login from "./pages/Login/Login";
+import ForgotPassword from "./pages/Login/ForgotPassword";
+import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
+import ResetPassword from "./pages/Login/ResetPassword";
 import RegionsList from "./pages/Regions/RegionsList";
 import Agenda from "./pages/Schedule/Schedule";
 import StudentForm from "./pages/StudentForm";
@@ -26,6 +29,10 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/forgot-password/sent" element={<ForgotPasswordSent />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password/:hash" element={<ResetPassword />} />
 
       <Route
         path="/"
