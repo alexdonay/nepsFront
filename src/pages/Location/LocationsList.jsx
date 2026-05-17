@@ -96,9 +96,9 @@ export default function LocationsList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between mb-3">
-        <h2 className="text-xl font-bold">Locais de Estágio</h2>
+        <h2 className="text-xl font-bold">Salas</h2>
         <Button
-          label="Novo Local"
+          label="Nova Sala"
           icon="pi pi-plus"
           onClick={() => {
             setEditId(null);
@@ -127,7 +127,7 @@ export default function LocationsList() {
       <Dialog
         visible={showDialog}
         onHide={() => setShowDialog(false)}
-        header={editId ? "Editar Local" : "Novo Local"}
+        header={editId ? "Editar Sala" : "Nova Sala"}
       >
         <div className="field mb-3">
           <label>Nome</label>

@@ -5,6 +5,7 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
 import { repository } from "../../services/repository";
+import { Checkbox } from "primereact/checkbox";
 
 export default function CoursesList() {
   const [courses, setCourses] = useState([]);
@@ -33,7 +34,7 @@ export default function CoursesList() {
         await repository.courses.post(form);
       }
       setShowDialog(false);
-      setForm({ name: "", code: "" });
+      setForm({ edu_insitute_id: 0, name: "", requires_gurney: false });
       setEditId(null);
       loadCourses();
     } catch (err) {
@@ -69,7 +70,7 @@ export default function CoursesList() {
           icon="pi pi-plus"
           onClick={() => {
             setEditId(null);
-            setForm({ name: "", code: "" });
+            setForm({ edu_insitute_id: 0, name: "", requires_gurney: false });
             setShowDialog(true);
           }}
         />
@@ -78,7 +79,7 @@ export default function CoursesList() {
       <DataTable value={courses} tableStyle={{ minWidth: "50rem" }}>
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
-        <Column field="code" header="Código" />
+        <Column field="requires_gurney" header="Requer Maca" />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
@@ -96,10 +97,10 @@ export default function CoursesList() {
           />
         </div>
         <div className="field mb-3">
-          <label>Código</label>
-          <InputText
-            value={form.code}
-            onChange={(e) => setForm({ ...form, code: e.target.value })}
+          <label>Requer Maca</label>
+          <Checkbox
+            value={form.requires_gurney}
+            onChange={(e) => setForm({ ...form, requires_gurney: e.target.value })}
             className="w-full"
           />
         </div>
