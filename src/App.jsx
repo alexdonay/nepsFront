@@ -10,7 +10,7 @@ import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
 import InternshipForm from "./pages/Institution/InternshipForm";
 import InternshipList from "./pages/Internship/InternshipList";
-import LocationsList from "./pages/Location/LocationsList";
+import RoomsList from "./pages/Rooms/RoomsList";
 import Login from "./pages/Login/Login";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
@@ -122,7 +122,7 @@ export default function App() {
         element={
           <PrivateRoute>
             <Layout>
-              <LocationsList />
+              <RoomsList />
             </Layout>
           </PrivateRoute>
         }

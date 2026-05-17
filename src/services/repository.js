@@ -67,8 +67,8 @@ export const repository = {
     delete: (id) => api.delete(API_ROUTES.EDUCATION_INSTITUTES.BY_ID(id)),
   },
 
-  // Localizações
-  locations: {
+  // Salas
+  rooms: {
     get: () => api.get(API_ROUTES.ROOMS.BASE),
     getById: (id) => api.get(API_ROUTES.ROOMS.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),

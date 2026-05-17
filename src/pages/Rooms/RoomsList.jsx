@@ -8,8 +8,8 @@ import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
 import { repository } from "../../services/repository";
 
-export default function LocationsList() {
-  const [locations, setLocations] = useState([]);
+export default function RoomsList() {
+  const [rooms, setRooms] = useState([]);
   const [healthUnits, setHealthUnits] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [form, setForm] = useState({
@@ -22,16 +22,17 @@ export default function LocationsList() {
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    loadLocations();
+    loadRooms();
     loadHealthUnits();
   }, []);
 
-  const loadLocations = async () => {
+  const loadRooms = async () => {
+    
     try {
-      const { data } = await repository.locations.get();
-      setLocations(data);
+      const { data } = await repository.rooms.get();
+      setRooms(data);
     } catch (e) {
-      setLocations([]);
+      setRooms([]);
     }
   };
 
@@ -47,9 +48,9 @@ export default function LocationsList() {
   const handleSave = async () => {
     try {
       if (editId) {
-        await repository.locations.put(editId, form);
+        await repository.rooms.put(editId, form);
       } else {
-        await repository.locations.post(form);
+        await repository.rooms.post(form);
       }
       setShowDialog(false);
       setForm({
@@ -114,7 +115,7 @@ export default function LocationsList() {
         />
       </div>
 
-      <DataTable value={locations} tableStyle={{ minWidth: "50rem" }}>
+      <DataTable value={rooms} tableStyle={{ minWidth: "50rem" }}>
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column header="Unidade de Saúde" body={unitTemplate} />
