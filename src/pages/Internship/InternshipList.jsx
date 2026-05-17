@@ -8,7 +8,7 @@ import { repository } from "../../services/repository";
 export default function InternshipList() {
   const [internships, setInternships] = useState([]);
   const [students, setStudents] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function InternshipList() {
         repository.locations.get(),
       ]);
       setStudents(studentsRes.data);
-      setLocations(locationsRes.data);
+      setRooms(locationsRes.data);
     } catch (e) {}
   };
 
@@ -41,9 +41,9 @@ export default function InternshipList() {
     return student ? student.name : "-";
   };
 
-  const locationTemplate = (rowData) => {
-    const location = locations.find((l) => l.id === rowData.location_id);
-    return location ? location.name : "-";
+  const roomTemplate = (rowData) => {
+    const room = rooms.find((r) => r.id === rowData.location_id);
+    return room ? room.name : "-";
   };
 
   const shiftTemplate = (rowData) => {

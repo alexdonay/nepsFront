@@ -13,7 +13,7 @@ export default function InternshipForm() {
     shift: "morning",
   });
   const [students, setStudents] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [periods, setPeriods] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,11 +27,11 @@ export default function InternshipForm() {
     try {
       const [studentsRes, locationsRes, periodsRes] = await Promise.all([
         repository.students.get(),
-        repository.locations.get(),
+        repository.rooms.get(),
         repository.periods.get(),
       ]);
       setStudents(studentsRes.data);
-      setLocations(locationsRes.data);
+      setRooms(roomsRes.data);
       setPeriods(periodsRes.data);
     } catch (e) {}
   };
@@ -78,10 +78,10 @@ export default function InternshipForm() {
         </div>
 
         <div className="field mb-3">
-          <label>Local *</label>
+          <label>Sala *</label>
           <Dropdown
             value={form.location_id}
-            options={locations}
+            options={rooms}
             optionLabel="name"
             optionValue="id"
             onChange={(e) => setForm({ ...form, location_id: e.value })}

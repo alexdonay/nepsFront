@@ -68,10 +68,10 @@ export default function Home() {
       path: "/institutions",
     },
     {
-      label: "Locais",
+      label: "Salas",
       icon: "pi pi-map-marker",
       color: "#06b6d4",
-      path: "/locations",
+      path: "/rooms",
     },
   ];
 
@@ -138,7 +138,7 @@ export default function Home() {
                     {item.label === "Vínculos" && stats.internships}
                     {item.label === "Períodos" && stats.periods}
                     {item.label === "Instituições" && "-"}
-                    {item.label === "Locais" && "-"}
+                    {item.label === "Salas" && "-"}
                   </div>
                 </div>
               </div>

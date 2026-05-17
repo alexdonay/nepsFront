@@ -20,7 +20,7 @@ export default function Layout({ children }) {
         },
         { label: "Regiões", icon: "pi pi-map", path: "/regions" },
         { label: "Cursos", icon: "pi pi-book", path: "/courses" },
-        { label: "Locais", icon: "pi pi-map-marker", path: "/locations" },
+        { label: "Salas", icon: "pi pi-map-marker", path: "/rooms" },
       ],
     },
     {
