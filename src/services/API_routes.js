@@ -6,11 +6,8 @@
 export const API_ROUTES = {
   AUTH: {
     LOGIN: "/v1/auth/login",
-    REFRESH: "/v1/auth/refresh",
-    ME: "/v1/auth/me",
     REGISTER: "/v1/auth/register",
     RESET_PASSWORD: "/v1/auth/reset-password",
-    RESET_PASSWORD_CONFIRM: "/v1/auth/reset-password/confirm",
   },
 
   USERS: {
@@ -19,44 +16,47 @@ export const API_ROUTES = {
     BY_ID: (id) => `/v1/users/${id}`,
   },
 
-  COURSES: {
-    BASE: "/v1/courses",
-    BY_ID: (id) => `/v1/courses/${id}`,
+  CADASTROS: {
+    COURSES: "/v1/cadastros/courses",
+    COURSES_BY_ID: (id) => `/v1/cadastros/courses/${id}`,
+    REGIONS: "/v1/cadastros/regions",
+    REGIONS_BY_ID: (id) => `/v1/cadastros/regions/${id}`,
+    HEALTH_UNITS: "/v1/cadastros/health-units",
+    HEALTH_UNITS_BY_ID: (id) => `/v1/cadastros/health-units/${id}`,
+    INSTITUTIONS: "/v1/cadastros/institutions",
+    INSTITUTIONS_BY_ID: (id) => `/v1/cadastros/institutions/${id}`,
+    LOCATIONS: "/v1/cadastros/locations",
+    LOCATIONS_BY_ID: (id) => `/v1/cadastros/locations/${id}`,
   },
 
-  EDUCATION_INSTITUTES: {
-    BASE: "/v1/education-institutes",
-    BY_ID: (id) => `/v1/education-institutes/${id}`,
+  GESTAO: {
+    STUDENTS: "/v1/gestao/students",
+    STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
+    INTERNSHIPS: "/v1/gestao/internships",
+    PERIODS: "/v1/gestao/periods",
+    PERIODS_CURRENT: "/v1/gestao/periods/current",
   },
 
-  REGIONS: {
-    BASE: "/v1/regions",
-    BY_ID: (id) => `/v1/regions/${id}`,
+  ACOMPANHAMENTO: {
+    LOCATIONS_AGENDA: "/v1/acompanhamento/locations-agenda",
   },
 
-  INTERNSHIP_FIELD: {
-    BASE: "/v1/internship-field",
-    BY_ID: (id) => `/v1/internship-field/${id}`,
+  SERVICES: {
+    BASE: "/v1/services",
+    BY_ID: (id) => `/v1/services/${id}`,
   },
 
-  ROOMS: {
-    BASE: "/v1/rooms",
-    BY_ID: (id) => `/v1/rooms/${id}`,
-    BY_INTERNSHIP_FIELD: (fieldId) => `/v1/rooms/by-internship_field/${fieldId}`,
+  SERVICE_ROOMS: {
+    BASE: "/v1/service-rooms",
+    BY_ID: (id) => `/v1/service-rooms/${id}`,
+    BY_SERVICE: (serviceId) => `/v1/service-rooms/by-service/${serviceId}`,
   },
 
-  STUDENTS: {
-    BASE: "/v1/students",
-    BY_ID: (id) => `/v1/students/${id}`,
-    BY_COURSE: (courseId) => `/v1/students/by-course/${courseId}`,
-    BY_INSTITUTE: (instituteId) => `/v1/students/by-institute/${instituteId}`,
-  },
-
-  INTERNSHIPS: {
-    BASE: "/v1/internships",
-    BY_ID: (id) => `/v1/internships/${id}`,
-    BY_FIELD: (fieldId) => `/v1/internships/by-field/${fieldId}`,
-    BY_EDU_INSTITUTE: (eduId) => `/v1/internships/by-education-institute/${eduId}`,
-    BY_ROOM: (roomId) => `/v1/internships/by-room/${roomId}`,
+  SERVICE_SCHEDULES: {
+    BASE: "/v1/service-schedules",
+    BY_ID: (id) => `/v1/service-schedules/${id}`,
+    BY_ROOM: (roomId) => `/v1/service-schedules/by-room/${roomId}`,
+    BY_ROOM_DAY: (roomId, weekDay) =>
+      `/v1/service-schedules/by-room/${roomId}/by-day/${weekDay}`,
   },
 };

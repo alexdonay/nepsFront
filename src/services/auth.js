@@ -16,4 +16,12 @@ export const confirmReset = (hash, newPassword) =>
 
 export const logout = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("permission");
+};
+
+export const confirmReset = (hash, newPassword) =>
+  repository.auth.confirmReset(hash, newPassword);
+
+export const logout = () => {
+  localStorage.removeItem("token");
 };

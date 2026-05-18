@@ -1,46 +1,116 @@
 import { Button } from "primereact/button";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { logout } from "../services/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { PERMISSIONS } from "../constants/permissions";
+import { hasPermission } from "../utils/auth";
+
+const ALL_PERMISSIONS = [
+  PERMISSIONS.ADMIN,
+  PERMISSIONS.INSTITUICAO_ENSINO,
+  PERMISSIONS.UNIDADE_SAUDE,
+];
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const menuItems = [
-    { label: "Início", icon: "pi pi-home", path: "/" },
+    { label: "Início", icon: "pi pi-home", path: "/", permissions: [] },
     {
       label: "Cadastro",
       icon: "pi pi-building",
       items: [
-        { label: "Unidades", icon: "pi pi-home", path: "/units" },
+        {
+          label: "Usuários",
+          icon: "pi pi-user-edit",
+          path: "/users",
+          permissions: [PERMISSIONS.ADMIN],
+        },
+        {
+          label: "Unidades",
+          icon: "pi pi-home",
+          path: "/units",
+          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE],
+        },
         {
           label: "Instituições",
           icon: "pi pi-building",
           path: "/institutions",
+          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
         },
-        { label: "Regiões", icon: "pi pi-map", path: "/regions" },
-        { label: "Cursos", icon: "pi pi-book", path: "/courses" },
-        { label: "Salas", icon: "pi pi-map-marker", path: "/rooms" },
+        {
+          label: "Regiões",
+          icon: "pi pi-map",
+          path: "/regions",
+          permissions: [PERMISSIONS.ADMIN],
+        },
+        {
+          label: "Cursos",
+          icon: "pi pi-book",
+          path: "/courses",
+          permissions: [PERMISSIONS.ADMIN],
+        },
+        {
+          label: "Salas",
+          icon: "pi pi-map-marker",
+          path: "/rooms",
+          permissions: [PERMISSIONS.ADMIN],
+        },
       ],
     },
     {
       label: "Gestão",
       icon: "pi pi-calendar",
       items: [
-        { label: "Períodos", icon: "pi pi-calendar", path: "/periods" },
-        { label: "Alunos", icon: "pi pi-users", path: "/students" },
-        { label: "Vínculos", icon: "pi pi-link", path: "/internships" },
+        {
+          label: "Períodos",
+          icon: "pi pi-calendar",
+          path: "/periods",
+          permissions: ALL_PERMISSIONS,
+        },
+        {
+          label: "Alunos",
+          icon: "pi pi-users",
+          path: "/students",
+          permissions: ALL_PERMISSIONS,
+        },
+        {
+          label: "Vínculos",
+          icon: "pi pi-link",
+          path: "/internships",
+          permissions: ALL_PERMISSIONS,
+        },
       ],
     },
-    { label: "Acompanhamento", icon: "pi pi-chart-bar", path: "/dashboard" },
+    {
+      label: "Acompanhamento",
+      icon: "pi pi-chart-bar",
+      path: "/dashboard",
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+    },
   ];
 
+  const filterMenuItems = (items) => {
+    return items
+      .map((item) => {
+        if (item.items) {
+          const filteredSubItems = item.items.filter((sub) =>
+            hasPermission(sub.permissions),
+          );
+          if (filteredSubItems.length === 0) return null;
+          return { ...item, items: filteredSubItems };
+        }
+        if (item.permissions && !hasPermission(item.permissions)) return null;
+        return item;
+      })
+      .filter(Boolean);
+  };
+
+  const visibleMenuItems = filterMenuItems(menuItems);
   return (
     <div className="layout-wrapper">
       <aside className="layout-sidebar p-3">
         <h2 className="text-xl font-bold mb-3">e-NEPS</h2>
         <nav className="flex flex-column gap-2">
-          {menuItems.map((item, i) =>
+          {visibleMenuItems.map((item, i) =>
             item.items ? (
               <div key={i} className="dropdown">
                 <span className={`pi ${item.icon} mr-2`}></span> {item.label}
@@ -63,7 +133,16 @@ export default function Layout({ children }) {
             ),
           )}
         </nav>
-        <div className="sidebar-footer mt-4">
+      </aside>
+
+      <main className="layout-main flex-1">
+        <div className="flex justify-content-end mb-3 gap-2">
+          <Button
+            icon="pi pi-user"
+            text
+            className="text-white"
+            onClick={() => navigate("/profile")}
+          />
           <Button
             icon="pi pi-sign-out"
             label="Sair"
@@ -74,9 +153,8 @@ export default function Layout({ children }) {
             }}
           />
         </div>
-      </aside>
-      <main className="layout-main flex-1">        
-        {children}
+
+        <div className="p-3">{children}</div>
       </main>
     </div>
   );

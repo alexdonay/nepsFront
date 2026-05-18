@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const defaultProtocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
+const defaultApiBaseUrl = `${defaultProtocol}//localhost:8000/api`;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultApiBaseUrl,
   headers: { 'Content-Type': 'application/json' }
 });
 
