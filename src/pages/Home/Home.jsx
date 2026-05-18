@@ -28,16 +28,20 @@ export default function Home() {
           repository.vinculos.get(),
           repository.periods.get(),
         ]);
+      const periods = periodsRes.data.items || periodsRes.data;
       setStats({
         students: studentsRes.data.length,
         units: unitsRes.data.length,
         internships: internshipsRes.data.length,
-        periods: periodsRes.data.length,
+        periods: periods.length,
       });
-    } catch (e) {}
-    try {
-      const { data } = await repository.periods.getCurrent();
-      setCurrentPeriod(data);
+      const today = new Date();
+      const current = periods.find(p => {
+        const start = new Date(p.start_date);
+        const end = new Date(p.end_date);
+        return start <= today && end >= today;
+      });
+      setCurrentPeriod(current || null);
     } catch (e) {}
   };
 

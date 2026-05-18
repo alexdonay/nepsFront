@@ -11,18 +11,23 @@ export const API_ROUTES = {
   },
 
   USERS: {
-    BASE: "/v1/users",
+    BASE: "/v1/users/",
     ME: "/v1/users/me",
     BY_ID: (id) => `/v1/users/${id}`,
   },
 
+  COURSES: {
+    BASE: "/v1/courses",
+    BY_ID: (id) => `/v1/courses/${id}`,
+  },
+
   CADASTROS: {
-    COURSES: "/v1/cadastros/courses",
-    COURSES_BY_ID: (id) => `/v1/cadastros/courses/${id}`,
-    REGIONS: "/v1/cadastros/regions",
-    REGIONS_BY_ID: (id) => `/v1/cadastros/regions/${id}`,
-    HEALTH_UNITS: "/v1/cadastros/health-units",
-    HEALTH_UNITS_BY_ID: (id) => `/v1/cadastros/health-units/${id}`,
+    COURSES: "/v1/courses",
+    COURSES_BY_ID: (id) => `/v1/courses/${id}`,
+    REGIONS: "/v1/regions",
+    REGIONS_BY_ID: (id) => `/v1/regions/${id}`,
+    HEALTH_UNITS: "/v1/health-units",
+    HEALTH_UNITS_BY_ID: (id) => `/v1/health-units/${id}`,
     INSTITUTIONS: "/v1/cadastros/institutions",
     INSTITUTIONS_BY_ID: (id) => `/v1/cadastros/institutions/${id}`,
     LOCATIONS: "/v1/cadastros/locations",
@@ -34,7 +39,6 @@ export const API_ROUTES = {
     STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
     INTERNSHIPS: "/v1/gestao/internships",
     PERIODS: "/v1/gestao/periods",
-    PERIODS_CURRENT: "/v1/gestao/periods/current",
   },
 
   ACOMPANHAMENTO: {
@@ -44,6 +48,12 @@ export const API_ROUTES = {
   SERVICES: {
     BASE: "/v1/services",
     BY_ID: (id) => `/v1/services/${id}`,
+    BY_REGION: (regionId) => `/v1/services/by-region/${regionId}`,
+  },
+
+  REGIONS: {
+    BASE: "/v1/regions",
+    BY_ID: (id) => `/v1/regions/${id}`,
   },
 
   SERVICE_ROOMS: {
@@ -58,5 +68,16 @@ export const API_ROUTES = {
     BY_ROOM: (roomId) => `/v1/service-schedules/by-room/${roomId}`,
     BY_ROOM_DAY: (roomId, weekDay) =>
       `/v1/service-schedules/by-room/${roomId}/by-day/${weekDay}`,
+  },
+
+  ROOMS: {
+    BASE: "/v1/rooms",
+    BY_ID: (id) => `/v1/rooms/${id}`,
+    BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
+  },
+
+  INTERNSHIP_FIELDS: {
+    BASE: "/api/v1/internship-field",
+    BY_ID: (id) => `/api/v1/internship-field/${id}`,
   },
 };

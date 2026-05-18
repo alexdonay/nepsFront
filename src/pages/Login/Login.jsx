@@ -49,6 +49,25 @@ export default function Login() {
       } catch (err) {
         console.error("/users/me error:", err.response ?? err.message ?? err);
         // fallback para quando /users/me não estiver disponível no login
+        
+        // Tentar extrair do token JWT
+        let tokenPermission = null;
+        try {
+          const tokenParts = data.access_token.split(".");
+          if (tokenParts.length === 3) {
+            const payload = JSON.parse(atob(tokenParts[1]));
+            const tokenCandidates = [
+              payload.permission,
+              payload.perfil,
+              payload.role,
+              payload.userType,
+              payload.type,
+            ];
+            if (Array.isArray(payload.roles)) tokenCandidates.push(...payload.roles);
+            tokenPermission = tokenCandidates.map(normalizePermission).find(Boolean);
+          }
+        } catch (e) { console.log("Error parsing token:", e); }
+
         const candidates = [
           data.permission,
           data.perfil,
@@ -59,7 +78,7 @@ export default function Login() {
 
         if (Array.isArray(data.roles)) candidates.push(...data.roles);
 
-        const permission = candidates.map(normalizePermission).find(Boolean);
+        const permission = tokenPermission || candidates.map(normalizePermission).find(Boolean);
         if (permission) localStorage.setItem("permission", permission);
         else localStorage.removeItem("permission");
       }

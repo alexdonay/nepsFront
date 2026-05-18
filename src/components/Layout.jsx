@@ -1,6 +1,7 @@
 import { Button } from "primereact/button";
 import { Link, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../constants/permissions";
+import { logout } from "../services/auth";
 import { hasPermission } from "../utils/auth";
 
 const ALL_PERMISSIONS = [
@@ -8,6 +9,8 @@ const ALL_PERMISSIONS = [
   PERMISSIONS.INSTITUICAO_ENSINO,
   PERMISSIONS.UNIDADE_SAUDE,
 ];
+
+const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE];
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -25,16 +28,16 @@ export default function Layout({ children }) {
           permissions: [PERMISSIONS.ADMIN],
         },
         {
-          label: "Unidades",
-          icon: "pi pi-home",
-          path: "/units",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE],
+          label: "Serviços",
+          icon: "pi pi-cog",
+          path: "/services",
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Instituições",
           icon: "pi pi-building",
           path: "/institutions",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Regiões",
@@ -70,13 +73,13 @@ export default function Layout({ children }) {
           label: "Alunos",
           icon: "pi pi-users",
           path: "/students",
-          permissions: ALL_PERMISSIONS,
+          permissions: MANAGEMENT_PERMISSIONS,
         },
         {
           label: "Vínculos",
           icon: "pi pi-link",
           path: "/internships",
-          permissions: ALL_PERMISSIONS,
+          permissions: MANAGEMENT_PERMISSIONS,
         },
       ],
     },
@@ -84,7 +87,7 @@ export default function Layout({ children }) {
       label: "Acompanhamento",
       icon: "pi pi-chart-bar",
       path: "/dashboard",
-      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE],
     },
   ];
 

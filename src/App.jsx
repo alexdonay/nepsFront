@@ -5,8 +5,6 @@ import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import CoursesList from "./pages/Courses/CoursesList";
 import EnrollmentPeriods from "./pages/EnrollmentPeriods/EnrollmentPeriods";
-import HealthUnitForm from "./pages/HealthUnit/HealthUnitForm";
-import HealthUnitsList from "./pages/HealthUnit/HealthUnitsList";
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
@@ -36,6 +34,8 @@ const ALL_PERMISSIONS = [
   PERMISSIONS.INSTITUICAO_ENSINO,
   PERMISSIONS.UNIDADE_SAUDE,
 ];
+
+const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE];
 
 function PrivateRoute({ children, permissions = [] }) {
   if (!isAuthenticated()) {
@@ -73,19 +73,6 @@ export default function App() {
       />
 
       <Route
-        path="/units"
-        element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
-            <Layout>
-              <HealthUnitsList />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-
-      <Route
         path="/users"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -117,37 +104,11 @@ export default function App() {
           </PrivateRoute>
         }
       />
-      <Route
-        path="/units/new"
-        element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
-            <Layout>
-              <HealthUnitForm />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/units/:id"
-        element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
-            <Layout>
-              <HealthUnitForm />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
 
       <Route
         path="/institutions"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <InstitutionsList />
             </Layout>
@@ -157,9 +118,17 @@ export default function App() {
       <Route
         path="/institutions/new"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <InstitutionForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/institutions/:id"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <InstitutionForm />
             </Layout>
@@ -201,9 +170,7 @@ export default function App() {
       <Route
         path="/services"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServicesList />
             </Layout>
@@ -214,9 +181,7 @@ export default function App() {
       <Route
         path="/services/new"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceForm />
             </Layout>
@@ -227,9 +192,7 @@ export default function App() {
       <Route
         path="/services/:id"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceForm />
             </Layout>
@@ -240,9 +203,7 @@ export default function App() {
       <Route
         path="/services/:serviceId/rooms"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceRoomsList />
             </Layout>
@@ -253,9 +214,7 @@ export default function App() {
       <Route
         path="/services/:serviceId/rooms/new"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceRoomForm />
             </Layout>
@@ -266,9 +225,7 @@ export default function App() {
       <Route
         path="/service-rooms/:id"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceRoomForm />
             </Layout>
@@ -279,9 +236,7 @@ export default function App() {
       <Route
         path="/service-rooms/:roomId/schedules"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceSchedulesList />
             </Layout>
@@ -292,9 +247,7 @@ export default function App() {
       <Route
         path="/service-rooms/:roomId/schedules/new"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceScheduleForm />
             </Layout>
@@ -305,9 +258,7 @@ export default function App() {
       <Route
         path="/service-schedules/:id"
         element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
-          >
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceScheduleForm />
             </Layout>
@@ -328,7 +279,7 @@ export default function App() {
       <Route
         path="/students"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <StudentsList />
             </Layout>
@@ -338,7 +289,7 @@ export default function App() {
       <Route
         path="/students/new"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <StudentForm />
             </Layout>
@@ -348,7 +299,7 @@ export default function App() {
       <Route
         path="/students/:id"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <StudentForm />
             </Layout>
@@ -359,7 +310,7 @@ export default function App() {
       <Route
         path="/internships"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <InternshipList />
             </Layout>
@@ -369,7 +320,7 @@ export default function App() {
       <Route
         path="/internships/new"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <InternshipForm />
             </Layout>
@@ -380,7 +331,9 @@ export default function App() {
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.INSTITUICAO_ENSINO]}>
+          <PrivateRoute
+            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
+          >
             <Layout>
               <Agenda />
             </Layout>

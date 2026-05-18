@@ -10,18 +10,13 @@ export const getCurrentUser = () => repository.users.me();
 export const updateProfile = (data) => repository.users.updateMe(data);
 
 export const resetPassword = (email) => repository.auth.resetPassword(email);
-
 export const confirmReset = (hash, newPassword) =>
   repository.auth.confirmReset(hash, newPassword);
 
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("permission");
-};
-
-export const confirmReset = (hash, newPassword) =>
-  repository.auth.confirmReset(hash, newPassword);
-
-export const logout = () => {
-  localStorage.removeItem("token");
+  try {
+    localStorage.removeItem("currentUser");
+  } catch (e) {}
 };
