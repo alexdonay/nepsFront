@@ -9,10 +9,17 @@ import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
 import { repository } from "../../services/repository";
 
+const DAYS = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"];
+const SHIFTS = ["MAN", "TRD", "VSP"];
+const SHIFT_LABELS = { MAN: "Manhã", TRD: "Tarde", VSP: "Vespertino" };
+
 export default function RoomsList() {
   const [rooms, setRooms] = useState([]);
   const [services, setServices] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
+  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [schedules, setSchedules] = useState([]);
   const [form, setForm] = useState({
     name: "",
     service_id: null,
@@ -88,8 +95,32 @@ export default function RoomsList() {
     setShowDialog(true);
   };
 
+  const handleManage = async (rowData) => {
+    setSelectedRoom(rowData);
+    try {
+      const { data } = await repository.serviceSchedules.getByRoom(rowData.id);
+      setSchedules(data);
+    } catch (e) {
+      setSchedules([]);
+    }
+    setShowScheduleDialog(true);
+  };
+
+  const getScheduleForCell = (day, shift) => {
+    return schedules.find(
+      (s) => s.week_day === day && s.shift === shift && s.is_active
+    );
+  };
+
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
+      <Button
+        icon="pi pi-calendar"
+        className="p-button-text"
+        tooltip="Gerir Agenda"
+        tooltipOptions={{ position: "top" }}
+        onClick={() => handleManage(rowData)}
+      />
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
@@ -192,6 +223,37 @@ export default function RoomsList() {
           </label>
         </div>
         <Button label="Salvar" onClick={handleSave} className="mt-3" />
+      </Dialog>
+
+      <Dialog
+        visible={showScheduleDialog}
+        onHide={() => setShowScheduleDialog(false)}
+        header={`Agenda - ${selectedRoom?.name || ""}`}
+        style={{ width: "80vw", maxWidth: "900px" }}
+      >
+        <DataTable value={SHIFTS} tableStyle={{ minWidth: "50rem" }} stripedRows>
+          <Column
+            header="Turno"
+            body={(row) => SHIFT_LABELS[row]}
+            style={{ fontWeight: "bold", width: "120px" }}
+          />
+          {DAYS.map((day) => (
+            <Column
+              key={day}
+              header={day}
+              body={(row) => {
+                const schedule = getScheduleForCell(day, row);
+                return schedule ? (
+                  <div className="text-green-700 font-medium">
+                    {schedule.student_id ? `Aluno #${schedule.student_id}` : "Livre"}
+                  </div>
+                ) : (
+                  <span className="text-500">-</span>
+                );
+              }}
+            />
+          ))}
+        </DataTable>
       </Dialog>
     </div>
   );
