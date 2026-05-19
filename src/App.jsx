@@ -308,27 +308,6 @@ export default function App() {
       />
 
       <Route
-        path="/internships"
-        element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
-            <Layout>
-              <InternshipList />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/internships/new"
-        element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
-            <Layout>
-              <InternshipForm />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-
-      <Route
         path="/dashboard"
         element={
           <PrivateRoute

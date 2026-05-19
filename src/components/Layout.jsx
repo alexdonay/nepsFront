@@ -75,12 +75,6 @@ export default function Layout({ children }) {
           path: "/students",
           permissions: MANAGEMENT_PERMISSIONS,
         },
-        {
-          label: "Vínculos",
-          icon: "pi pi-link",
-          path: "/internships",
-          permissions: MANAGEMENT_PERMISSIONS,
-        },
       ],
     },
     {

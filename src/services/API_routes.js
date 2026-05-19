@@ -37,7 +37,6 @@ export const API_ROUTES = {
   GESTAO: {
     STUDENTS: "/v1/gestao/students",
     STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
-    INTERNSHIPS: "/v1/gestao/internships",
     PERIODS: "/v1/gestao/periods",
   },
 
@@ -74,10 +73,5 @@ export const API_ROUTES = {
     BASE: "/v1/rooms",
     BY_ID: (id) => `/v1/rooms/${id}`,
     BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
-  },
-
-  INTERNSHIP_FIELDS: {
-    BASE: "/api/v1/internship-field",
-    BY_ID: (id) => `/api/v1/internship-field/${id}`,
   },
 };

@@ -79,12 +79,6 @@ export const repository = {
     delete: (id) => api.delete(API_ROUTES.ROOMS.BY_ID(id)),
   },
 
-  // Campos de Estágio
-  internshipFields: {
-    get: () => api.get(API_ROUTES.INTERNSHIP_FIELDS.BASE),
-    getById: (id) => api.get(API_ROUTES.INTERNSHIP_FIELDS.BY_ID(id)),
-  },
-
   // Estudantes
   students: {
     get: () => api.get(API_ROUTES.STUDENTS.BASE),
@@ -95,17 +89,6 @@ export const repository = {
     byCourse: (courseId) => api.get(API_ROUTES.STUDENTS.BY_COURSE(courseId)),
     byInstitute: (instituteId) =>
       api.get(API_ROUTES.STUDENTS.BY_INSTITUTE(instituteId)),
-  },
-
-  // Internships
-  internships: {
-    get: () => api.get(API_ROUTES.INTERNSHIPS.BASE),
-    post: (data) => api.post(API_ROUTES.INTERNSHIPS.BASE, data),
-    getById: (id) => api.get(API_ROUTES.INTERNSHIPS.BY_ID(id)),
-    byField: (fieldId) => api.get(API_ROUTES.INTERNSHIPS.BY_FIELD(fieldId)),
-    byEducationInstitute: (eduId) =>
-      api.get(API_ROUTES.INTERNSHIPS.BY_EDU_INSTITUTE(eduId)),
-    byRoom: (roomId) => api.get(API_ROUTES.INTERNSHIPS.BY_ROOM(roomId)),
   },
 
   // Períodos (se existir no backend)
