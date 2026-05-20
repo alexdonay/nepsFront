@@ -37,7 +37,7 @@ const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE];
 
 function PrivateRoute({ children, permissions = [] }) {
   if (!isAuthenticated()) {
-    return <Navigate to="/access-denied" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (!permissions.length) return children;
