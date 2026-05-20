@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
-import api from '../services/api';
+import { Button } from "primereact/button";
+import { Column } from "primereact/column";
+import { DataTable } from "primereact/datatable";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { repository } from "../services/repository";
 
 export default function InstitutionsList() {
   const [institutions, setInstitutions] = useState([]);
@@ -30,7 +30,11 @@ export default function InstitutionsList() {
 
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
-      <Button icon="pi pi-pencil" className="p-button-text" onClick={() => navigate(`/institutions/${rowData.id}`)} />
+      <Button
+        icon="pi pi-pencil"
+        className="p-button-text"
+        onClick={() => navigate(`/institutions/${rowData.id}`)}
+      />
     </div>
   );
 
@@ -38,7 +42,11 @@ export default function InstitutionsList() {
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between mb-3">
         <h2 className="text-xl font-bold">Instituições</h2>
-        <Button label="Nova Instituição" icon="pi pi-plus" onClick={() => navigate('/institutions/new')} />
+        <Button
+          label="Nova Instituição"
+          icon="pi pi-plus"
+          onClick={() => navigate("/institutions/new")}
+        />
       </div>
 
       <DataTable
