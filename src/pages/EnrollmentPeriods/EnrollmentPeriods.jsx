@@ -136,6 +136,7 @@ export default function EnrollmentPeriods() {
           <Calendar
             value={form.priority_start_date}
             onChange={(e) => setForm({ ...form, priority_start_date: e.value })}
+            dateFormat="dd/mm/yy"
             className="w-full"
           />
         </div>
@@ -144,6 +145,7 @@ export default function EnrollmentPeriods() {
           <Calendar
             value={form.priority_end_date}
             onChange={(e) => setForm({ ...form, priority_end_date: e.value })}
+            dateFormat="dd/mm/yy"
             className="w-full"
           />
         </div>
@@ -152,6 +154,7 @@ export default function EnrollmentPeriods() {
           <Calendar
             value={form.start_date}
             onChange={(e) => setForm({ ...form, start_date: e.value })}
+            dateFormat="dd/mm/yy"
             className="w-full"
           />
         </div>
@@ -160,6 +163,7 @@ export default function EnrollmentPeriods() {
           <Calendar
             value={form.end_date}
             onChange={(e) => setForm({ ...form, end_date: e.value })}
+            dateFormat="dd/mm/yy"
             className="w-full"
           />
         </div>
