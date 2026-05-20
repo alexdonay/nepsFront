@@ -3,20 +3,18 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
+import Schedule from "./pages/Schedule";
 import CoursesList from "./pages/Courses/CoursesList";
 import EnrollmentPeriods from "./pages/EnrollmentPeriods/EnrollmentPeriods";
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
-import InstitutionsList from "./pages/Institution/InstitutionsList";
-import InternshipForm from "./pages/Institution/InternshipForm";
-import InternshipList from "./pages/Internship/InternshipList";
+import InstitutionsList from "./pages/InstitutionsList";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
 import ResetPassword from "./pages/Login/ResetPassword";
 import RegionsList from "./pages/Regions/RegionsList";
 import RoomsList from "./pages/Rooms/RoomsList";
-import Agenda from "./pages/Schedule/Schedule";
 import ServiceRoomForm from "./pages/ServiceRooms/ServiceRoomForm";
 import ServiceRoomsList from "./pages/ServiceRooms/ServiceRoomsList";
 import ServiceForm from "./pages/Services/ServiceForm";
@@ -314,7 +312,7 @@ export default function App() {
             permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
           >
             <Layout>
-              <Agenda />
+              <Schedule />
             </Layout>
           </PrivateRoute>
         }
