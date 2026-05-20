@@ -5,54 +5,69 @@ import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
+import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
+import { getCurrentPermission, normalizePermission } from "../../utils/auth";
 
 export default function EnrollmentPeriods() {
   const [periods, setPeriods] = useState([]);
-  const [currentPeriod, setCurrentPeriod] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
   const [form, setForm] = useState({
     name: "",
+    priority_start_date: null,
+    priority_end_date: null,
     start_date: null,
     end_date: null,
-    description: "",
   });
+  const currentPermission = normalizePermission(getCurrentPermission());
+  const canCreatePeriod = currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO;
+
+  const today = new Date();
 
   useEffect(() => {
     loadPeriods();
-    loadCurrentPeriod();
   }, []);
 
   const loadPeriods = async () => {
     try {
       const { data } = await repository.periods.get();
-      setPeriods(data);
+      setPeriods(data.items || data);
     } catch (e) {
       setPeriods([]);
     }
   };
 
-  const loadCurrentPeriod = async () => {
-    try {
-      const { data } = await repository.periods.getCurrent();
-      setCurrentPeriod(data);
-    } catch (e) {}
-  };
+  const currentPeriod = periods.find((p) => {
+    const start = new Date(p.start_date);
+    const end = new Date(p.end_date);
+    return start <= today && end >= today;
+  });
 
   const handleSave = async () => {
+    if (!canCreatePeriod) {
+      return;
+    }
+
     try {
       await repository.periods.post({
-        ...form,
-        start_date: form.start_date.toISOString(),
-        end_date: form.end_date.toISOString(),
+        name: form.name,
+        priority_start_date: form.priority_start_date
+          ?.toISOString()
+          .split("T")[0],
+        priority_end_date: form.priority_end_date?.toISOString().split("T")[0],
+        start_date: form.start_date?.toISOString().split("T")[0],
+        end_date: form.end_date?.toISOString().split("T")[0],
       });
       setShowDialog(false);
-      setForm({ name: "", start_date: null, end_date: null, description: "" });
+      setForm({
+        name: "",
+        priority_start_date: null,
+        priority_end_date: null,
+        start_date: null,
+        end_date: null,
+      });
       loadPeriods();
-      loadCurrentPeriod();
-    } catch (err) {
-      alert(err.response?.data?.detail || "Erro ao salvar");
-    }
+    } catch (err) {}
   };
 
   const dateTemplate = (rowData) =>
@@ -62,11 +77,13 @@ export default function EnrollmentPeriods() {
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between mb-3">
         <h2 className="text-xl font-bold">Períodos de Inscrição</h2>
-        <Button
-          label="Abrir Período"
-          icon="pi pi-plus"
-          onClick={() => setShowDialog(true)}
-        />
+        {canCreatePeriod && (
+          <Button
+            label="Abrir Período"
+            icon="pi pi-plus"
+            onClick={() => setShowDialog(true)}
+          />
+        )}
       </div>
 
       {currentPeriod && (
@@ -77,7 +94,12 @@ export default function EnrollmentPeriods() {
         </div>
       )}
 
-      <DataTable value={periods}>
+      <DataTable
+        value={periods}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="name" header="Nome" />
         <Column
           field="start_date"
@@ -110,7 +132,23 @@ export default function EnrollmentPeriods() {
           />
         </div>
         <div className="field mb-3">
-          <label>Início</label>
+          <label>Data Início Entidades Prioritárias</label>
+          <Calendar
+            value={form.priority_start_date}
+            onChange={(e) => setForm({ ...form, priority_start_date: e.value })}
+            className="w-full"
+          />
+        </div>
+        <div className="field mb-3">
+          <label>Data Fim Entidades Prioritárias</label>
+          <Calendar
+            value={form.priority_end_date}
+            onChange={(e) => setForm({ ...form, priority_end_date: e.value })}
+            className="w-full"
+          />
+        </div>
+        <div className="field mb-3">
+          <label>Data Início Demais Entidades</label>
           <Calendar
             value={form.start_date}
             onChange={(e) => setForm({ ...form, start_date: e.value })}
@@ -118,21 +156,14 @@ export default function EnrollmentPeriods() {
           />
         </div>
         <div className="field mb-3">
-          <label>Fim</label>
+          <label>Data Fim Demais Entidades</label>
           <Calendar
             value={form.end_date}
             onChange={(e) => setForm({ ...form, end_date: e.value })}
             className="w-full"
           />
         </div>
-        <div className="field mb-3">
-          <label>Descrição</label>
-          <InputText
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="w-full"
-          />
-        </div>
+
         <Button label="Salvar" onClick={handleSave} />
       </Dialog>
     </div>

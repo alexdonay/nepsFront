@@ -6,15 +6,12 @@
 export const API_ROUTES = {
   AUTH: {
     LOGIN: "/v1/auth/login",
-    REFRESH: "/v1/auth/refresh",
-    ME: "/v1/auth/me",
     REGISTER: "/v1/auth/register",
     RESET_PASSWORD: "/v1/auth/reset-password",
-    RESET_PASSWORD_CONFIRM: "/v1/auth/reset-password/confirm",
   },
 
   USERS: {
-    BASE: "/v1/users",
+    BASE: "/v1/users/",
     ME: "/v1/users/me",
     BY_ID: (id) => `/v1/users/${id}`,
   },
@@ -24,9 +21,33 @@ export const API_ROUTES = {
     BY_ID: (id) => `/v1/courses/${id}`,
   },
 
-  EDUCATION_INSTITUTES: {
-    BASE: "/v1/education-institutes",
-    BY_ID: (id) => `/v1/education-institutes/${id}`,
+  CADASTROS: {
+    COURSES: "/v1/courses",
+    COURSES_BY_ID: (id) => `/v1/courses/${id}`,
+    REGIONS: "/v1/regions",
+    REGIONS_BY_ID: (id) => `/v1/regions/${id}`,
+    HEALTH_UNITS: "/v1/health-units",
+    HEALTH_UNITS_BY_ID: (id) => `/v1/health-units/${id}`,
+    INSTITUTIONS: "/v1/cadastros/institutions",
+    INSTITUTIONS_BY_ID: (id) => `/v1/cadastros/institutions/${id}`,
+    LOCATIONS: "/v1/cadastros/locations",
+    LOCATIONS_BY_ID: (id) => `/v1/cadastros/locations/${id}`,
+  },
+
+  GESTAO: {
+    STUDENTS: "/v1/gestao/students",
+    STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
+    PERIODS: "/v1/gestao/periods",
+  },
+
+  ACOMPANHAMENTO: {
+    LOCATIONS_AGENDA: "/v1/acompanhamento/locations-agenda",
+  },
+
+  SERVICES: {
+    BASE: "/v1/services",
+    BY_ID: (id) => `/v1/services/${id}`,
+    BY_REGION: (regionId) => `/v1/services/by-region/${regionId}`,
   },
 
   REGIONS: {
@@ -34,29 +55,23 @@ export const API_ROUTES = {
     BY_ID: (id) => `/v1/regions/${id}`,
   },
 
-  INTERNSHIP_FIELD: {
-    BASE: "/v1/internship-field",
-    BY_ID: (id) => `/v1/internship-field/${id}`,
+  SERVICE_ROOMS: {
+    BASE: "/v1/service-rooms",
+    BY_ID: (id) => `/v1/service-rooms/${id}`,
+    BY_SERVICE: (serviceId) => `/v1/service-rooms/by-service/${serviceId}`,
+  },
+
+  SERVICE_SCHEDULES: {
+    BASE: "/v1/service-schedules",
+    BY_ID: (id) => `/v1/service-schedules/${id}`,
+    BY_ROOM: (roomId) => `/v1/service-schedules/by-room/${roomId}`,
+    BY_ROOM_DAY: (roomId, weekDay) =>
+      `/v1/service-schedules/by-room/${roomId}/by-day/${weekDay}`,
   },
 
   ROOMS: {
     BASE: "/v1/rooms",
     BY_ID: (id) => `/v1/rooms/${id}`,
-    BY_INTERNSHIP_FIELD: (fieldId) => `/v1/rooms/by-internship_field/${fieldId}`,
-  },
-
-  STUDENTS: {
-    BASE: "/v1/students",
-    BY_ID: (id) => `/v1/students/${id}`,
-    BY_COURSE: (courseId) => `/v1/students/by-course/${courseId}`,
-    BY_INSTITUTE: (instituteId) => `/v1/students/by-institute/${instituteId}`,
-  },
-
-  INTERNSHIPS: {
-    BASE: "/v1/internships",
-    BY_ID: (id) => `/v1/internships/${id}`,
-    BY_FIELD: (fieldId) => `/v1/internships/by-field/${fieldId}`,
-    BY_EDU_INSTITUTE: (eduId) => `/v1/internships/by-education-institute/${eduId}`,
-    BY_ROOM: (roomId) => `/v1/internships/by-room/${roomId}`,
+    BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
   },
 };

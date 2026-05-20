@@ -3,8 +3,9 @@ import { Message } from "primereact/message";
 import { Password } from "primereact/password";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../services/auth";
 import EmailInput from "../../components/Email/EmailInput";
+import { getCurrentUser, login } from "../../services/auth";
+import { normalizePermission } from "../../utils/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,6 +21,68 @@ export default function Login() {
     try {
       const { data } = await login(email.trim(), password);
       localStorage.setItem("token", data.access_token);
+
+      // Primeiro tenta obter permissão detalhada do endpoint /users/me
+      try {
+        const token = localStorage.getItem("token");
+        console.log("token after login:", token);
+        const me = await getCurrentUser();
+        console.log("/users/me response:", me);
+        const user = me.data;
+        // persistir currentUser para uso em outras partes da UI
+        try {
+          localStorage.setItem("currentUser", JSON.stringify(user));
+        } catch {}
+        const candidates = [
+          user.permission,
+          user.perfil,
+          user.role,
+          user.userType,
+          user.type,
+        ];
+
+        if (Array.isArray(user.roles)) candidates.push(...user.roles);
+
+        const permission = candidates.map(normalizePermission).find(Boolean);
+        if (permission) localStorage.setItem("permission", permission);
+        else localStorage.removeItem("permission");
+      } catch (err) {
+        console.error("/users/me error:", err.response ?? err.message ?? err);
+        // fallback para quando /users/me não estiver disponível no login
+        
+        // Tentar extrair do token JWT
+        let tokenPermission = null;
+        try {
+          const tokenParts = data.access_token.split(".");
+          if (tokenParts.length === 3) {
+            const payload = JSON.parse(atob(tokenParts[1]));
+            const tokenCandidates = [
+              payload.permission,
+              payload.perfil,
+              payload.role,
+              payload.userType,
+              payload.type,
+            ];
+            if (Array.isArray(payload.roles)) tokenCandidates.push(...payload.roles);
+            tokenPermission = tokenCandidates.map(normalizePermission).find(Boolean);
+          }
+        } catch (e) { console.log("Error parsing token:", e); }
+
+        const candidates = [
+          data.permission,
+          data.perfil,
+          data.role,
+          data.userType,
+          data.type,
+        ];
+
+        if (Array.isArray(data.roles)) candidates.push(...data.roles);
+
+        const permission = tokenPermission || candidates.map(normalizePermission).find(Boolean);
+        if (permission) localStorage.setItem("permission", permission);
+        else localStorage.removeItem("permission");
+      }
+
       navigate("/");
     } catch (err) {
       setError("Email ou senha incorretos");
@@ -33,9 +96,12 @@ export default function Login() {
       <div className="auth-card">
         <div className="auth-side">
           <div className="auth-logo">e-NEPS</div>
-          <div className="auth-sub">Gerenciamento de Estágios e Acompanhamento</div>
+          <div className="auth-sub">
+            Gerenciamento de Estágios e Acompanhamento
+          </div>
           <p style={{ marginTop: 12, lineHeight: 1.4 }}>
-            Painel administrativo para gestão de instituições, alunos e estágios.
+            Painel administrativo para gestão de instituições, alunos e
+            estágios.
           </p>
         </div>
 
@@ -49,7 +115,10 @@ export default function Login() {
             <EmailInput value={email} onChange={setEmail} required />
 
             <div className="field mb-3">
-              <label htmlFor="password" className="block text-900 font-medium mb-2">
+              <label
+                htmlFor="password"
+                className="block text-900 font-medium mb-2"
+              >
                 Senha
               </label>
               <Password
@@ -62,16 +131,28 @@ export default function Login() {
               />
             </div>
 
-            <Button type="submit" label="Entrar" className="w-full mb-3" loading={loading} />
+            <Button
+              type="submit"
+              label="Entrar"
+              className="w-full mb-3"
+              loading={loading}
+            />
 
             <div className="flex align-items-center justify-content-center mb-3">
-              <Button type="button" label="Recuperar senha" className="p-button-text" onClick={() => navigate("/forgot-password")} />
+              <Button
+                type="button"
+                label="Recuperar senha"
+                className="p-button-text"
+                onClick={() => navigate("/forgot-password")}
+              />
             </div>
           </form>
 
           {error && <Message severity="error" text={error} className="mt-3" />}
 
-          <div className="auth-footnote">Não tem conta? Contate o administrador para criação de usuário.</div>
+          <div className="auth-footnote">
+            Não tem conta? Contate o administrador para criação de usuário.
+          </div>
         </div>
       </div>
     </div>

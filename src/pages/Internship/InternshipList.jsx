@@ -19,7 +19,7 @@ export default function InternshipList() {
   const loadInternships = async () => {
     try {
       const { data } = await repository.vinculos.get();
-      setInternships(data);
+      setInternships(data.items || data);
     } catch (e) {
       setInternships([]);
     }
@@ -31,8 +31,8 @@ export default function InternshipList() {
         repository.students.get(),
         repository.locations.get(),
       ]);
-      setStudents(studentsRes.data);
-      setRooms(locationsRes.data);
+      setStudents(studentsRes.data.items || studentsRes.data);
+      setRooms(locationsRes.data.items || locationsRes.data);
     } catch (e) {}
   };
 
@@ -62,10 +62,16 @@ export default function InternshipList() {
         />
       </div>
 
-      <DataTable value={internships} tableStyle={{ minWidth: "50rem" }}>
+      <DataTable
+        value={internships}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column header="Aluno" body={studentTemplate} />
-        <Column header="Local" body={locationTemplate} />
+        <Column header="Local" body={roomTemplate} />
         <Column header="Turno" body={shiftTemplate} />
         <Column field="status" header="Status" />
       </DataTable>

@@ -9,7 +9,6 @@ export default function Home() {
   const [stats, setStats] = useState({
     students: 0,
     units: 0,
-    internships: 0,
     periods: 0,
   });
   const [currentPeriod, setCurrentPeriod] = useState(null);
@@ -21,23 +20,25 @@ export default function Home() {
 
   const loadData = async () => {
     try {
-      const [studentsRes, unitsRes, internshipsRes, periodsRes] =
+      const [studentsRes, unitsRes, periodsRes] =
         await Promise.all([
           repository.students.get(),
           repository.healthUnits.get(),
-          repository.vinculos.get(),
           repository.periods.get(),
         ]);
+      const periods = periodsRes.data.items || periodsRes.data;
       setStats({
         students: studentsRes.data.length,
         units: unitsRes.data.length,
-        internships: internshipsRes.data.length,
-        periods: periodsRes.data.length,
+        periods: periods.length,
       });
-    } catch (e) {}
-    try {
-      const { data } = await repository.periods.getCurrent();
-      setCurrentPeriod(data);
+      const today = new Date();
+      const current = periods.find(p => {
+        const start = new Date(p.start_date);
+        const end = new Date(p.end_date);
+        return start <= today && end >= today;
+      });
+      setCurrentPeriod(current || null);
     } catch (e) {}
   };
 
@@ -49,12 +50,6 @@ export default function Home() {
       path: "/students",
     },
     { label: "Unidades", icon: "pi pi-home", color: "#10b981", path: "/units" },
-    {
-      label: "Vínculos",
-      icon: "pi pi-link",
-      color: "#8b5cf6",
-      path: "/internships",
-    },
     {
       label: "Períodos",
       icon: "pi pi-calendar",
@@ -76,11 +71,11 @@ export default function Home() {
   ];
 
   const chartData = {
-    labels: ["Alunos", "Unidades", "Vínculos", "Períodos"],
+    labels: ["Alunos", "Unidades", "Períodos"],
     datasets: [
       {
-        data: [stats.students, stats.units, stats.internships, stats.periods],
-        backgroundColor: ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b"],
+        data: [stats.students, stats.units, stats.periods],
+        backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
       },
     ],
   };
@@ -135,7 +130,6 @@ export default function Home() {
                   <div className="text-900 font-medium">
                     {item.label === "Alunos" && stats.students}
                     {item.label === "Unidades" && stats.units}
-                    {item.label === "Vínculos" && stats.internships}
                     {item.label === "Períodos" && stats.periods}
                     {item.label === "Instituições" && "-"}
                     {item.label === "Salas" && "-"}
@@ -164,17 +158,11 @@ export default function Home() {
                 className="p-button-outlined"
                 onClick={() => navigate("/students/new")}
               />
-              <Button
-                label="Nova Unidade"
-                icon="pi pi-home"
+<Button
+                label="Nova Sala"
+                icon="pi pi-plus"
                 className="p-button-outlined"
                 onClick={() => navigate("/units/new")}
-              />
-              <Button
-                label="Novo Vínculo"
-                icon="pi pi-link"
-                className="p-button-outlined"
-                onClick={() => navigate("/internships/new")}
               />
               <Button
                 label="Abrir Período"

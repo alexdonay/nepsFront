@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:https": "VITE_DEV_HTTPS=true vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:https": "VITE_DEV_HTTPS=true vite preview"
   },
   "dependencies": {
     "axios": "^1.16.0",

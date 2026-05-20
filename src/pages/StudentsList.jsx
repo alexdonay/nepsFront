@@ -19,7 +19,7 @@ export default function StudentsList() {
   const loadStudents = async () => {
     try {
       const { data } = await repository.students.get();
-      setStudents(data);
+      setStudents(data.items || data);
     } catch (e) {
       setStudents([]);
     }
@@ -31,8 +31,8 @@ export default function StudentsList() {
         repository.courses.get(),
         repository.institutions.get(),
       ]);
-      setCourses(coursesRes.data);
-      setInstitutions(instRes.data);
+      setCourses(coursesRes.data.items || coursesRes.data);
+      setInstitutions(instRes.data.items || instRes.data);
     } catch (e) {}
   };
 
@@ -67,7 +67,13 @@ export default function StudentsList() {
         />
       </div>
 
-      <DataTable value={students} tableStyle={{ minWidth: "50rem" }}>
+      <DataTable
+        value={students}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />

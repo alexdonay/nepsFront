@@ -16,7 +16,7 @@ export default function HealthUnitsList() {
   const loadUnits = async () => {
     try {
       const { data } = await repository.healthUnits.get();
-      setUnits(data);
+      setUnits(data.items || data);
     } catch (e) {
       setUnits([]);
     }
@@ -43,7 +43,13 @@ export default function HealthUnitsList() {
         />
       </div>
 
-      <DataTable value={units} tableStyle={{ minWidth: "50rem" }}>
+      <DataTable
+        value={units}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cnes" header="CNES" />

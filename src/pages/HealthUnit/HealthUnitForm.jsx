@@ -52,7 +52,7 @@ export default function HealthUnitForm() {
   return (
     <div className="surface-card p-4 shadow-2 border-round w-full max-w-md">
       <h2 className="text-xl font-bold mb-3">
-        {id ? "Editar" : "Nova"} Unidade de Saúde
+        {id ? "Editar" : "Nova"} Serviço
       </h2>
 
       {error && <Message severity="error" text={error} className="mb-3" />}
