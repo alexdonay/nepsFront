@@ -79,11 +79,11 @@ export default function EnrollmentPeriods() {
         </div>
         <div className="field mb-3">
           <label>Início</label>
-          <Calendar value={form.start_date} onChange={(e) => setForm({...form, start_date: e.value})} className="w-full" />
+          <Calendar value={form.start_date} onChange={(e) => setForm({...form, start_date: e.value})} dateFormat="dd/mm/yy" className="w-full" />
         </div>
         <div className="field mb-3">
           <label>Fim</label>
-          <Calendar value={form.end_date} onChange={(e) => setForm({...form, end_date: e.value})} className="w-full" />
+          <Calendar value={form.end_date} onChange={(e) => setForm({...form, end_date: e.value})} dateFormat="dd/mm/yy" className="w-full" />
         </div>
         <div className="field mb-3">
           <label>Descrição</label>
