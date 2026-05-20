@@ -18,8 +18,8 @@ export default function StudentsList() {
 
   const loadStudents = async () => {
     try {
-      const { data } = await api.get('/gestao/students');
-      setStudents(data);
+      const { data } = await repository.students.get();
+      setStudents(data.items || data);
     } catch (e) {
       setStudents([]);
     }
@@ -31,8 +31,8 @@ export default function StudentsList() {
         api.get('/cadastros/courses'),
         api.get('/cadastros/institutions')
       ]);
-      setCourses(coursesRes.data);
-      setInstitutions(instRes.data);
+      setCourses(coursesRes.data.items || coursesRes.data);
+      setInstitutions(instRes.data.items || instRes.data);
     } catch (e) {}
   };
 
@@ -58,8 +58,14 @@ export default function StudentsList() {
         <h2 className="text-xl font-bold">Alunos</h2>
         <Button label="Novo Aluno" icon="pi pi-plus" onClick={() => navigate('/students/new')} />
       </div>
-      
-      <DataTable value={students} tableStyle={{ minWidth: '50rem' }}>
+
+      <DataTable
+        value={students}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />

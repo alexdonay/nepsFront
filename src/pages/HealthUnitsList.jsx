@@ -15,8 +15,8 @@ export default function HealthUnitsList() {
 
   const loadUnits = async () => {
     try {
-      const { data } = await api.get('/cadastros/health-units');
-      setUnits(data);
+      const { data } = await repository.healthUnits.get();
+      setUnits(data.items || data);
     } catch (e) {
       setUnits([]);
     }
@@ -34,8 +34,14 @@ export default function HealthUnitsList() {
         <h2 className="text-xl font-bold">Unidades de Saúde</h2>
         <Button label="Nova Unidade" icon="pi pi-plus" onClick={() => navigate('/units/new')} />
       </div>
-      
-      <DataTable value={units} tableStyle={{ minWidth: '50rem' }}>
+
+      <DataTable
+        value={units}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cnes" header="CNES" />

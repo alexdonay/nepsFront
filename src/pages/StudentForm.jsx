@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
-import { InputNumber } from 'primereact/inputnumber';
-import { Button } from 'primereact/button';
-import { Message } from 'primereact/message';
-import api from '../services/api';
+import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import { InputNumber } from "primereact/inputnumber";
+import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import PhoneInput from "../components/PhoneInput";
+import CpfInput from "../components/CpfInput";
+import { repository } from "../services/repository";
+import EmailInput from "../components/Email/EmailInput";
 
 export default function StudentForm() {
   const { id } = useParams();
@@ -70,19 +73,26 @@ export default function StudentForm() {
         
         <div className="field mb-3">
           <label>CPF</label>
-          <InputText value={form.cpf} onChange={(e) => setForm({...form, cpf: e.target.value})} className="w-full" />
+          <CpfInput
+            value={form.cpf}
+            onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+            className="w-full"
+          />
         </div>
-        
-        <div className="field mb-3">
-          <label>Email *</label>
-          <InputText value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="w-full" required />
-        </div>
-        
-        <div className="field mb-3">
-          <label>Telefone</label>
-          <InputText value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})} className="w-full" />
-        </div>
-        
+
+        <EmailInput
+          label="Email"
+          value={form.email}
+          onChange={(value) => setForm({ ...form, email: value })}
+          required
+        />
+
+        <PhoneInput
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          label="Telefone"
+        />
+
         <div className="field mb-3">
           <label>Curso *</label>
           <Dropdown value={form.course_id} options={courses} optionLabel="name" optionValue="id" onChange={(e) => setForm({...form, course_id: e.value})} className="w-full" placeholder="Selecione" required />

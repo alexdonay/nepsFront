@@ -15,7 +15,109 @@ body {
   color: white;
 }
 
+.layout-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
 .layout-main {
   flex: 1;
   padding: 1rem;
+}
+
+.layout-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.sidebar-footer .p-button-plain {
+  color: white;
+}
+
+/* Authentication pages modern layout */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f6ff 0%, #eef2ff 100%);
+  padding: 2rem;
+}
+
+.auth-card {
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
+}
+
+.auth-side {
+  flex: 1 1 40%;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.auth-side .auth-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-side .auth-sub {
+  color: rgba(255,255,255,0.86);
+  margin-top: 0.25rem;
+}
+
+.auth-form {
+  flex: 1 1 60%;
+  background: #ffffff;
+  padding: 2.5rem;
+}
+
+.auth-form h1 {
+  margin: 0 0 0.5rem 0;
+}
+
+.auth-form .p-button {
+  border-radius: 8px;
+}
+
+.auth-form .p-button-text {
+  color: #2563eb;
+}
+
+.auth-form .field label {
+  font-weight: 600;
+}
+
+.auth-footnote {
+  margin-top: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .auth-card { flex-direction: column; }
+  .auth-side { padding: 2rem; }
 }

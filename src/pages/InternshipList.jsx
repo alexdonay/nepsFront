@@ -8,7 +8,7 @@ import api from '../services/api';
 export default function InternshipList() {
   const [internships, setInternships] = useState([]);
   const [students, setStudents] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,8 +18,8 @@ export default function InternshipList() {
 
   const loadInternships = async () => {
     try {
-      const { data } = await api.get('/gestao/internships');
-      setInternships(data);
+      const { data } = await repository.vinculos.get();
+      setInternships(data.items || data);
     } catch (e) {
       setInternships([]);
     }
@@ -31,8 +31,8 @@ export default function InternshipList() {
         api.get('/gestao/students'),
         api.get('/cadastros/locations')
       ]);
-      setStudents(studentsRes.data);
-      setLocations(locationsRes.data);
+      setStudents(studentsRes.data.items || studentsRes.data);
+      setRooms(locationsRes.data.items || locationsRes.data);
     } catch (e) {}
   };
 
@@ -41,9 +41,9 @@ export default function InternshipList() {
     return student ? student.name : '-';
   };
 
-  const locationTemplate = (rowData) => {
-    const location = locations.find(l => l.id === rowData.location_id);
-    return location ? location.name : '-';
+  const roomTemplate = (rowData) => {
+    const room = rooms.find((r) => r.id === rowData.location_id);
+    return room ? room.name : "-";
   };
 
   const shiftTemplate = (rowData) => {
@@ -57,11 +57,17 @@ export default function InternshipList() {
         <h2 className="text-xl font-bold">Vínculos de Estágio</h2>
         <Button label="Novo Vínculo" icon="pi pi-plus" onClick={() => navigate('/internships/new')} />
       </div>
-      
-      <DataTable value={internships} tableStyle={{ minWidth: '50rem' }}>
+
+      <DataTable
+        value={internships}
+        tableStyle={{ minWidth: "50rem" }}
+        paginator
+        rows={10}
+        rowsPerPageOptions={[10, 20, 50]}
+      >
         <Column field="id" header="ID" sortable />
         <Column header="Aluno" body={studentTemplate} />
-        <Column header="Local" body={locationTemplate} />
+        <Column header="Local" body={roomTemplate} />
         <Column header="Turno" body={shiftTemplate} />
         <Column field="status" header="Status" />
       </DataTable>
