@@ -8,6 +8,7 @@ export const API_ROUTES = {
     LOGIN: "/v1/auth/login",
     REGISTER: "/v1/auth/register",
     RESET_PASSWORD: "/v1/auth/reset-password",
+    RESET_PASSWORD_CONFIRM: "/v1/auth/reset-password-confirm",
   },
 
   USERS: {
