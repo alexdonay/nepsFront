@@ -11,6 +11,7 @@ import CNPJInput from "../../components/CNPJInput";
 import EmailInput from "../../components/Email/EmailInput";
 import PhoneInput from "../../components/PhoneInput";
 import { repository } from "../../services/repository";
+import { normalizeCNPJ } from "../../services/utils";
 
 export default function InstitutionForm() {
   const { id } = useParams();
@@ -98,6 +99,19 @@ export default function InstitutionForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!normalizeCNPJ(form.cnpj)) {
+      setError("O CNPJ da instituição é obrigatório.");
+      setLoading(false);
+      return;
+    }
+
+    if (!form.email.trim()) {
+      setError("O e-mail da instituição é obrigatório.");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (id) await repository.institutions.put(id, form);
       else await repository.institutions.post(form);
@@ -140,6 +154,7 @@ export default function InstitutionForm() {
               value={form.cnpj}
               onChange={updateField("cnpj")}
               label="CNPJ"
+              required
             />
 
             <div className="field mb-3">
@@ -161,6 +176,7 @@ export default function InstitutionForm() {
               label="Email"
               value={form.email}
               onChange={(value) => setForm({ ...form, email: value })}
+              required
             />
 
             <div className="field mb-3 flex align-items-center gap-2">

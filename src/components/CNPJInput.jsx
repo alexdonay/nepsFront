@@ -87,7 +87,12 @@ export default function CNPJInput({
 
   return (
     <div className="field mb-3">
-      {label && <label>{label}</label>}
+      {label && (
+        <label>
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
       <div className="flex gap-2">
         <input
           ref={inputRef}

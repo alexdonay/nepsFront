@@ -1,3 +1,4 @@
+import { API_ROUTES } from "./API_routes";
 import api from "./api";
 
 export const login = (email, password) =>
@@ -9,9 +10,14 @@ export const getCurrentUser = () => api.get("/v1/users/me");
 
 export const updateProfile = (data) => api.put("/v1/users/me", data);
 
-export const resetPassword = (email) => repository.auth.resetPassword(email);
+export const resetPassword = (email) =>
+  api.post(API_ROUTES.AUTH.RESET_PASSWORD, { email });
+
 export const confirmReset = (hash, newPassword) =>
-  repository.auth.confirmReset(hash, newPassword);
+  api.post(API_ROUTES.AUTH.RESET_PASSWORD_CONFIRM, {
+    reset_token: hash,
+    new_password: newPassword,
+  });
 
 export const logout = () => {
   localStorage.removeItem("token");

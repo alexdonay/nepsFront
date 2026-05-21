@@ -2,7 +2,6 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { Password } from "primereact/password";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
@@ -15,7 +14,6 @@ export default function UserForm() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [profile, setProfile] = useState(null);
   const [isActive, setIsActive] = useState(true);
   const [institutions, setInstitutions] = useState([]);
@@ -86,11 +84,6 @@ export default function UserForm() {
         is_active: isActive,
       };
 
-      // incluir senha apenas se fornecida (criação ou alteração)
-      if (!isEdit || password) {
-        payload.password = password;
-      }
-
       if (profile === PERMISSIONS.INSTITUICAO_ENSINO) {
         if (!selectedInstitution) throw new Error("Selecione a instituição");
         payload.education_institute_id =
@@ -106,7 +99,6 @@ export default function UserForm() {
         await repository.users.put(id, payload);
         setSuccess("Usuário atualizado com sucesso.");
       } else {
-        if (!password) throw new Error("Senha é obrigatória");
         await repository.users.post(payload);
         setSuccess("Usuário criado com sucesso.");
       }
@@ -148,20 +140,6 @@ export default function UserForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">Senha {!isEdit && "*"}</label>
-          <Password
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required={!isEdit}
-            toggleMask
-            className="w-full"
-            placeholder={
-              isEdit ? "Deixe em branco para manter a senha atual" : ""
-            }
           />
         </div>
 
