@@ -24,6 +24,9 @@ export default function EnrollmentPeriods() {
 
   const today = new Date();
 
+  const formatDate = (value) =>
+    value ? new Date(value).toLocaleDateString("pt-BR") : "";
+
   useEffect(() => {
     loadPeriods();
   }, []);
@@ -70,8 +73,7 @@ export default function EnrollmentPeriods() {
     } catch (err) {}
   };
 
-  const dateTemplate = (rowData) =>
-    new Date(rowData.start_date).toLocaleDateString();
+  const dateTemplate = (rowData) => formatDate(rowData.start_date);
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
@@ -89,8 +91,7 @@ export default function EnrollmentPeriods() {
       {currentPeriod && (
         <div className="surface-100 p-3 border-round mb-3">
           <strong>Período Ativo:</strong> {currentPeriod.name} (
-          {dateTemplate(currentPeriod)} -{" "}
-          {new Date(currentPeriod.end_date).toLocaleDateString()})
+          {dateTemplate(currentPeriod)} - {formatDate(currentPeriod.end_date)})
         </div>
       )}
 
@@ -104,12 +105,12 @@ export default function EnrollmentPeriods() {
         <Column
           field="start_date"
           header="Início"
-          body={(row) => new Date(row.start_date).toLocaleDateString()}
+          body={(row) => formatDate(row.start_date)}
         />
         <Column
           field="end_date"
           header="Fim"
-          body={(row) => new Date(row.end_date).toLocaleDateString()}
+          body={(row) => formatDate(row.end_date)}
         />
         <Column
           field="is_active"
@@ -137,6 +138,7 @@ export default function EnrollmentPeriods() {
             value={form.priority_start_date}
             onChange={(e) => setForm({ ...form, priority_start_date: e.value })}
             className="w-full"
+            dateFormat="dd/mm/yy"
           />
         </div>
         <div className="field mb-3">
@@ -145,6 +147,7 @@ export default function EnrollmentPeriods() {
             value={form.priority_end_date}
             onChange={(e) => setForm({ ...form, priority_end_date: e.value })}
             className="w-full"
+            dateFormat="dd/mm/yy"
           />
         </div>
         <div className="field mb-3">
@@ -153,6 +156,7 @@ export default function EnrollmentPeriods() {
             value={form.start_date}
             onChange={(e) => setForm({ ...form, start_date: e.value })}
             className="w-full"
+            dateFormat="dd/mm/yy"
           />
         </div>
         <div className="field mb-3">
@@ -161,6 +165,7 @@ export default function EnrollmentPeriods() {
             value={form.end_date}
             onChange={(e) => setForm({ ...form, end_date: e.value })}
             className="w-full"
+            dateFormat="dd/mm/yy"
           />
         </div>
 
