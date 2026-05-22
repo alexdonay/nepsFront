@@ -99,7 +99,9 @@ export default function UserForm() {
 
       if (profile === PERMISSIONS.UNIDADE_SAUDE) {
         if (!selectedUnit) throw new Error("Selecione o serviço");
-        payload.health_unit_id = selectedUnit.id ?? selectedUnit;
+        const unitId = selectedUnit.id ?? selectedUnit;
+        payload.health_unit_id = unitId;
+        payload.service_id = unitId;
       }
 
       if (isEdit) {
