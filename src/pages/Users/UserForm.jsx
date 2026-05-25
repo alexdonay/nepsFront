@@ -9,6 +9,31 @@ import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
 import { normalizePermission } from "../../utils/auth";
 
+const normalizeErrorMessage = (err) => {
+  const detail = err?.response?.data?.detail;
+
+  if (!detail) return err?.message || "Erro ao salvar usuário";
+
+  if (typeof detail === "string") return detail;
+
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item?.msg) return item.msg;
+        if (item?.message) return item.message;
+        return JSON.stringify(item);
+      })
+      .join(" | ");
+  }
+
+  if (typeof detail === "object") {
+    return detail.msg || detail.message || JSON.stringify(detail);
+  }
+
+  return String(detail);
+};
+
 export default function UserForm() {
   const { id } = useParams();
   const isEdit = !!id;
@@ -79,43 +104,50 @@ export default function UserForm() {
     setLoading(true);
 
     try {
-      const payload = {
-        name,
-        email,
-        role: profile,
-        is_active: isActive,
-      };
+      const payload = isEdit
+        ? {
+            name,
+            email,
+            role: profile,
+            is_active: isActive,
+          }
+        : {
+            name,
+            email,
+            role: profile,
+            is_active: isActive,
+          };
 
-      // incluir senha apenas se fornecida (criação ou alteração)
-      if (!isEdit || password) {
+      if (!isEdit) {
+        // incluir senha apenas na criação
+        if (!password) throw new Error("Senha é obrigatória");
         payload.password = password;
-      }
 
-      if (profile === PERMISSIONS.INSTITUICAO_ENSINO) {
-        if (!selectedInstitution) throw new Error("Selecione a instituição");
-        payload.education_institute_id =
-          selectedInstitution.id ?? selectedInstitution;
-      }
+        if (profile === PERMISSIONS.INSTITUICAO_ENSINO) {
+          if (!selectedInstitution) throw new Error("Selecione a instituição");
+          payload.education_institute_id =
+            selectedInstitution.id ?? selectedInstitution;
+        }
 
-      if (profile === PERMISSIONS.UNIDADE_SAUDE) {
-        if (!selectedUnit) throw new Error("Selecione o serviço");
-        payload.health_unit_id = selectedUnit.id ?? selectedUnit;
+        if (profile === PERMISSIONS.UNIDADE_SAUDE) {
+          if (!selectedUnit) throw new Error("Selecione o serviço");
+          const unitId = selectedUnit.id ?? selectedUnit;
+          payload.health_unit_id = unitId;
+          payload.service_id = unitId;
+        }
       }
 
       if (isEdit) {
         await repository.users.put(id, payload);
         setSuccess("Usuário atualizado com sucesso.");
       } else {
-        if (!password) throw new Error("Senha é obrigatória");
         await repository.users.post(payload);
         setSuccess("Usuário criado com sucesso.");
       }
 
       setTimeout(() => navigate("/users"), 1000);
     } catch (err) {
-      const msg =
-        err?.response?.data?.detail || err.message || "Erro ao salvar usuário";
-      setError(msg);
+      setError(normalizeErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -134,7 +166,7 @@ export default function UserForm() {
         <div>
           <label className="block mb-1">Nome</label>
           <InputText
-            value={name}
+            value={name ?? ""}
             onChange={(e) => setName(e.target.value)}
             required
             className="w-full"
@@ -144,7 +176,7 @@ export default function UserForm() {
         <div>
           <label className="block mb-1">E-mail</label>
           <InputText
-            value={email}
+            value={email ?? ""}
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full"
@@ -154,7 +186,7 @@ export default function UserForm() {
         <div>
           <label className="block mb-1">Senha {!isEdit && "*"}</label>
           <Password
-            value={password}
+            value={password ?? ""}
             onChange={(e) => setPassword(e.target.value)}
             required={!isEdit}
             toggleMask
@@ -168,7 +200,7 @@ export default function UserForm() {
         <div>
           <label className="block mb-1">Perfil de Acesso</label>
           <Dropdown
-            value={profile}
+            value={profile ?? null}
             onChange={(e) => setProfile(e.value)}
             options={profileOptions}
             placeholder="Selecione o perfil"
@@ -179,7 +211,7 @@ export default function UserForm() {
         <div>
           <label className="block mb-1">Status</label>
           <Dropdown
-            value={isActive}
+            value={isActive ?? true}
             onChange={(e) => setIsActive(e.value)}
             options={[
               { label: "Ativo", value: true },
@@ -194,7 +226,7 @@ export default function UserForm() {
           <div>
             <label className="block mb-1">Instituição</label>
             <Dropdown
-              value={selectedInstitution}
+              value={selectedInstitution ?? null}
               options={institutions}
               onChange={(e) => setSelectedInstitution(e.value)}
               optionLabel="name"
@@ -209,7 +241,7 @@ export default function UserForm() {
           <div>
             <label className="block mb-1">Serviço</label>
             <Dropdown
-              value={selectedUnit}
+              value={selectedUnit ?? null}
               options={units}
               onChange={(e) => setSelectedUnit(e.value)}
               optionLabel="name"

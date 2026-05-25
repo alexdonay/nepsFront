@@ -30,11 +30,11 @@ export default function EmailInput({
         onBlur={() => setTouched(true)}
         className={className}
         required={required}
+        autoComplete="new-password"
+        name={`${id}-field`}
         {...props}
       />
-      {isInvalid && (
-        <small className="p-error">{invalidMessage}</small>
-      )}
+      {isInvalid && <small className="p-error">{invalidMessage}</small>}
     </div>
   );
 }

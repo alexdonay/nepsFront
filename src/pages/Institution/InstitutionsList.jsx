@@ -14,6 +14,12 @@ const FILTER_CONFIG = [
     placeholder: "Buscar por nome...",
   },
   {
+    label: "CNPJ",
+    key: "cnpj",
+    type: "text",
+    placeholder: "Buscar por CNPJ...",
+  },
+  {
     label: "Status",
     key: "is_active",
     type: "dropdown",
@@ -22,10 +28,19 @@ const FILTER_CONFIG = [
       { label: "Inativo", value: "0" },
     ],
   },
+  {
+    label: "Prioridade",
+    key: "priority",
+    type: "dropdown",
+    options: [
+      { label: "Prioritário", value: "0" },
+      { label: "Não prioritário", value: "1" },
+    ],
+  },
 ];
 
-export default function RegionsList() {
-  const [regions, setRegions] = useState([]);
+export default function InstitutionsList() {
+  const [institutions, setInstitutions] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,7 +50,7 @@ export default function RegionsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadRegions();
+    loadInstitutions();
   }, [searchParams, first, rows]);
 
   useEffect(() => {
@@ -47,7 +62,7 @@ export default function RegionsList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadRegions = useCallback(async () => {
+  const loadInstitutions = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
@@ -57,12 +72,12 @@ export default function RegionsList() {
         params[key] = value;
       });
 
-      const { data } = await repository.regions.get(params);
-      setRegions(data.items || data);
+      const { data } = await repository.institutions.get(params);
+      setInstitutions(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar regiões:", e);
-      setRegions([]);
+      console.error("Erro ao carregar instituições:", e);
+      setInstitutions([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
@@ -95,18 +110,18 @@ export default function RegionsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
-  const activeTemplate = (rowData) => (
-    <span className={rowData.is_active ? "text-green-500" : "text-red-500"}>
-      {rowData.is_active ? "Ativo" : "Inativo"}
-    </span>
-  );
+  const priorityLabel = (rowData) =>
+    Number(rowData.priority) === 0 ? "Prioritário" : "Não prioritário";
+
+  const statusLabel = (rowData) =>
+    rowData.is_active === false ? "Inativo" : "Ativo";
 
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/regions/${rowData.id}`)}
+        onClick={() => navigate(`/institutions/${rowData.id}`)}
       />
     </div>
   );
@@ -114,7 +129,7 @@ export default function RegionsList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Regiões</h2>
+        <h2 className="text-xl font-bold m-0">Instituições</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -124,15 +139,15 @@ export default function RegionsList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Nova Região"
+            label="Nova Instituição"
             icon="pi pi-plus"
-            onClick={() => navigate("/regions/new")}
+            onClick={() => navigate("/institutions/new")}
           />
         </div>
       </div>
 
       <DataTable
-        value={regions}
+        value={institutions}
         tableStyle={{ minWidth: "50rem" }}
         paginator
         first={first}
@@ -142,11 +157,15 @@ export default function RegionsList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhuma região encontrada"
+        emptyMessage="Nenhuma instituição encontrada"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
-        <Column field="is_active" header="Status" body={activeTemplate} />
+        <Column field="cnpj" header="CNPJ" />
+        <Column body={statusLabel} header="Status" />
+        <Column body={priorityLabel} header="Prioridade" />
+        <Column field="address" header="Endereço" />
+        <Column field="phone" header="Telefone" />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 

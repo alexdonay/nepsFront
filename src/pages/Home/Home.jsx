@@ -158,12 +158,6 @@ export default function Home() {
                 className="p-button-outlined"
                 onClick={() => navigate("/students/new")}
               />
-<Button
-                label="Nova Sala"
-                icon="pi pi-plus"
-                className="p-button-outlined"
-                onClick={() => navigate("/units/new")}
-              />
               <Button
                 label="Abrir Período"
                 icon="pi pi-calendar-plus"

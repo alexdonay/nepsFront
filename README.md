@@ -34,3 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Filtros e drawer de pesquisa
+
+Este projeto utiliza um componente compartilhado de filtros em drawer nas telas de listagem.
+
+- Componente principal: `src/components/FilterDrawer.jsx` — drawer reutilizável que renderiza campos a partir de uma configuração (`filters`).
+- Componente específico de cursos: `src/pages/Courses/CoursesFilter.jsx` — encapsula as opções e configurações de filtro para a listagem de cursos.
+- Roles de usuário suportados pelo backend: `admin`, `education_institute` e `service`.
+- Convenções de query params:
+  - Campos textuais usam sufixo `_like` por padrão (ex.: `name_like=joao`).
+  - Campos multiselect usam sufixo `_in` e são serializados como CSV nas chamadas de listagem (ex.: `role_in=ADMIN,USER`).
+  - Date range produz dois params: `{key}_start` e `{key}_end` (formato `YYYY-MM-DD`).
+  - Caso seja necessário outro nome de parâmetro, o filtro pode definir `queryKey` na configuração.
+
+As páginas de listagem usam `useSearchParams` para persistir filtros na URL e `src/services/repository.js` aceita `params` para repassar query strings para a API.
