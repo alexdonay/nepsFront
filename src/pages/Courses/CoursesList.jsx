@@ -1,8 +1,6 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
 import { repository } from "../../services/repository";
 
