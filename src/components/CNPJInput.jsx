@@ -97,6 +97,8 @@ export default function CNPJInput({
           required={required}
           className={`p-inputtext w-full ${className}`}
           maxLength="18"
+          autoComplete="new-password"
+          name="cnpj-field"
           {...props}
         />
         {normalizeCNPJ(value).length === 12 && (

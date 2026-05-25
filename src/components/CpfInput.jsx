@@ -25,7 +25,13 @@ function validateCpf(cpf) {
   return true;
 }
 
-export default function CpfInput({ value, onChange, className, invalid, ...props }) {
+export default function CpfInput({
+  value,
+  onChange,
+  className,
+  invalid,
+  ...props
+}) {
   const [touched, setTouched] = useState(false);
   const showError = touched && value && !validateCpf(value);
 
@@ -37,11 +43,11 @@ export default function CpfInput({ value, onChange, className, invalid, ...props
         onChange={onChange}
         onBlur={() => setTouched(true)}
         className={`${className || ""} ${showError || invalid ? "p-invalid" : ""}`}
+        autoComplete="new-password"
+        name="cpf-field"
         {...props}
       />
-      {showError && (
-        <small className="p-error">CPF inválido</small>
-      )}
+      {showError && <small className="p-error">CPF inválido</small>}
     </div>
   );
 }

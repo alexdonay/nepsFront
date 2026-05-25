@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { repository } from "../../services/repository";
 
 const DAYS = [
@@ -17,7 +17,9 @@ const DAYS = [
 
 export default function ServiceScheduleForm() {
   const { id, roomId } = useParams();
+  const location = useLocation();
   const isEdit = !!id;
+  const isRoomContext = location.pathname.startsWith("/rooms/");
   const [form, setForm] = useState({
     week_day: 1,
     start: "09:00",
@@ -39,7 +41,9 @@ export default function ServiceScheduleForm() {
       if (isEdit) await repository.serviceSchedules.put(id, form);
       else await repository.serviceSchedules.post(form);
       navigate(
-        roomId ? `/service-rooms/${roomId}/schedules` : "/service-schedules",
+        roomId
+          ? `${isRoomContext ? "/rooms" : "/service-rooms"}/${roomId}/schedules`
+          : "/service-schedules",
       );
     } catch (e) {}
   };

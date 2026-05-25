@@ -8,6 +8,9 @@ import { repository } from "../../services/repository";
 export default function ServiceRoomsList() {
   const { serviceId } = useParams();
   const [rooms, setRooms] = useState([]);
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,9 +22,20 @@ export default function ServiceRoomsList() {
         ? await repository.serviceRooms.getByService(serviceId)
         : await repository.serviceRooms.get();
       setRooms(data.items || data);
+      setTotalRecords(
+        data.pagination?.total ||
+          (Array.isArray(data) ? data.length : data.items?.length || 0),
+      );
+      setFirst(0);
     } catch (e) {
       setRooms([]);
+      setTotalRecords(0);
     }
+  };
+
+  const handlePaginationChange = (event) => {
+    setFirst(event.first);
+    setRows(event.rows);
   };
 
   return (
@@ -42,8 +56,12 @@ export default function ServiceRoomsList() {
       <DataTable
         value={rooms}
         paginator
-        rows={10}
+        first={first}
+        rows={rows}
+        totalRecords={totalRecords}
         rowsPerPageOptions={[10, 20, 50]}
+        onPage={handlePaginationChange}
+        lazy
       >
         <Column field="id" header="ID" />
         <Column field="name" header="Nome" />

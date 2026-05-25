@@ -3,26 +3,31 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
+import CoursesForm from "./pages/Courses/CoursesForm";
 import CoursesList from "./pages/Courses/CoursesList";
-import EnrollmentPeriods from "./pages/EnrollmentPeriods/EnrollmentPeriods";
+import EnrollmentPeriodsList from "./pages/EnrollmentPeriods/EnrollmentPeriodsList";
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
-import InstitutionsList from "./pages/InstitutionsList";
+import InstitutionsList from "./pages/Institution/InstitutionsList";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
 import ResetPassword from "./pages/Login/ResetPassword";
+import RegionsForm from "./pages/Regions/RegionsForm";
 import RegionsList from "./pages/Regions/RegionsList";
+import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
-import Schedule from "./pages/Schedule";
+
+import Schedule from "./pages/Schedule/Schedule";
 import ServiceRoomForm from "./pages/ServiceRooms/ServiceRoomForm";
 import ServiceRoomsList from "./pages/ServiceRooms/ServiceRoomsList";
 import ServiceForm from "./pages/Services/ServiceForm";
 import ServicesList from "./pages/Services/ServicesList";
+import ServiceScheduleAssignment from "./pages/ServiceSchedules/ServiceScheduleAssignment";
 import ServiceScheduleForm from "./pages/ServiceSchedules/ServiceScheduleForm";
 import ServiceSchedulesList from "./pages/ServiceSchedules/ServiceSchedulesList";
-import StudentForm from "./pages/StudentForm";
-import StudentsList from "./pages/StudentsList";
+import StudentForm from "./pages/Student/StudentForm";
+import StudentsList from "./pages/Student/StudentsList";
 import UserForm from "./pages/Users/UserForm";
 import UsersList from "./pages/Users/UsersList";
 import { hasPermission, isAuthenticated } from "./utils/auth";
@@ -144,6 +149,29 @@ export default function App() {
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/regions/new"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <RegionsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/regions/:id"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <RegionsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
       <Route
         path="/courses"
         element={
@@ -155,11 +183,86 @@ export default function App() {
         }
       />
       <Route
+        path="/courses/new"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CoursesForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/courses/:id"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CoursesForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/rooms"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <RoomsList />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/new"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <RoomsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/:id"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <RoomsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/:roomId/schedules"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <ServiceSchedulesList />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/:roomId/schedules/new"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <ServiceScheduleForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/:roomId/schedules/:dayOfWeek/:period"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <ServiceScheduleAssignment />
             </Layout>
           </PrivateRoute>
         }
@@ -254,6 +357,17 @@ export default function App() {
       />
 
       <Route
+        path="/service-rooms/:roomId/schedules/:dayOfWeek/:period"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <ServiceScheduleAssignment />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/service-schedules/:id"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -269,7 +383,7 @@ export default function App() {
         element={
           <PrivateRoute permissions={ALL_PERMISSIONS}>
             <Layout>
-              <EnrollmentPeriods />
+              <EnrollmentPeriodsList />
             </Layout>
           </PrivateRoute>
         }
@@ -311,6 +425,27 @@ export default function App() {
           <PrivateRoute
             permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
           >
+            <Route
+              path="/courses/new"
+              element={
+                <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+                  <Layout>
+                    <CoursesForm />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/courses/:id"
+              element={
+                <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+                  <Layout>
+                    <CoursesForm />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
             <Layout>
               <Schedule />
             </Layout>

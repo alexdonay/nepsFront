@@ -38,6 +38,10 @@ export const API_ROUTES = {
   GESTAO: {
     STUDENTS: "/v1/gestao/students",
     STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
+    STUDENTS_BY_COURSE: (courseId) =>
+      `/v1/gestao/students/by-course/${courseId}`,
+    STUDENTS_BY_INSTITUTE: (instituteId) =>
+      `/v1/gestao/students/by-institute/${instituteId}`,
     PERIODS: "/v1/gestao/periods",
   },
 
@@ -74,5 +78,8 @@ export const API_ROUTES = {
     BASE: "/v1/rooms",
     BY_ID: (id) => `/v1/rooms/${id}`,
     BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
+    SCHEDULE: (roomId) => `/v1/rooms/${roomId}/schedule`,
+    SCHEDULE_STUDENT: (roomId, dayOfWeek, period) =>
+      `/v1/rooms/${roomId}/schedule/${dayOfWeek}/${period}/student`,
   },
 };

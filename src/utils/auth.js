@@ -22,7 +22,9 @@ export function normalizePermission(value) {
     v.includes("unidade") ||
     v.includes("saude") ||
     v.includes("health") ||
-    v.includes("unit")
+    v.includes("unit") ||
+    v.includes("service") ||
+    v.includes("serv")
   ) {
     return PERMISSIONS.UNIDADE_SAUDE;
   }
