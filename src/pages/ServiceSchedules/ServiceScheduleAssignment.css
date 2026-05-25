@@ -1,7 +1,11 @@
 .assignment-container {
   padding: 2rem;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--surface-50) 0%,
+    var(--surface-100) 100%
+  );
 }
 
 .assignment-header {

@@ -37,8 +37,10 @@ export const API_ROUTES = {
   GESTAO: {
     STUDENTS: "/v1/gestao/students",
     STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
-    STUDENTS_BY_COURSE: (courseId) => `/v1/gestao/students/by-course/${courseId}`,
-    STUDENTS_BY_INSTITUTE: (instituteId) => `/v1/gestao/students/by-institute/${instituteId}`,
+    STUDENTS_BY_COURSE: (courseId) =>
+      `/v1/gestao/students/by-course/${courseId}`,
+    STUDENTS_BY_INSTITUTE: (instituteId) =>
+      `/v1/gestao/students/by-institute/${instituteId}`,
     PERIODS: "/v1/gestao/periods",
   },
 

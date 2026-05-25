@@ -89,7 +89,9 @@ export default function ServiceSchedulesList() {
     return DAY_ORDER.map((dayOfWeek) => {
       const day = normalized.get(dayOfWeek);
       const periods = PERIOD_ORDER.map((periodKey) => {
-        const period = day?.periods?.find((item) => item.period === periodKey) || {
+        const period = day?.periods?.find(
+          (item) => item.period === periodKey,
+        ) || {
           period: periodKey,
           studentIds: [],
         };
@@ -119,7 +121,8 @@ export default function ServiceSchedulesList() {
           <h1 className="schedule-title">📅 Agenda da Sala</h1>
           {room && (
             <p className="schedule-subtitle">
-              Sala: <strong>{room.name}</strong> • Capacidade: <strong>{roomCapacity || "-"}</strong> alunos
+              Sala: <strong>{room.name}</strong> • Capacidade:{" "}
+              <strong>{roomCapacity || "-"}</strong> alunos
             </p>
           )}
         </div>
@@ -149,7 +152,10 @@ export default function ServiceSchedulesList() {
               <div className="shifts-container">
                 {day.periods.map((period) => {
                   const studentCount = period.studentIds?.length || 0;
-                  const vacancies = roomCapacity > 0 ? Math.max(roomCapacity - studentCount, 0) : null;
+                  const vacancies =
+                    roomCapacity > 0
+                      ? Math.max(roomCapacity - studentCount, 0)
+                      : null;
                   const isFilled = studentCount > 0;
 
                   return (
@@ -177,7 +183,8 @@ export default function ServiceSchedulesList() {
                           {isFilled ? (
                             <>
                               <i className="pi pi-check-circle text-green-500 mr-2"></i>
-                              {studentCount} aluno{studentCount > 1 ? "s" : ""} vinculado{studentCount > 1 ? "s" : ""}
+                              {studentCount} aluno{studentCount > 1 ? "s" : ""}{" "}
+                              vinculado{studentCount > 1 ? "s" : ""}
                             </>
                           ) : (
                             <>

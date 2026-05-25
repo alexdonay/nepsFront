@@ -4,7 +4,12 @@ import { DataTable } from "primereact/datatable";
 import { Message } from "primereact/message";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import "./ServiceScheduleAssignment.css";
@@ -26,12 +31,32 @@ const PERIOD_LABELS = {
 };
 
 const STUDENT_FILTERS = [
-  { label: "Nome", key: "name", type: "text", placeholder: "Buscar por nome..." },
+  {
+    label: "Nome",
+    key: "name",
+    type: "text",
+    placeholder: "Buscar por nome...",
+  },
   { label: "CPF", key: "cpf", type: "text", placeholder: "Buscar por CPF..." },
-  { label: "Email", key: "email", type: "text", placeholder: "Buscar por email..." },
+  {
+    label: "Email",
+    key: "email",
+    type: "text",
+    placeholder: "Buscar por email...",
+  },
   { label: "Curso", key: "course_id", type: "dropdown", options: [] },
-  { label: "Instituição", key: "institution_id", type: "dropdown", options: [] },
-  { label: "Semestre", key: "semester", type: "number", placeholder: "Digite o semestre..." },
+  {
+    label: "Instituição",
+    key: "institution_id",
+    type: "dropdown",
+    options: [],
+  },
+  {
+    label: "Semestre",
+    key: "semester",
+    type: "number",
+    placeholder: "Digite o semestre...",
+  },
 ];
 
 export default function ServiceScheduleAssignment() {
@@ -61,7 +86,10 @@ export default function ServiceScheduleAssignment() {
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const filtersArray = useMemo(() => Array.from(searchParams.entries()).length, [searchParams]);
+  const filtersArray = useMemo(
+    () => Array.from(searchParams.entries()).length,
+    [searchParams],
+  );
   const roomCapacity = Number(room?.room_capacity ?? room?.capacity ?? 0);
   const selectedStudentIds = selectedStudents.map((student) => student.id);
 
@@ -82,12 +110,14 @@ export default function ServiceScheduleAssignment() {
       setCourses(coursesList);
       setInstitutions(institutionsList);
 
-      STUDENT_FILTERS.find((filter) => filter.key === "course_id").options = coursesList.map(
-        (course) => ({ label: course.name, value: course.id }),
-      );
-      STUDENT_FILTERS.find((filter) => filter.key === "institution_id").options = institutionsList.map(
-        (institution) => ({ label: institution.name, value: institution.id }),
-      );
+      STUDENT_FILTERS.find((filter) => filter.key === "course_id").options =
+        coursesList.map((course) => ({ label: course.name, value: course.id }));
+      STUDENT_FILTERS.find(
+        (filter) => filter.key === "institution_id",
+      ).options = institutionsList.map((institution) => ({
+        label: institution.name,
+        value: institution.id,
+      }));
     } catch (e) {
       console.error("Erro ao carregar referências:", e);
       setCourses([]);
@@ -117,9 +147,12 @@ export default function ServiceScheduleAssignment() {
 
       const days = scheduleRes.data?.days || [];
       const day = days.find((d) => d.dayOfWeek === dayOfWeek);
-      const linkedIds = day?.periods?.find((p) => p.period === period)?.studentIds || [];
+      const linkedIds =
+        day?.periods?.find((p) => p.period === period)?.studentIds || [];
       if (linkedIds.length > 0) {
-        const linkedRes = await Promise.all(linkedIds.map((id) => repository.students.getById(id)));
+        const linkedRes = await Promise.all(
+          linkedIds.map((id) => repository.students.getById(id)),
+        );
         setLinkedStudents(linkedRes.map((r) => r.data));
       } else {
         setLinkedStudents([]);
@@ -129,11 +162,19 @@ export default function ServiceScheduleAssignment() {
       setSchedule(scheduleRes.data);
       setTotalRecords(studentsRes.data.pagination?.total || 0);
       setStudents(
-        (Array.isArray(studentsRes.data) ? studentsRes.data : studentsRes.data.items || []).filter(
-          (student) => !((scheduleRes.data?.days || [])
-            .flatMap((day) => day.periods || [])
-            .find((item) => item.dayOfWeek === dayOfWeek && item.period === period)?.studentIds || [])
-            .includes(student.id),
+        (Array.isArray(studentsRes.data)
+          ? studentsRes.data
+          : studentsRes.data.items || []
+        ).filter(
+          (student) =>
+            !(
+              (scheduleRes.data?.days || [])
+                .flatMap((day) => day.periods || [])
+                .find(
+                  (item) =>
+                    item.dayOfWeek === dayOfWeek && item.period === period,
+                )?.studentIds || []
+            ).includes(student.id),
         ),
       );
     } catch {
@@ -160,7 +201,9 @@ export default function ServiceScheduleAssignment() {
   const currentPeriod = useMemo(() => {
     const days = schedule?.days || [];
     const day = days.find((item) => item.dayOfWeek === dayOfWeek);
-    return day?.periods?.find((item) => item.period === period) || { studentIds: [] };
+    return (
+      day?.periods?.find((item) => item.period === period) || { studentIds: [] }
+    );
   }, [dayOfWeek, period, schedule]);
 
   const currentPeriodStudentIds = currentPeriod.studentIds || [];
@@ -171,7 +214,8 @@ export default function ServiceScheduleAssignment() {
     const params = new URLSearchParams();
     Object.entries(appliedFilters).forEach(([key, value]) => {
       if (Array.isArray(value)) params.append(key, value.join(","));
-      else if (value !== null && value !== undefined && value !== "") params.append(key, value);
+      else if (value !== null && value !== undefined && value !== "")
+        params.append(key, value);
     });
     setSearchParams(params);
     setFirst(0);
@@ -201,7 +245,9 @@ export default function ServiceScheduleAssignment() {
   };
 
   const institutionTemplate = (rowData) => {
-    const institution = institutions.find((item) => item.id === rowData.institution_id);
+    const institution = institutions.find(
+      (item) => item.id === rowData.institution_id,
+    );
     return institution ? institution.name : "-";
   };
 
@@ -213,7 +259,9 @@ export default function ServiceScheduleAssignment() {
     const nextSelection = event.value || [];
     if (nextSelection.length > remainingVacancies) {
       setMessageSeverity("warn");
-      setMessage(`Selecione no máximo ${remainingVacancies} aluno(s) para este período.`);
+      setMessage(
+        `Selecione no máximo ${remainingVacancies} aluno(s) para este período.`,
+      );
       return;
     }
 
@@ -225,7 +273,9 @@ export default function ServiceScheduleAssignment() {
     if (!selectedStudents.length) return;
     if (selectedStudents.length > remainingVacancies) {
       setMessageSeverity("warn");
-      setMessage(`Selecione no máximo ${remainingVacancies} aluno(s) para este período.`);
+      setMessage(
+        `Selecione no máximo ${remainingVacancies} aluno(s) para este período.`,
+      );
       return;
     }
 
@@ -233,7 +283,12 @@ export default function ServiceScheduleAssignment() {
       setSaving(true);
       for (const student of selectedStudents) {
         // eslint-disable-next-line no-await-in-loop
-        await repository.roomSchedules.addStudent(roomId, dayOfWeek, period, student.id);
+        await repository.roomSchedules.addStudent(
+          roomId,
+          dayOfWeek,
+          period,
+          student.id,
+        );
       }
       setMessageSeverity("success");
       setMessage("Alunos vinculados com sucesso.");
@@ -250,7 +305,12 @@ export default function ServiceScheduleAssignment() {
   const handleRemoveStudent = async (studentId) => {
     try {
       setUnlinking(true);
-      await repository.roomSchedules.removeStudent(roomId, dayOfWeek, period, studentId);
+      await repository.roomSchedules.removeStudent(
+        roomId,
+        dayOfWeek,
+        period,
+        studentId,
+      );
       setMessageSeverity("success");
       setMessage("Aluno desvinculado com sucesso.");
       await loadData();
@@ -267,10 +327,12 @@ export default function ServiceScheduleAssignment() {
       <div className="assignment-header">
         <div>
           <h1 className="assignment-title">
-            {DAY_LABELS[dayOfWeek] || dayOfWeek} • {PERIOD_LABELS[period] || period}
+            {DAY_LABELS[dayOfWeek] || dayOfWeek} •{" "}
+            {PERIOD_LABELS[period] || period}
           </h1>
           <p className="assignment-subtitle">
-            {room?.name || "Sala"} • {currentLinkedCount}/{roomCapacity || currentLinkedCount} ocupados
+            {room?.name || "Sala"} • {currentLinkedCount}/
+            {roomCapacity || currentLinkedCount} ocupados
             {roomCapacity > 0 ? ` • ${remainingVacancies} vagas livres` : ""}
           </p>
         </div>
@@ -293,7 +355,9 @@ export default function ServiceScheduleAssignment() {
         </div>
       </div>
 
-      {message && <Message severity={messageSeverity} text={message} className="mb-3" />}
+      {message && (
+        <Message severity={messageSeverity} text={message} className="mb-3" />
+      )}
 
       {loading ? (
         <div className="assignment-loading">
@@ -323,9 +387,17 @@ export default function ServiceScheduleAssignment() {
               lazy
               emptyMessage="Nenhum aluno encontrado"
             >
-              <Column selectionMode="multiple" headerStyle={{ width: "3rem" }} />
+              <Column
+                selectionMode="multiple"
+                headerStyle={{ width: "3rem" }}
+              />
               <Column field="id" header="ID" sortable />
-              <Column field="name" header="Nome" body={studentTemplate} sortable />
+              <Column
+                field="name"
+                header="Nome"
+                body={studentTemplate}
+                sortable
+              />
               <Column field="cpf" header="CPF" />
               <Column header="Curso" body={courseTemplate} />
               <Column header="Instituição" body={institutionTemplate} />
@@ -358,13 +430,20 @@ export default function ServiceScheduleAssignment() {
                 <div>
                   <strong>Alunos vinculados ({currentLinkedCount})</strong>
                   {currentLinkedCount === 0 ? (
-                    <span className="text-sm text-color-secondary">Nenhum aluno vinculado</span>
+                    <span className="text-sm text-color-secondary">
+                      Nenhum aluno vinculado
+                    </span>
                   ) : (
                     linkedStudents.map((student) => (
-                      <div key={student.id} className="flex align-items-center justify-content-between mt-2">
+                      <div
+                        key={student.id}
+                        className="flex align-items-center justify-content-between mt-2"
+                      >
                         <div>
                           <span className="font-medium">{student.name}</span>
-                          <div className="text-xs text-color-secondary">CPF: {student.cpf || "-"}</div>
+                          <div className="text-xs text-color-secondary">
+                            CPF: {student.cpf || "-"}
+                          </div>
                         </div>
                         <Button
                           icon="pi pi-trash"
@@ -383,7 +462,9 @@ export default function ServiceScheduleAssignment() {
               <div className="linked-item">
                 <div>
                   <strong>Selecionados para vincular</strong>
-                  <span className="text-sm">{selectedSummary || "Nenhum aluno selecionado"}</span>
+                  <span className="text-sm">
+                    {selectedSummary || "Nenhum aluno selecionado"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -393,7 +474,10 @@ export default function ServiceScheduleAssignment() {
                 label="Vincular selecionados"
                 icon="pi pi-check"
                 loading={saving}
-                disabled={!selectedStudents.length || selectedStudents.length > remainingVacancies}
+                disabled={
+                  !selectedStudents.length ||
+                  selectedStudents.length > remainingVacancies
+                }
                 onClick={linkSelectedStudents}
               />
               <Button
