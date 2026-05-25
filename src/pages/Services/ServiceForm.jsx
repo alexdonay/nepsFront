@@ -77,58 +77,73 @@ export default function ServiceForm() {
         {isEdit ? "Editar Serviço" : "Novo Serviço"}
       </h2>
 
-      <div className="field mb-3">
-        <label className="block text-900 font-medium mb-2">Nome *</label>
-        <InputText
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="w-full"
-        />
-      </div>
-
-      <div className="field mb-3">
-        <label className="block text-900 font-medium mb-2">Região</label>
-        <Dropdown
-          value={form.region_id}
-          options={regions}
-          onChange={(e) => setForm({ ...form, region_id: e.value })}
-          placeholder="Selecione uma região"
-          className="w-full"
-          showClear
-        />
-      </div>
-
-      <div className="field mb-3">
-        <label className="block text-900 font-medium mb-2">
-          Email do Responsável
-        </label>
-        <InputText
-          value={form.user_email}
-          onChange={(e) => setForm({ ...form, user_email: e.target.value })}
-          className="w-full"
-          placeholder="email@exemplo.com"
-        />
-      </div>
-
-      <div className="field mb-3">
-        <label className="flex align-items-center gap-2">
-          <input
-            type="checkbox"
-            checked={form.is_active}
-            onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+      <form
+        autoComplete="new-password"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+      >
+        <div className="field mb-3">
+          <label className="block text-900 font-medium mb-2">Nome *</label>
+          <InputText
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="w-full"
+            autoComplete="new-password"
+            name="service_name"
           />
-          Ativo
-        </label>
-      </div>
+        </div>
 
-      <div className="flex gap-2">
-        <Button label="Salvar" onClick={save} loading={loading} />
-        <Button
-          label="Cancelar"
-          className="p-button-secondary"
-          onClick={() => navigate("/services")}
-        />
-      </div>
+        <div className="field mb-3">
+          <label className="block text-900 font-medium mb-2">Região</label>
+          <Dropdown
+            value={form.region_id}
+            options={regions}
+            onChange={(e) => setForm({ ...form, region_id: e.value })}
+            placeholder="Selecione uma região"
+            className="w-full"
+            showClear
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label className="block text-900 font-medium mb-2">
+            Email do Responsável
+          </label>
+          <InputText
+            value={form.user_email}
+            onChange={(e) => setForm({ ...form, user_email: e.target.value })}
+            className="w-full"
+            placeholder="email@exemplo.com"
+            autoComplete="new-password"
+            name="service_user_email"
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label className="flex align-items-center gap-2">
+            <input
+              type="checkbox"
+              checked={form.is_active}
+              onChange={(e) =>
+                setForm({ ...form, is_active: e.target.checked })
+              }
+            />
+            Ativo
+          </label>
+        </div>
+
+        <div className="flex gap-2">
+          <Button label="Salvar" type="submit" loading={loading} />
+          <Button
+            label="Cancelar"
+            type="button"
+            className="p-button-secondary"
+            onClick={() => navigate("/services")}
+          />
+        </div>
+      </form>
     </div>
   );
 }

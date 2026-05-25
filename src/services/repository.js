@@ -26,7 +26,7 @@ export const repository = {
   users: {
     me: () => api.get(API_ROUTES.USERS.ME),
     updateMe: (data) => api.put(API_ROUTES.USERS.ME, data),
-    get: () => api.get(API_ROUTES.USERS.BASE),
+    get: (params = {}) => api.get(API_ROUTES.USERS.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.USERS.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.USERS.BASE, data),
     put: (id, data) => api.put(API_ROUTES.USERS.BY_ID(id), data),
@@ -35,7 +35,7 @@ export const repository = {
 
   // Cursos
   courses: {
-    get: () => api.get(API_ROUTES.COURSES.BASE),
+    get: (params = {}) => api.get(API_ROUTES.COURSES.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.COURSES.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
     put: (id, data) => api.put(API_ROUTES.COURSES.BY_ID(id), data),
@@ -44,7 +44,7 @@ export const repository = {
 
   // Regiões
   regions: {
-    get: () => api.get(API_ROUTES.REGIONS.BASE),
+    get: (params = {}) => api.get(API_ROUTES.REGIONS.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.REGIONS.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.REGIONS.BASE, data),
     put: (id, data) => api.patch(API_ROUTES.REGIONS.BY_ID(id), data),
@@ -53,7 +53,7 @@ export const repository = {
 
   // Unidades de Saúde
   healthUnits: {
-    get: () => api.get(API_ROUTES.SERVICES.BASE),
+    get: (params = {}) => api.get(API_ROUTES.SERVICES.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.SERVICES.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
     put: (id, data) => api.put(API_ROUTES.SERVICES.BY_ID(id), data),
@@ -62,7 +62,8 @@ export const repository = {
 
   // Instituições
   institutions: {
-    get: () => api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
+    get: (params = {}) =>
+      api.get(API_ROUTES.CADASTROS.INSTITUTIONS, { params }),
     getById: (id) => api.get(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id)),
     post: (data) => api.post(API_ROUTES.CADASTROS.INSTITUTIONS, data),
     put: (id, data) =>
@@ -72,34 +73,47 @@ export const repository = {
 
   // Salas
   rooms: {
-    get: () => api.get(API_ROUTES.ROOMS.BASE),
+    get: (params = {}) => api.get(API_ROUTES.ROOMS.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.ROOMS.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),
     put: (id, data) => api.patch(API_ROUTES.ROOMS.BY_ID(id), data),
     delete: (id) => api.delete(API_ROUTES.ROOMS.BY_ID(id)),
   },
 
+  roomSchedules: {
+    get: (roomId) => api.get(API_ROUTES.ROOMS.SCHEDULE(roomId)),
+    addStudent: (roomId, dayOfWeek, period, studentId) =>
+      api.post(API_ROUTES.ROOMS.SCHEDULE_STUDENT(roomId, dayOfWeek, period), {
+        student_id: studentId,
+      }),
+    removeStudent: (roomId, dayOfWeek, period, studentId) =>
+      api.delete(API_ROUTES.ROOMS.SCHEDULE_STUDENT(roomId, dayOfWeek, period), {
+        data: { student_id: studentId },
+      }),
+  },
+
   // Estudantes
   students: {
-    get: () => api.get(API_ROUTES.STUDENTS.BASE),
-    getById: (id) => api.get(API_ROUTES.STUDENTS.BY_ID(id)),
-    post: (data) => api.post(API_ROUTES.STUDENTS.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.STUDENTS.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.STUDENTS.BY_ID(id)),
-    byCourse: (courseId) => api.get(API_ROUTES.STUDENTS.BY_COURSE(courseId)),
+    get: (params = {}) => api.get(API_ROUTES.GESTAO.STUDENTS, { params }),
+    getById: (id) => api.get(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
+    put: (id, data) => api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
+    byCourse: (courseId) =>
+      api.get(API_ROUTES.GESTAO.STUDENTS_BY_COURSE(courseId)),
     byInstitute: (instituteId) =>
-      api.get(API_ROUTES.STUDENTS.BY_INSTITUTE(instituteId)),
+      api.get(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE(instituteId)),
   },
 
   // Períodos (se existir no backend)
   periods: {
-    get: () => api.get("/v1/periods"),
+    get: (params = {}) => api.get("/v1/periods", { params }),
     post: (data) => api.post("/v1/periods", data),
   },
 
   // Services
   services: {
-    get: () => api.get(API_ROUTES.SERVICES.BASE),
+    get: (params = {}) => api.get(API_ROUTES.SERVICES.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.SERVICES.BY_ID(id)),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
     put: (id, data) => api.put(API_ROUTES.SERVICES.BY_ID(id), data),
@@ -108,7 +122,7 @@ export const repository = {
 
   // Service Rooms
   serviceRooms: {
-    get: () => api.get(API_ROUTES.SERVICE_ROOMS.BASE),
+    get: (params = {}) => api.get(API_ROUTES.SERVICE_ROOMS.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.SERVICE_ROOMS.BY_ID(id)),
     getByService: (serviceId) =>
       api.get(API_ROUTES.SERVICE_ROOMS.BY_SERVICE(serviceId)),
@@ -119,7 +133,8 @@ export const repository = {
 
   // Service Schedules
   serviceSchedules: {
-    get: () => api.get(API_ROUTES.SERVICE_SCHEDULES.BASE),
+    get: (params = {}) =>
+      api.get(API_ROUTES.SERVICE_SCHEDULES.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.SERVICE_SCHEDULES.BY_ID(id)),
     getByRoom: (roomId) =>
       api.get(API_ROUTES.SERVICE_SCHEDULES.BY_ROOM(roomId)),

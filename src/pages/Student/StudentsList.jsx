@@ -4,6 +4,8 @@ import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
+import api from "../../services/api";
+import { API_ROUTES } from "../../services/API_routes";
 import { repository } from "../../services/repository";
 
 const FILTER_CONFIG = [
@@ -14,18 +16,41 @@ const FILTER_CONFIG = [
     placeholder: "Buscar por nome...",
   },
   {
-    label: "Status",
-    key: "is_active",
+    label: "CPF",
+    key: "cpf",
+    type: "text",
+    placeholder: "Buscar por CPF...",
+  },
+  {
+    label: "Email",
+    key: "email",
+    type: "text",
+    placeholder: "Buscar por email...",
+  },
+  {
+    label: "Curso",
+    key: "course_id",
     type: "dropdown",
-    options: [
-      { label: "Ativo", value: "1" },
-      { label: "Inativo", value: "0" },
-    ],
+    options: [],
+  },
+  {
+    label: "Instituição",
+    key: "institution_id",
+    type: "dropdown",
+    options: [],
+  },
+  {
+    label: "Semestre",
+    key: "semester",
+    type: "number",
+    placeholder: "Digite o semestre...",
   },
 ];
 
-export default function RegionsList() {
-  const [regions, setRegions] = useState([]);
+export default function StudentsList() {
+  const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -35,10 +60,11 @@ export default function RegionsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadRegions();
-  }, [searchParams, first, rows]);
+    loadOptions();
+  }, []);
 
   useEffect(() => {
+    // Se houver filtros na URL na primeira montagem, abrir drawer automaticamente
     const hasFilters = searchParams.toString().length > 0;
     if (hasFilters) {
       setFilterVisible(true);
@@ -47,7 +73,33 @@ export default function RegionsList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadRegions = useCallback(async () => {
+  const loadOptions = async () => {
+    try {
+      const [coursesRes, instRes] = await Promise.all([
+        api.get(API_ROUTES.CADASTROS.COURSES),
+        api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
+      ]);
+      const coursesList = Array.isArray(coursesRes.data)
+        ? coursesRes.data
+        : coursesRes.data.items || [];
+      const instList = Array.isArray(instRes.data)
+        ? instRes.data
+        : instRes.data.items || [];
+
+      setCourses(coursesList);
+      setInstitutions(instList);
+
+      // Atualizar opções nos filtros
+      FILTER_CONFIG.find((f) => f.key === "course_id").options =
+        coursesList.map((c) => ({ label: c.name, value: c.id }));
+      FILTER_CONFIG.find((f) => f.key === "institution_id").options =
+        instList.map((i) => ({ label: i.name, value: i.id }));
+    } catch (e) {
+      console.error("Erro ao carregar opções:", e);
+    }
+  };
+
+  const loadStudents = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
@@ -57,17 +109,21 @@ export default function RegionsList() {
         params[key] = value;
       });
 
-      const { data } = await repository.regions.get(params);
-      setRegions(data.items || data);
+      const { data } = await repository.students.get(params);
+      setStudents(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar regiões:", e);
-      setRegions([]);
+      console.error("Erro ao carregar alunos:", e);
+      setStudents([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
     }
   }, [searchParams, first, rows]);
+
+  useEffect(() => {
+    loadStudents();
+  }, [loadStudents]);
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -95,26 +151,30 @@ export default function RegionsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
-  const activeTemplate = (rowData) => (
-    <span className={rowData.is_active ? "text-green-500" : "text-red-500"}>
-      {rowData.is_active ? "Ativo" : "Inativo"}
-    </span>
-  );
-
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/regions/${rowData.id}`)}
+        onClick={() => navigate(`/students/${rowData.id}`)}
       />
     </div>
   );
 
+  const courseTemplate = (rowData) => {
+    const course = courses.find((c) => c.id === rowData.course_id);
+    return course ? course.name : "-";
+  };
+
+  const institutionTemplate = (rowData) => {
+    const inst = institutions.find((i) => i.id === rowData.institution_id);
+    return inst ? inst.name : "-";
+  };
+
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Regiões</h2>
+        <h2 className="text-xl font-bold m-0">Alunos</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -124,15 +184,15 @@ export default function RegionsList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Nova Região"
+            label="Novo Aluno"
             icon="pi pi-plus"
-            onClick={() => navigate("/regions/new")}
+            onClick={() => navigate("/students/new")}
           />
         </div>
       </div>
 
       <DataTable
-        value={regions}
+        value={students}
         tableStyle={{ minWidth: "50rem" }}
         paginator
         first={first}
@@ -142,11 +202,15 @@ export default function RegionsList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhuma região encontrada"
+        emptyMessage="Nenhum aluno encontrado"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
-        <Column field="is_active" header="Status" body={activeTemplate} />
+        <Column field="cpf" header="CPF" />
+        <Column field="email" header="Email" />
+        <Column header="Curso" body={courseTemplate} />
+        <Column field="semester" header="Semestre" />
+        <Column header="Instituição" body={institutionTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 

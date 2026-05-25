@@ -60,6 +60,8 @@ export default function PhoneInput({
         placeholder="(XX) XXXX-XXXX"
         required={required}
         className={`p-inputtext w-full ${className}`}
+        autoComplete="new-password"
+        name="phone-field"
         {...props}
       />
       <small className="block text-500 mt-1">

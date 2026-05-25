@@ -1,115 +1,130 @@
 import { Button } from "primereact/button";
-import { Checkbox } from "primereact/checkbox";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { Dropdown } from "primereact/dropdown";
-import { InputNumber } from "primereact/inputnumber";
-import { InputText } from "primereact/inputtext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 
-const DAYS = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"];
-const SHIFTS = ["MAN", "TRD", "VSP"];
-const SHIFT_LABELS = { MAN: "Manhã", TRD: "Tarde", VSP: "Vespertino" };
+const FILTER_CONFIG = [
+  {
+    label: "Nome",
+    key: "name",
+    type: "text",
+    placeholder: "Buscar por nome...",
+  },
+  {
+    label: "Serviço",
+    key: "service_id",
+    type: "dropdown",
+    options: [],
+  },
+  {
+    label: "Possui Maca",
+    key: "has_gurney",
+    type: "dropdown",
+    options: [
+      { label: "Sim", value: "1" },
+      { label: "Não", value: "0" },
+    ],
+  },
+];
 
 export default function RoomsList() {
   const [rooms, setRooms] = useState([]);
   const [services, setServices] = useState([]);
-  const [showDialog, setShowDialog] = useState(false);
-  const [showScheduleDialog, setShowScheduleDialog] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [schedules, setSchedules] = useState([]);
-  const [form, setForm] = useState({
-    name: "",
-    service_id: null,
-    room_capacity: 0,
-    has_gurney: false,
-    is_active: true,
-  });
-  const [editId, setEditId] = useState(null);
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    loadRooms();
     loadServices();
   }, []);
 
-  const loadRooms = async () => {
-    try {
-      const { data } = await repository.rooms.get();
-      setRooms(data.items || data);
-    } catch (e) {
-      setRooms([]);
+  useEffect(() => {
+    loadRooms();
+  }, [searchParams, first, rows]);
+
+  useEffect(() => {
+    const hasFilters = searchParams.toString().length > 0;
+    if (hasFilters) {
+      setFilterVisible(true);
     }
-  };
+    // só rodar na montagem inicial
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadRooms = useCallback(async () => {
+    try {
+      setLoading(true);
+      const page = Math.floor(first / rows) + 1;
+      const params = { page, per_page: rows };
+
+      searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+
+      const { data } = await repository.rooms.get(params);
+      setRooms(data.items || data || []);
+      setTotalRecords(data.pagination?.total || 0);
+    } catch (e) {
+      console.error("Erro ao carregar salas:", e);
+      setRooms([]);
+      setTotalRecords(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchParams, first, rows]);
 
   const loadServices = async () => {
     try {
       const { data } = await repository.services.get();
-      setServices(
-        (data.items || data).map((s) => ({ label: s.name, value: s.id })),
-      );
+      const list = data.items || data || [];
+      const servicesList = list.map((service) => ({
+        label: service.name,
+        value: service.id,
+      }));
+      setServices(servicesList);
+
+      FILTER_CONFIG.find((f) => f.key === "service_id").options = servicesList;
     } catch (e) {
+      console.error("Erro ao carregar serviços:", e);
       setServices([]);
     }
   };
 
-  const handleSave = async () => {
-    if (!form.name || !form.service_id || !form.room_capacity) {
-      return;
-    }
-    try {
-      const payload = {
-        name: form.name,
-        service_id: form.service_id,
-        room_capacity: form.room_capacity,
-        has_gurney: form.has_gurney,
-        is_active: form.is_active,
-      };
-      if (editId) {
-        await repository.rooms.put(editId, payload);
+  const handleApplyFilters = (appliedFilters) => {
+    const params = new URLSearchParams();
+    Object.entries(appliedFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        params.append(key, value.join(","));
       } else {
-        await repository.rooms.post(payload);
+        params.append(key, value);
       }
-      setShowDialog(false);
-      setForm({
-        name: "",
-        service_id: null,
-        room_capacity: 0,
-        has_gurney: false,
-      });
-      setEditId(null);
-      loadRooms();
-    } catch (err) {}
-  };
-
-  const handleEdit = (rowData) => {
-    setForm({
-      name: rowData.name,
-      service_id: rowData.service_id,
-      room_capacity: rowData.room_capacity,
-      has_gurney: rowData.has_gurney ?? false,
-      is_active: rowData.is_active ?? true,
     });
-    setEditId(rowData.id);
-    setShowDialog(true);
+    setSearchParams(params);
+    setFirst(0);
   };
 
-  const handleManage = async (rowData) => {
-    setSelectedRoom(rowData);
-    try {
-      const { data } = await repository.serviceSchedules.getByRoom(rowData.id);
-      setSchedules(data);
-    } catch (e) {
-      setSchedules([]);
-    }
-    setShowScheduleDialog(true);
+  const handleClearFilters = () => {
+    setSearchParams({});
+    setFirst(0);
+    setFilterVisible(false);
   };
 
-  const getScheduleForCell = (day, shift) => {
-    return schedules.find(
-      (s) => s.week_day === day && s.shift === shift && s.is_active
-    );
+  const handlePaginationChange = (event) => {
+    setFirst(event.first);
+    setRows(event.rows);
+  };
+
+  const activeFilterCount = Array.from(searchParams.entries()).length;
+
+  const handleManage = (rowData) => {
+    navigate(`/rooms/${rowData.id}/schedules`);
   };
 
   const actionsTemplate = (rowData) => (
@@ -124,44 +139,50 @@ export default function RoomsList() {
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => handleEdit(rowData)}
+        onClick={() => navigate(`/rooms/${rowData.id}`)}
       />
     </div>
   );
 
   const serviceTemplate = (rowData) => {
-    const serv = services.find((s) => s.value === rowData.service_id);
-    return serv ? serv.label : "-";
+    const service = services.find((item) => item.value === rowData.service_id);
+    return service ? service.label : "-";
   };
 
   const gurneyTemplate = (rowData) => (rowData.has_gurney ? "Sim" : "Não");
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
-      <div className="flex justify-content-between mb-3">
-        <h2 className="text-xl font-bold">Salas</h2>
-        <Button
-          label="Nova Sala"
-          icon="pi pi-plus"
-          onClick={() => {
-            setEditId(null);
-            setForm({
-              name: "",
-              service_id: null,
-              room_capacity: 0,
-              has_gurney: false,
-              is_active: true,
-            });
-            setShowDialog(true);
-          }}
-        />
+      <div className="flex justify-content-between align-items-center mb-3">
+        <h2 className="text-xl font-bold m-0">Salas</h2>
+        <div className="flex gap-2">
+          <Button
+            label="Filtros"
+            icon="pi pi-filter"
+            badge={activeFilterCount > 0 ? activeFilterCount : null}
+            badgeClassName="p-badge-info"
+            onClick={() => setFilterVisible(true)}
+          />
+          <Button
+            label="Nova Sala"
+            icon="pi pi-plus"
+            onClick={() => navigate("/rooms/new")}
+          />
+        </div>
       </div>
 
       <DataTable
         value={rooms}
         tableStyle={{ minWidth: "50rem" }}
         paginator
-        rows={10}
+        first={first}
+        rows={rows}
+        totalRecords={totalRecords}
+        rowsPerPageOptions={[10, 20, 50]}
+        onPage={handlePaginationChange}
+        loading={loading}
+        lazy
+        emptyMessage="Nenhuma sala encontrada"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
@@ -171,90 +192,14 @@ export default function RoomsList() {
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <Dialog
-        visible={showDialog}
-        onHide={() => setShowDialog(false)}
-        header={editId ? "Editar Sala" : "Nova Sala"}
-      >
-        <div className="field mb-3">
-          <label className="block text-900 font-medium mb-2">Nome *</label>
-          <InputText
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full"
-          />
-        </div>
-        <div className="field mb-3">
-          <label className="block text-900 font-medium mb-2">Serviço *</label>
-          <Dropdown
-            value={form.service_id}
-            options={services}
-            onChange={(e) => setForm({ ...form, service_id: e.value })}
-            placeholder="Selecione"
-            className="w-full"
-          />
-        </div>
-        <div className="field mb-3">
-          <label className="block text-900 font-medium mb-2">
-            Capacidade *
-          </label>
-          <InputNumber
-            value={form.room_capacity}
-            onChange={(e) => setForm({ ...form, room_capacity: e.value })}
-            className="w-full"
-          />
-        </div>
-        <div className="field mb-3">
-          <label className="flex align-items-center gap-2">
-            <Checkbox
-              checked={form.has_gurney}
-              onChange={(e) => setForm({ ...form, has_gurney: e.checked })}
-            />
-            Possui maca
-          </label>
-        </div>
-        <div className="field mb-3">
-          <label className="flex align-items-center gap-2">
-            <Checkbox
-              checked={form.is_active}
-              onChange={(e) => setForm({ ...form, is_active: e.checked })}
-            />
-            Ativo
-          </label>
-        </div>
-        <Button label="Salvar" onClick={handleSave} className="mt-3" />
-      </Dialog>
-
-      <Dialog
-        visible={showScheduleDialog}
-        onHide={() => setShowScheduleDialog(false)}
-        header={`Agenda - ${selectedRoom?.name || ""}`}
-        style={{ width: "80vw", maxWidth: "900px" }}
-      >
-        <DataTable value={SHIFTS} tableStyle={{ minWidth: "50rem" }} stripedRows>
-          <Column
-            header="Turno"
-            body={(row) => SHIFT_LABELS[row]}
-            style={{ fontWeight: "bold", width: "120px" }}
-          />
-          {DAYS.map((day) => (
-            <Column
-              key={day}
-              header={day}
-              body={(row) => {
-                const schedule = getScheduleForCell(day, row);
-                return schedule ? (
-                  <div className="text-green-700 font-medium">
-                    {schedule.student_id ? `Aluno #${schedule.student_id}` : "Livre"}
-                  </div>
-                ) : (
-                  <span className="text-500">-</span>
-                );
-              }}
-            />
-          ))}
-        </DataTable>
-      </Dialog>
+      <FilterDrawer
+        visible={filterVisible}
+        onHide={() => setFilterVisible(false)}
+        filters={FILTER_CONFIG}
+        onApply={handleApplyFilters}
+        onClear={handleClearFilters}
+        activeCount={activeFilterCount}
+      />
     </div>
   );
 }
