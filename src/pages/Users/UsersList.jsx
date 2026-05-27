@@ -30,7 +30,7 @@ const FILTER_CONFIG = [
         label: "Instituição de Ensino",
         value: PERMISSIONS.INSTITUICAO_ENSINO,
       },
-      { label: "Service", value: PERMISSIONS.UNIDADE_SAUDE },
+      { label: "Campo de Estágio", value: PERMISSIONS.CAMPO_ESTAGIO },
     ],
   },
   {

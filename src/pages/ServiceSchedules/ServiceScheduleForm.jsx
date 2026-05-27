@@ -50,7 +50,11 @@ export default function ServiceScheduleForm() {
 
   return (
     <div className="p-4">
-      <h2>{isEdit ? "Editar Horário" : "Novo Horário"}</h2>
+      <h2>
+        {isEdit
+          ? "Editar Horário do Campo de Estágio"
+          : "Novo Horário do Campo de Estágio"}
+      </h2>
       <div className="field mb-3">
         <label>Dia</label>
         <Dropdown

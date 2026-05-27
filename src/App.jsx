@@ -5,7 +5,9 @@ import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import CoursesForm from "./pages/Courses/CoursesForm";
 import CoursesList from "./pages/Courses/CoursesList";
+import EnrollmentPeriodsForm from "./pages/EnrollmentPeriods/EnrollmentPeriodsForm";
 import EnrollmentPeriodsList from "./pages/EnrollmentPeriods/EnrollmentPeriodsList";
+import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriodsManage";
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
@@ -35,10 +37,10 @@ import { hasPermission, isAuthenticated } from "./utils/auth";
 const ALL_PERMISSIONS = [
   PERMISSIONS.ADMIN,
   PERMISSIONS.INSTITUICAO_ENSINO,
-  PERMISSIONS.UNIDADE_SAUDE,
+  PERMISSIONS.CAMPO_ESTAGIO,
 ];
 
-const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE];
+const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO];
 
 function PrivateRoute({ children, permissions = [] }) {
   if (!isAuthenticated()) {
@@ -389,6 +391,36 @@ export default function App() {
         }
       />
       <Route
+        path="/periods/new"
+        element={
+          <PrivateRoute permissions={ALL_PERMISSIONS}>
+            <Layout>
+              <EnrollmentPeriodsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/periods/:id"
+        element={
+          <PrivateRoute permissions={ALL_PERMISSIONS}>
+            <Layout>
+              <EnrollmentPeriodsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/periods/:id/manage"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <EnrollmentPeriodsManage />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/students"
         element={
           <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
@@ -423,7 +455,7 @@ export default function App() {
         path="/dashboard"
         element={
           <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE]}
+            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}
           >
             <Route
               path="/courses/new"

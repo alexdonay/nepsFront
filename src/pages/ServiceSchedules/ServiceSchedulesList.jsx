@@ -30,7 +30,7 @@ const PERIOD_ORDER = ["MORNING", "AFTERNOON", "EVENING"];
 const PERIODS = {
   MORNING: { label: "Manhã", icon: "pi-sun", color: "info" },
   AFTERNOON: { label: "Tarde", icon: "pi-cloud", color: "warning" },
-  EVENING: { label: "Noite", icon: "pi-moon", color: "secondary" },
+  EVENING: { label: "Vespertino", icon: "pi-moon", color: "secondary" },
 };
 
 export default function ServiceSchedulesList() {
@@ -118,7 +118,9 @@ export default function ServiceSchedulesList() {
     <div className="schedule-container">
       <div className="schedule-header">
         <div>
-          <h1 className="schedule-title">📅 Agenda da Sala</h1>
+          <h1 className="schedule-title">
+            📅 Agenda da Sala do Campo de Estágio
+          </h1>
           {room && (
             <p className="schedule-subtitle">
               Sala: <strong>{room.name}</strong> • Capacidade:{" "}

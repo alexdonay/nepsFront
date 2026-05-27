@@ -27,7 +27,7 @@ const DAY_LABELS = {
 const PERIOD_LABELS = {
   MORNING: "Manhã",
   AFTERNOON: "Tarde",
-  EVENING: "Noite",
+  EVENING: "Vespertino",
 };
 
 const STUDENT_FILTERS = [

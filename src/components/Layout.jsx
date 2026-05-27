@@ -7,10 +7,10 @@ import { hasPermission } from "../utils/auth";
 const ALL_PERMISSIONS = [
   PERMISSIONS.ADMIN,
   PERMISSIONS.INSTITUICAO_ENSINO,
-  PERMISSIONS.UNIDADE_SAUDE,
+  PERMISSIONS.CAMPO_ESTAGIO,
 ];
 
-const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE];
+const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO];
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function Layout({ children }) {
   const menuItems = [
     { label: "Início", icon: "pi pi-home", path: "/", permissions: [] },
     {
-      label: "Cadastro",
+      label: "Cadastros",
       icon: "pi pi-building",
       items: [
         {
@@ -28,7 +28,7 @@ export default function Layout({ children }) {
           permissions: [PERMISSIONS.ADMIN],
         },
         {
-          label: "Serviços",
+          label: "Campos de Estágio",
           icon: "pi pi-cog",
           path: "/services",
           permissions: [PERMISSIONS.ADMIN],
@@ -81,7 +81,7 @@ export default function Layout({ children }) {
       label: "Acompanhamento",
       icon: "pi pi-chart-bar",
       path: "/dashboard",
-      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.UNIDADE_SAUDE],
+      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
     },
   ];
 

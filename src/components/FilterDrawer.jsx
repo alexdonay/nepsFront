@@ -15,23 +15,30 @@ export default function FilterDrawer({
   onApply,
   onClear,
   activeCount,
+  initialValues = {},
 }) {
   const [filterValues, setFilterValues] = useState({});
 
   useEffect(() => {
-    // Inicializar filtros com valores vazios
-    const initialValues = {};
+    // Inicializar filtros com valores vazios + defaults recebidos do pai
+    const nextValues = { ...initialValues };
     filters?.forEach((filter) => {
+      if (Object.prototype.hasOwnProperty.call(nextValues, filter.key)) return;
+
       if (filter.type === "date-range") {
-        initialValues[filter.key] = [null, null];
+        nextValues[filter.key] = [null, null];
       } else if (filter.type === "multiselect") {
-        initialValues[filter.key] = [];
+        nextValues[filter.key] = [];
+      } else if (filter.type === "text") {
+        nextValues[filter.key] = "";
+      } else if (filter.type === "number") {
+        nextValues[filter.key] = undefined;
       } else {
-        initialValues[filter.key] = filter.type === "boolean" ? false : null;
+        nextValues[filter.key] = filter.type === "boolean" ? false : null;
       }
     });
-    setFilterValues(initialValues);
-  }, [filters]);
+    setFilterValues(nextValues);
+  }, [filters, initialValues]);
 
   const handleApply = () => {
     const appliedFilters = {};
@@ -78,8 +85,11 @@ export default function FilterDrawer({
   };
 
   const handleClear = () => {
-    const clearedValues = {};
+    const clearedValues = { ...initialValues };
     filters?.forEach((filter) => {
+      if (Object.prototype.hasOwnProperty.call(clearedValues, filter.key))
+        return;
+
       if (filter.type === "date-range") {
         clearedValues[filter.key] = [null, null];
       } else if (filter.type === "multiselect") {
@@ -95,32 +105,23 @@ export default function FilterDrawer({
   const renderFilterField = (filter) => {
     const { label, key, type, placeholder, options } = filter;
 
-    const commonProps = {
-      value:
-        filterValues[key] ??
-        (type === "date-range"
-          ? [null, null]
-          : type === "multiselect"
-            ? []
-            : type === "boolean"
-              ? false
-              : null),
-      autoComplete: "new-password",
-      onChange: (e) => {
-        setFilterValues((prev) => ({
-          ...prev,
-          [key]: e.target?.value !== undefined ? e.target.value : e.value,
-        }));
-      },
-      className: "w-full",
-    };
-
     switch (type) {
       case "text":
         return (
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
-            <InputText {...commonProps} placeholder={placeholder} />
+            <InputText
+              value={filterValues[key] ?? ""}
+              autoComplete="new-password"
+              onChange={(e) => {
+                setFilterValues((prev) => ({
+                  ...prev,
+                  [key]: e.target.value,
+                }));
+              }}
+              className="w-full"
+              placeholder={placeholder}
+            />
           </div>
         );
 
@@ -129,12 +130,19 @@ export default function FilterDrawer({
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
             <Dropdown
-              {...commonProps}
+              value={filterValues[key] ?? null}
+              onChange={(e) => {
+                setFilterValues((prev) => ({
+                  ...prev,
+                  [key]: e.value,
+                }));
+              }}
               options={options}
               optionLabel="label"
               optionValue="value"
               placeholder={placeholder || "Selecionar..."}
               showClear
+              className="w-full"
             />
           </div>
         );
@@ -144,12 +152,19 @@ export default function FilterDrawer({
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
             <MultiSelect
-              {...commonProps}
+              value={filterValues[key] ?? []}
+              onChange={(e) => {
+                setFilterValues((prev) => ({
+                  ...prev,
+                  [key]: e.value,
+                }));
+              }}
               options={options}
               optionLabel="label"
               optionValue="value"
               placeholder={placeholder || "Selecionar..."}
               showClear
+              className="w-full"
             />
           </div>
         );
@@ -159,10 +174,17 @@ export default function FilterDrawer({
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
             <Calendar
-              {...commonProps}
+              value={filterValues[key] ?? undefined}
+              onChange={(e) => {
+                setFilterValues((prev) => ({
+                  ...prev,
+                  [key]: e.value,
+                }));
+              }}
               dateFormat="dd/mm/yy"
               showIcon
               mask="99/99/9999"
+              className="w-full"
             />
           </div>
         );
@@ -212,9 +234,16 @@ export default function FilterDrawer({
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
             <InputNumber
-              {...commonProps}
+              value={filterValues[key] ?? undefined}
+              onChange={(e) => {
+                setFilterValues((prev) => ({
+                  ...prev,
+                  [key]: e.value,
+                }));
+              }}
               placeholder={placeholder}
               useGrouping={false}
+              className="w-full"
             />
           </div>
         );

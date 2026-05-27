@@ -29,9 +29,9 @@ export default function Login() {
         const me = await getCurrentUser();
         console.log("/users/me response:", me);
         const user = me.data;
-        // persistir currentUser para uso em outras partes da UI
+        // persistir user para uso em outras partes da UI
         try {
-          localStorage.setItem("currentUser", JSON.stringify(user));
+          localStorage.setItem("user", JSON.stringify(user));
         } catch {}
         const candidates = [
           user.permission,
@@ -49,7 +49,7 @@ export default function Login() {
       } catch (err) {
         console.error("/users/me error:", err.response ?? err.message ?? err);
         // fallback para quando /users/me não estiver disponível no login
-        
+
         // Tentar extrair do token JWT
         let tokenPermission = null;
         try {
@@ -63,10 +63,15 @@ export default function Login() {
               payload.userType,
               payload.type,
             ];
-            if (Array.isArray(payload.roles)) tokenCandidates.push(...payload.roles);
-            tokenPermission = tokenCandidates.map(normalizePermission).find(Boolean);
+            if (Array.isArray(payload.roles))
+              tokenCandidates.push(...payload.roles);
+            tokenPermission = tokenCandidates
+              .map(normalizePermission)
+              .find(Boolean);
           }
-        } catch (e) { console.log("Error parsing token:", e); }
+        } catch (e) {
+          console.log("Error parsing token:", e);
+        }
 
         const candidates = [
           data.permission,
@@ -78,7 +83,8 @@ export default function Login() {
 
         if (Array.isArray(data.roles)) candidates.push(...data.roles);
 
-        const permission = tokenPermission || candidates.map(normalizePermission).find(Boolean);
+        const permission =
+          tokenPermission || candidates.map(normalizePermission).find(Boolean);
         if (permission) localStorage.setItem("permission", permission);
         else localStorage.removeItem("permission");
       }

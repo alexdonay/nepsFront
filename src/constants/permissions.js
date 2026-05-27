@@ -1,7 +1,7 @@
 export const PERMISSIONS = {
   ADMIN: "admin",
   INSTITUICAO_ENSINO: "education_institute",
-  UNIDADE_SAUDE: "service",
+  CAMPO_ESTAGIO: "service",
 };
 
 export default PERMISSIONS;
