@@ -1,9 +1,9 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Sidebar } from "primereact/sidebar";
 import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
+import { Sidebar } from "primereact/sidebar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
@@ -190,14 +190,28 @@ export default function EnrollmentPeriodsManage() {
 
   const openManageForStudent = async (student) => {
     setAssignedSlots([]);
-    setSlotFilters({ room_id: "", day_of_week: "", period: "", onlyWithVacancies: true });
+    setSlotFilters({
+      room_id: "",
+      day_of_week: "",
+      period: "",
+      onlyWithVacancies: true,
+    });
 
     let targetStudent = student;
 
     const extractSlots = (obj) => {
       if (obj?.slot) return Array.isArray(obj.slot) ? obj.slot : [obj.slot];
       if (Array.isArray(obj?.slots) && obj.slots.length > 0) return obj.slots;
-      const slotKeys = ["schedule", "schedules", "room_schedule", "room_schedules", "linked_slot", "linked_slots", "assigned_slot", "assigned_slots"];
+      const slotKeys = [
+        "schedule",
+        "schedules",
+        "room_schedule",
+        "room_schedules",
+        "linked_slot",
+        "linked_slots",
+        "assigned_slot",
+        "assigned_slots",
+      ];
       for (const key of slotKeys) {
         if (obj?.[key]) {
           const val = obj[key];
@@ -207,7 +221,9 @@ export default function EnrollmentPeriodsManage() {
       const roomId = obj?.room_id ?? obj?.roomId;
       const dayOfWeek = obj?.day_of_week ?? obj?.dayOfWeek;
       if (roomId && dayOfWeek && obj?.period) {
-        return [{ room_id: roomId, day_of_week: dayOfWeek, period: obj.period }];
+        return [
+          { room_id: roomId, day_of_week: dayOfWeek, period: obj.period },
+        ];
       }
       return [];
     };
@@ -240,17 +256,22 @@ export default function EnrollmentPeriodsManage() {
     await loadAvailableSlots(targetStudent);
 
     if (studentSlots.length > 0) {
-      setAvailableSlots(prev => {
+      setAvailableSlots((prev) => {
         const merged = [...prev];
         for (const as of studentSlots) {
-          const exists = prev.some(s =>
-            Number(s.room_id ?? s.roomId ?? s.room) === Number(as.room_id ?? as.roomId ?? as.room) &&
-            (s.day_of_week || s.dayOfWeek) === (as.day_of_week || as.dayOfWeek) &&
-            s.period === as.period
+          const exists = prev.some(
+            (s) =>
+              Number(s.room_id ?? s.roomId ?? s.room) ===
+                Number(as.room_id ?? as.roomId ?? as.room) &&
+              (s.day_of_week || s.dayOfWeek) ===
+                (as.day_of_week || as.dayOfWeek) &&
+              s.period === as.period,
           );
           if (!exists) {
             merged.push({
-              id: as.id ?? `assigned-${as.room_id}-${as.day_of_week}-${as.period}`,
+              id:
+                as.id ??
+                `assigned-${as.room_id}-${as.day_of_week}-${as.period}`,
               room_id: as.room_id ?? as.roomId ?? as.room,
               day_of_week: as.day_of_week || as.dayOfWeek,
               period: as.period,
@@ -270,7 +291,12 @@ export default function EnrollmentPeriodsManage() {
     setManagingStudent(null);
     setAvailableSlots([]);
     setAssignedSlots([]);
-    setSlotFilters({ room_id: "", day_of_week: "", period: "", onlyWithVacancies: true });
+    setSlotFilters({
+      room_id: "",
+      day_of_week: "",
+      period: "",
+      onlyWithVacancies: true,
+    });
   };
 
   const loadAvailableSlots = async (student) => {
@@ -457,13 +483,17 @@ export default function EnrollmentPeriodsManage() {
       }
 
       if (slotFilters.day_of_week) {
-        const slotDay = normalizeScheduleValue(slot.day_of_week || slot.dayOfWeek);
-        if (slotDay !== normalizeScheduleValue(slotFilters.day_of_week)) return false;
+        const slotDay = normalizeScheduleValue(
+          slot.day_of_week || slot.dayOfWeek,
+        );
+        if (slotDay !== normalizeScheduleValue(slotFilters.day_of_week))
+          return false;
       }
 
       if (slotFilters.period) {
         const slotPeriod = normalizeScheduleValue(slot.period);
-        if (slotPeriod !== normalizeScheduleValue(slotFilters.period)) return false;
+        if (slotPeriod !== normalizeScheduleValue(slotFilters.period))
+          return false;
       }
 
       if (slotFilters.onlyWithVacancies) {
@@ -584,7 +614,9 @@ export default function EnrollmentPeriodsManage() {
                   label: r.name || r.room_name || r.id,
                   value: r.id,
                 }))}
-                onChange={(e) => setSlotFilters((p) => ({ ...p, room_id: e.value }))}
+                onChange={(e) =>
+                  setSlotFilters((p) => ({ ...p, room_id: e.value }))
+                }
                 placeholder="Todas"
                 showClear
               />
@@ -594,8 +626,13 @@ export default function EnrollmentPeriodsManage() {
               <label className="p-mr-2">Dia</label>
               <Dropdown
                 value={slotFilters.day_of_week}
-                options={Object.keys(DAY_LABELS).map((k) => ({ label: DAY_LABELS[k], value: k }))}
-                onChange={(e) => setSlotFilters((p) => ({ ...p, day_of_week: e.value }))}
+                options={Object.keys(DAY_LABELS).map((k) => ({
+                  label: DAY_LABELS[k],
+                  value: k,
+                }))}
+                onChange={(e) =>
+                  setSlotFilters((p) => ({ ...p, day_of_week: e.value }))
+                }
                 placeholder="Todos"
                 showClear
               />
@@ -605,8 +642,13 @@ export default function EnrollmentPeriodsManage() {
               <label className="p-mr-2">Período</label>
               <Dropdown
                 value={slotFilters.period}
-                options={Object.keys(PERIOD_LABELS).map((k) => ({ label: PERIOD_LABELS[k], value: k }))}
-                onChange={(e) => setSlotFilters((p) => ({ ...p, period: e.value }))}
+                options={Object.keys(PERIOD_LABELS).map((k) => ({
+                  label: PERIOD_LABELS[k],
+                  value: k,
+                }))}
+                onChange={(e) =>
+                  setSlotFilters((p) => ({ ...p, period: e.value }))
+                }
                 placeholder="Todos"
                 showClear
               />
@@ -616,7 +658,9 @@ export default function EnrollmentPeriodsManage() {
               <div className="mr-2">Apenas com vagas</div>
               <InputSwitch
                 checked={slotFilters.onlyWithVacancies}
-                onChange={(e) => setSlotFilters((p) => ({ ...p, onlyWithVacancies: e.value }))}
+                onChange={(e) =>
+                  setSlotFilters((p) => ({ ...p, onlyWithVacancies: e.value }))
+                }
               />
             </div>
           </div>
