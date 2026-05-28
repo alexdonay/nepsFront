@@ -19,6 +19,9 @@ export default function FilterDrawer({
 }) {
   const [filterValues, setFilterValues] = useState({});
 
+  const filtersKey = JSON.stringify(filters || []);
+  const initialValuesKey = JSON.stringify(initialValues || {});
+
   useEffect(() => {
     // Inicializar filtros com valores vazios + defaults recebidos do pai
     const nextValues = { ...initialValues };
@@ -46,7 +49,7 @@ export default function FilterDrawer({
       }
       return nextValues;
     });
-  }, [filters, initialValues]);
+  }, [filtersKey, initialValuesKey]);
 
   const handleApply = () => {
     const appliedFilters = {};
