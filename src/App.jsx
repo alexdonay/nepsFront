@@ -5,6 +5,7 @@ import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import CoursesForm from "./pages/Courses/CoursesForm";
 import CoursesList from "./pages/Courses/CoursesList";
+import EnrollmentManageInstitution from "./pages/EnrollmentPeriods/EnrollmentManageInstitution";
 import EnrollmentPeriodsForm from "./pages/EnrollmentPeriods/EnrollmentPeriodsForm";
 import EnrollmentPeriodsList from "./pages/EnrollmentPeriods/EnrollmentPeriodsList";
 import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriodsManage";
@@ -416,6 +417,16 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <EnrollmentPeriodsManage />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/periods/:periodId/manage-institution"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.INSTITUICAO_ENSINO]}>
+            <Layout>
+              <EnrollmentManageInstitution />
             </Layout>
           </PrivateRoute>
         }

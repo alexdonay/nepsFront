@@ -23,7 +23,7 @@ export const API_ROUTES = {
   },
 
 CADASTROS: {
-    // ... other endpoints
+    COURSES: "/v1/courses",
     INSTITUTIONS: "/v1/education-institutes",
     INSTITUTIONS_BY_ID: (id) => `/v1/education-institutes/${id}`,
     LOCATIONS: "/v1/cadastros/locations",

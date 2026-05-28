@@ -49,3 +49,25 @@ Este projeto utiliza um componente compartilhado de filtros em drawer nas telas 
   - Caso seja necessário outro nome de parâmetro, o filtro pode definir `queryKey` na configuração.
 
 As páginas de listagem usam `useSearchParams` para persistir filtros na URL e `src/services/repository.js` aceita `params` para repassar query strings para a API.
+
+## Variáveis de ambiente
+
+Este projeto usa o arquivo `.env.local` na raiz do repositório para configurar integrações locais.
+
+### Cloudinary
+
+O cadastro de alunos envia um PDF obrigatório para o Cloudinary antes de salvar o registro no backend. Para isso, configure as variáveis abaixo no `.env.local`:
+
+```dotenv
+VITE_CLOUDINARY_CLOUD_NAME=seu_cloud_name
+VITE_CLOUDINARY_API_KEY=sua_api_key
+VITE_CLOUDINARY_API_SECRET=seu_api_secret
+```
+
+Observações:
+
+- O arquivo `.env.local` não deve ser commitado no repositório.
+- Sempre reinicie o servidor de desenvolvimento após alterar qualquer variável de ambiente.
+- O PDF enviado deve ter no máximo 5MB.
+- O frontend valida o arquivo antes do upload e envia ao backend apenas a URL retornada pelo Cloudinary.
+
