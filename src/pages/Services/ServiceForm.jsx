@@ -74,7 +74,7 @@ export default function ServiceForm() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <h2 className="text-xl font-bold mb-4">
-        {isEdit ? "Editar Serviço" : "Novo Serviço"}
+        {isEdit ? "Editar Campo de Estágio" : "Novo Campo de Estágio"}
       </h2>
 
       <form

@@ -26,7 +26,7 @@ export function normalizePermission(value) {
     v.includes("service") ||
     v.includes("serv")
   ) {
-    return PERMISSIONS.UNIDADE_SAUDE;
+    return PERMISSIONS.CAMPO_ESTAGIO;
   }
   return null;
 }
@@ -37,6 +37,21 @@ export function isAuthenticated() {
 
 export function getCurrentPermission() {
   return localStorage.getItem("permission");
+}
+
+export function getCurrentUser() {
+  const userJson = localStorage.getItem("user");
+  if (!userJson) return null;
+  try {
+    return JSON.parse(userJson);
+  } catch {
+    return null;
+  }
+}
+
+export function getCurrentInstitutionId() {
+  const user = getCurrentUser();
+  return user?.education_institute_id || user?.institution_id || null;
 }
 
 export function hasPermission(permissions = []) {

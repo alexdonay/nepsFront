@@ -72,7 +72,7 @@ export default function ServicesList() {
       setServices(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar serviços:", e);
+      console.error("Erro ao carregar campos de estágio:", e);
       setServices([]);
       setTotalRecords(0);
     } finally {
@@ -145,7 +145,7 @@ export default function ServicesList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Serviços</h2>
+        <h2 className="text-xl font-bold m-0">Campos de Estágio</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -155,7 +155,7 @@ export default function ServicesList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Novo Serviço"
+            label="Novo Campo de Estágio"
             icon="pi pi-plus"
             onClick={() => navigate("/services/new")}
           />
@@ -173,7 +173,7 @@ export default function ServicesList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhum serviço encontrado"
+        emptyMessage="Nenhum campo de estágio encontrado"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable body={nameTemplate} />

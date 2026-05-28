@@ -24,25 +24,21 @@ export const API_ROUTES = {
 
   CADASTROS: {
     COURSES: "/v1/courses",
-    COURSES_BY_ID: (id) => `/v1/courses/${id}`,
-    REGIONS: "/v1/regions",
-    REGIONS_BY_ID: (id) => `/v1/regions/${id}`,
-    HEALTH_UNITS: "/v1/health-units",
-    HEALTH_UNITS_BY_ID: (id) => `/v1/health-units/${id}`,
-    INSTITUTIONS: "/v1/cadastros/institutions",
-    INSTITUTIONS_BY_ID: (id) => `/v1/cadastros/institutions/${id}`,
+    INSTITUTIONS: "/v1/education-institutes",
+    INSTITUTIONS_BY_ID: (id) => `/v1/education-institutes/${id}`,
     LOCATIONS: "/v1/cadastros/locations",
     LOCATIONS_BY_ID: (id) => `/v1/cadastros/locations/${id}`,
   },
 
   GESTAO: {
-    STUDENTS: "/v1/gestao/students",
-    STUDENTS_BY_ID: (id) => `/v1/gestao/students/${id}`,
-    STUDENTS_BY_COURSE: (courseId) =>
-      `/v1/gestao/students/by-course/${courseId}`,
+    STUDENTS: "/v1/students",
+    STUDENTS_BY_ID: (id) => `/v1/students/${id}`,
+    STUDENTS_BY_COURSE: (courseId) => `/v1/students/by-course/${courseId}`,
     STUDENTS_BY_INSTITUTE: (instituteId) =>
-      `/v1/gestao/students/by-institute/${instituteId}`,
-    PERIODS: "/v1/gestao/periods",
+      `/v1/students/by-institute/${instituteId}`,
+    PERIODS: "/v1/periods",
+    PERIODS_BY_ID: (id) => `/v1/periods/${id}`,
+    PERIODS_STUDENTS: (id) => `/v1/periods/${id}/students`,
   },
 
   ACOMPANHAMENTO: {
@@ -78,6 +74,7 @@ export const API_ROUTES = {
     BASE: "/v1/rooms",
     BY_ID: (id) => `/v1/rooms/${id}`,
     BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
+    AVAILABLE_SLOTS: "/v1/rooms/available-slots",
     SCHEDULE: (roomId) => `/v1/rooms/${roomId}/schedule`,
     SCHEDULE_STUDENT: (roomId, dayOfWeek, period) =>
       `/v1/rooms/${roomId}/schedule/${dayOfWeek}/${period}/student`,

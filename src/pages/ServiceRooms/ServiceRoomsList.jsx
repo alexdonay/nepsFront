@@ -41,7 +41,7 @@ export default function ServiceRoomsList() {
   return (
     <div className="p-4">
       <div className="flex justify-content-between mb-3">
-        <h2>Salas</h2>
+        <h2>Salas do Campo de Estágio</h2>
         <Button
           label="Nova Sala"
           onClick={() =>

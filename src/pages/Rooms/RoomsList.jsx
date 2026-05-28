@@ -14,7 +14,7 @@ const FILTER_CONFIG = [
     placeholder: "Buscar por nome...",
   },
   {
-    label: "Serviço",
+    label: "Campo de Estágio",
     key: "service_id",
     type: "dropdown",
     options: [],
@@ -92,7 +92,7 @@ export default function RoomsList() {
 
       FILTER_CONFIG.find((f) => f.key === "service_id").options = servicesList;
     } catch (e) {
-      console.error("Erro ao carregar serviços:", e);
+      console.error("Erro ao carregar campos de estágio:", e);
       setServices([]);
     }
   };
@@ -154,7 +154,7 @@ export default function RoomsList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Salas</h2>
+        <h2 className="text-xl font-bold m-0">Salas do Campo de Estágio</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -187,7 +187,7 @@ export default function RoomsList() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="room_capacity" header="Capacidade" />
-        <Column header="Serviço" body={serviceTemplate} />
+        <Column header="Campo de Estágio" body={serviceTemplate} />
         <Column header="Possui Maca" body={gurneyTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>

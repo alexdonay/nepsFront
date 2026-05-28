@@ -46,7 +46,7 @@ export default function Schedule() {
               </div>
               <div className="col-4">
                 <div className="surface-100 p-3 border-round">
-                  <strong>Noite</strong>
+                  <strong>Vespertino</strong>
                   <p>
                     {loc.evening_students?.length || 0}/{loc.evening_slots}
                   </p>

@@ -112,14 +112,16 @@ export default function RoomsForm() {
         </div>
 
         <div className="field col-12 md:col-6">
-          <label className="block text-900 font-medium mb-2">Serviço *</label>
+          <label className="block text-900 font-medium mb-2">
+            Campo de Estágio *
+          </label>
           <Dropdown
             value={form.service_id}
             options={services}
             optionLabel="label"
             optionValue="value"
             onChange={(e) => setForm({ ...form, service_id: e.value })}
-            placeholder="Selecione"
+            placeholder="Selecione um campo de estágio"
             className="w-full"
             required
           />

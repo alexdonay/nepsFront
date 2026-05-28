@@ -1,11 +1,9 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
-import api from "../../services/api";
-import { API_ROUTES } from "../../services/API_routes";
 import { repository } from "../../services/repository";
 
 const FILTER_CONFIG = [
@@ -49,8 +47,6 @@ const FILTER_CONFIG = [
 
 export default function StudentsList() {
   const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [institutions, setInstitutions] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,10 +54,6 @@ export default function StudentsList() {
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadOptions();
-  }, []);
 
   useEffect(() => {
     // Se houver filtros na URL na primeira montagem, abrir drawer automaticamente
@@ -73,37 +65,11 @@ export default function StudentsList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadOptions = async () => {
-    try {
-      const [coursesRes, instRes] = await Promise.all([
-        api.get(API_ROUTES.CADASTROS.COURSES),
-        api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
-      ]);
-      const coursesList = Array.isArray(coursesRes.data)
-        ? coursesRes.data
-        : coursesRes.data.items || [];
-      const instList = Array.isArray(instRes.data)
-        ? instRes.data
-        : instRes.data.items || [];
-
-      setCourses(coursesList);
-      setInstitutions(instList);
-
-      // Atualizar opções nos filtros
-      FILTER_CONFIG.find((f) => f.key === "course_id").options =
-        coursesList.map((c) => ({ label: c.name, value: c.id }));
-      FILTER_CONFIG.find((f) => f.key === "institution_id").options =
-        instList.map((i) => ({ label: i.name, value: i.id }));
-    } catch (e) {
-      console.error("Erro ao carregar opções:", e);
-    }
-  };
-
   const loadStudents = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
-      const params = { page, per_page: rows };
+      const params = { page, per_page: rows, include: "course,institution" };
 
       searchParams.forEach((value, key) => {
         params[key] = value;
@@ -151,6 +117,47 @@ export default function StudentsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
+  const filters = useMemo(() => {
+    const coursesOptions = Array.from(
+      new Map(
+        students
+          .filter((student) => student.course?.id && student.course?.name)
+          .map((student) => [
+            student.course.id,
+            { label: student.course.name, value: student.course.id },
+          ]),
+      ).values(),
+    );
+
+    const institutionsOptions = Array.from(
+      new Map(
+        students
+          .filter(
+            (student) => student.institution?.id && student.institution?.name,
+          )
+          .map((student) => [
+            student.institution.id,
+            {
+              label: student.institution.name,
+              value: student.institution.id,
+            },
+          ]),
+      ).values(),
+    );
+
+    return FILTER_CONFIG.map((filter) => {
+      if (filter.key === "course_id") {
+        return { ...filter, options: coursesOptions };
+      }
+
+      if (filter.key === "institution_id") {
+        return { ...filter, options: institutionsOptions };
+      }
+
+      return filter;
+    });
+  }, [students]);
+
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
@@ -162,13 +169,17 @@ export default function StudentsList() {
   );
 
   const courseTemplate = (rowData) => {
-    const course = courses.find((c) => c.id === rowData.course_id);
-    return course ? course.name : "-";
+    if (rowData.course && typeof rowData.course === "object") {
+      return rowData.course.name;
+    }
+    return rowData.course_name || "-";
   };
 
   const institutionTemplate = (rowData) => {
-    const inst = institutions.find((i) => i.id === rowData.institution_id);
-    return inst ? inst.name : "-";
+    if (rowData.institution && typeof rowData.institution === "object") {
+      return rowData.institution.name;
+    }
+    return rowData.institution_name || "-";
   };
 
   return (
@@ -217,7 +228,7 @@ export default function StudentsList() {
       <FilterDrawer
         visible={filterVisible}
         onHide={() => setFilterVisible(false)}
-        filters={FILTER_CONFIG}
+        filters={filters}
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}
