@@ -70,4 +70,3 @@ Observações:
 - Sempre reinicie o servidor de desenvolvimento após alterar qualquer variável de ambiente.
 - O PDF enviado deve ter no máximo 5MB.
 - O frontend valida o arquivo antes do upload e envia ao backend apenas a URL retornada pelo Cloudinary.
-

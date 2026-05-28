@@ -174,13 +174,10 @@ export default function EnrollmentManageInstitution() {
       const documentUrl = await uploadPdfToCloudinary(documentFile);
 
       // Cadastrar aluno
-      const { data: newStudent } = await api.post(
-        API_ROUTES.GESTAO.STUDENTS,
-        {
-          ...registerForm,
-          document_url: documentUrl,
-        },
-      );
+      const { data: newStudent } = await api.post(API_ROUTES.GESTAO.STUDENTS, {
+        ...registerForm,
+        document_url: documentUrl,
+      });
       const studentId = newStudent.id;
 
       // Vincular ao período
@@ -203,7 +200,9 @@ export default function EnrollmentManageInstitution() {
       await loadData();
     } catch (e) {
       setRegisterError(
-        e.response?.data?.detail || e.message || "Erro ao cadastrar e vincular aluno",
+        e.response?.data?.detail ||
+          e.message ||
+          "Erro ao cadastrar e vincular aluno",
       );
       console.error("Erro ao cadastrar e vincular aluno:", e);
     } finally {
