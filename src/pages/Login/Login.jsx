@@ -25,11 +25,8 @@ export default function Login() {
       // Primeiro tenta obter permissão detalhada do endpoint /users/me
       try {
         const token = localStorage.getItem("token");
-        console.log("token after login:", token);
         const me = await getCurrentUser();
-        console.log("/users/me response:", me);
         const user = me.data;
-        // persistir user para uso em outras partes da UI
         try {
           localStorage.setItem("user", JSON.stringify(user));
         } catch {}
@@ -69,9 +66,7 @@ export default function Login() {
               .map(normalizePermission)
               .find(Boolean);
           }
-        } catch (e) {
-          console.log("Error parsing token:", e);
-        }
+        } catch (e) {}
 
         const candidates = [
           data.permission,

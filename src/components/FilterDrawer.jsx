@@ -37,7 +37,15 @@ export default function FilterDrawer({
         nextValues[filter.key] = filter.type === "boolean" ? false : null;
       }
     });
-    setFilterValues(nextValues);
+    // Evita atualização de estado se os valores não mudaram (prevenindo loop)
+    setFilterValues((prev) => {
+      try {
+        if (JSON.stringify(prev) === JSON.stringify(nextValues)) return prev;
+      } catch (e) {
+        // se stringify falhar, prosseguir com a atualização
+      }
+      return nextValues;
+    });
   }, [filters, initialValues]);
 
   const handleApply = () => {

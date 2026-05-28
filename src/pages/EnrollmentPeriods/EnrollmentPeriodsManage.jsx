@@ -108,6 +108,7 @@ export default function EnrollmentPeriodsManage() {
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [assignedSlots, setAssignedSlots] = useState([]);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [slotFilters, setSlotFilters] = useState({
     room_id: "",
     day_of_week: "",
@@ -327,77 +328,42 @@ export default function EnrollmentPeriodsManage() {
         slot.period,
         managingStudent.id,
       );
-      alert("Aluno vinculado ao horário com sucesso.");
-      // atualizar lista de alunos vinculados e horários disponíveis
+
       await loadPeriodStudents();
-      await loadAvailableSlots(managingStudent);
-      // atualizar dados do aluno gerenciado (slot/assignedSlots)
-      try {
-        const { data } = await repository.students.getById(managingStudent.id);
-        const fullStudent = data || managingStudent;
-        setManagingStudent(fullStudent);
-        if (fullStudent?.slot) {
-          setAssignedSlots(
-            Array.isArray(fullStudent.slot)
-              ? fullStudent.slot
-              : [fullStudent.slot],
-          );
-        } else if (Array.isArray(fullStudent?.slots)) {
-          setAssignedSlots(fullStudent.slots);
-        } else {
-          setAssignedSlots([]);
-        }
-      } catch (e) {
-        console.error("Erro ao atualizar dados do aluno após vincular:", e);
-      }
+      clearManage();
+      navigate(`/periods/${id}/manage`);
     } catch (e) {
       console.error("Erro ao vincular aluno ao horário:", e);
-      alert("Falha ao vincular aluno ao horário.");
     }
   };
 
-  const handleRemoveStudentFromSlot = async (slot) => {
-    if (!managingStudent || !slot) return;
-    if (
-      !window.confirm(
-        "Tem certeza que deseja desvincular o aluno deste horário?",
-      )
-    ) {
+  const handleRemoveStudentFromSlot = async () => {
+    if (isRemoving) {
       return;
     }
+    if (!managingStudent) {
+      return;
+    }
+    const periodId = period?.id || id;
+    if (!periodId) {
+      console.error("periodId não definido");
+      return;
+    }
+
+    setIsRemoving(true);
     try {
-      await repository.roomSchedules.removeStudent(
-        slot.room_id,
-        slot.day_of_week || slot.dayOfWeek,
-        slot.period,
+      const response = await repository.periods.removeStudent(
+        periodId,
         managingStudent.id,
       );
-      alert("Aluno desvinculado com sucesso.");
-      // atualizar lista de alunos vinculados e horários disponíveis
-      await loadPeriodStudents();
-      await loadAvailableSlots(managingStudent);
-      // atualizar dados do aluno gerenciado (slot/assignedSlots)
-      try {
-        const { data } = await repository.students.getById(managingStudent.id);
-        const fullStudent = data || managingStudent;
-        setManagingStudent(fullStudent);
-        if (fullStudent?.slot) {
-          setAssignedSlots(
-            Array.isArray(fullStudent.slot)
-              ? fullStudent.slot
-              : [fullStudent.slot],
-          );
-        } else if (Array.isArray(fullStudent?.slots)) {
-          setAssignedSlots(fullStudent.slots);
-        } else {
-          setAssignedSlots([]);
-        }
-      } catch (e) {
-        console.error("Erro ao atualizar dados do aluno após desvincular:", e);
-      }
+      setIsRemoving(false);
+      clearManage();
+      navigate(`/periods/${id}/manage`);
     } catch (e) {
-      console.error("Erro ao desvincular aluno do horário:", e);
-      alert("Falha ao desvincular aluno do horário.");
+      console.error("❌ Erro ao desvincular:", e);
+      console.error("Status:", e.response?.status);
+      console.error("Dados:", e.response?.data);
+      setIsRemoving(false);
     }
   };
 
@@ -697,8 +663,10 @@ export default function EnrollmentPeriodsManage() {
                     <Button
                       label="Desvincular"
                       icon="pi pi-unlink"
-                      onClick={() => handleRemoveStudentFromSlot(s)}
+                      onClick={() => handleRemoveStudentFromSlot()}
                       severity="warning"
+                      disabled={isRemoving}
+                      loading={isRemoving}
                     />
                   ) : (
                     <Button

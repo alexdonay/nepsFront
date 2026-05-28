@@ -22,15 +22,10 @@ export const API_ROUTES = {
     BY_ID: (id) => `/v1/courses/${id}`,
   },
 
-  CADASTROS: {
-    COURSES: "/v1/courses",
-    COURSES_BY_ID: (id) => `/v1/courses/${id}`,
-    REGIONS: "/v1/regions",
-    REGIONS_BY_ID: (id) => `/v1/regions/${id}`,
-    HEALTH_UNITS: "/v1/health-units",
-    HEALTH_UNITS_BY_ID: (id) => `/v1/health-units/${id}`,
-    INSTITUTIONS: "/v1/cadastros/institutions",
-    INSTITUTIONS_BY_ID: (id) => `/v1/cadastros/institutions/${id}`,
+CADASTROS: {
+    // ... other endpoints
+    INSTITUTIONS: "/v1/education-institutes",
+    INSTITUTIONS_BY_ID: (id) => `/v1/education-institutes/${id}`,
     LOCATIONS: "/v1/cadastros/locations",
     LOCATIONS_BY_ID: (id) => `/v1/cadastros/locations/${id}`,
   },
