@@ -75,6 +75,8 @@ export const repository = {
   rooms: {
     get: (params = {}) => api.get(API_ROUTES.ROOMS.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.ROOMS.BY_ID(id)),
+    getAvailableSlots: (params = {}) =>
+      api.get(API_ROUTES.ROOMS.AVAILABLE_SLOTS, { params }),
     post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),
     put: (id, data) => api.patch(API_ROUTES.ROOMS.BY_ID(id), data),
     delete: (id) => api.delete(API_ROUTES.ROOMS.BY_ID(id)),
@@ -99,16 +101,34 @@ export const repository = {
     post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
     put: (id, data) => api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), data),
     delete: (id) => api.delete(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
-    byCourse: (courseId) =>
-      api.get(API_ROUTES.GESTAO.STUDENTS_BY_COURSE(courseId)),
-    byInstitute: (instituteId) =>
-      api.get(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE(instituteId)),
+    byCourse: (courseId, params = {}) =>
+      api.get(API_ROUTES.GESTAO.STUDENTS_BY_COURSE(courseId), { params }),
+    byInstitute: (instituteId, params = {}) =>
+      api.get(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE(instituteId), {
+        params,
+      }),
   },
 
   // Períodos (se existir no backend)
   periods: {
-    get: (params = {}) => api.get("/v1/periods", { params }),
-    post: (data) => api.post("/v1/periods", data),
+    get: (params = {}) => api.get(API_ROUTES.GESTAO.PERIODS, { params }),
+    getById: (id, params = {}) =>
+      api.get(API_ROUTES.GESTAO.PERIODS_BY_ID(id), { params }),
+    findOne: (id) => api.get(API_ROUTES.GESTAO.PERIODS_BY_ID(id)),
+    post: (data) => api.post(API_ROUTES.GESTAO.PERIODS, data),
+    put: (id, data) => api.put(API_ROUTES.GESTAO.PERIODS_BY_ID(id), data),
+    patch: (id, data) => api.patch(API_ROUTES.GESTAO.PERIODS_BY_ID(id), data),
+    delete: (id) => api.delete(API_ROUTES.GESTAO.PERIODS_BY_ID(id)),
+    getStudents: (id, params = {}) =>
+      api.get(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), { params }),
+    addStudent: (id, studentId) =>
+      api.post(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), {
+        student_id: studentId,
+      }),
+    removeStudent: (id, studentId) =>
+      api.delete(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), {
+        data: { student_id: studentId },
+      }),
   },
 
   // Services

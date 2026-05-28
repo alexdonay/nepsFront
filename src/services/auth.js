@@ -20,9 +20,14 @@ export const confirmReset = (hash, newPassword) =>
   });
 
 export const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("permission");
   try {
+    localStorage.removeItem("token");
+    localStorage.removeItem("permission");
+    // older code used 'user' key; some parts use 'currentUser'
+    localStorage.removeItem("user");
     localStorage.removeItem("currentUser");
-  } catch (e) {}
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.debug("logout localStorage cleanup failed", e);
+  }
 };

@@ -94,7 +94,7 @@ export default function UserForm() {
   const profileOptions = [
     { label: "Administrador", value: PERMISSIONS.ADMIN },
     { label: "Instituição de Ensino", value: PERMISSIONS.INSTITUICAO_ENSINO },
-    { label: "Serviço", value: PERMISSIONS.UNIDADE_SAUDE },
+    { label: "Campo de Estágio", value: PERMISSIONS.CAMPO_ESTAGIO },
   ];
 
   const handleSubmit = async (e) => {
@@ -129,8 +129,8 @@ export default function UserForm() {
             selectedInstitution.id ?? selectedInstitution;
         }
 
-        if (profile === PERMISSIONS.UNIDADE_SAUDE) {
-          if (!selectedUnit) throw new Error("Selecione o serviço");
+        if (profile === PERMISSIONS.CAMPO_ESTAGIO) {
+          if (!selectedUnit) throw new Error("Selecione o campo de estágio");
           const unitId = selectedUnit.id ?? selectedUnit;
           payload.health_unit_id = unitId;
           payload.service_id = unitId;
@@ -237,16 +237,16 @@ export default function UserForm() {
           </div>
         )}
 
-        {profile === PERMISSIONS.UNIDADE_SAUDE && (
+        {profile === PERMISSIONS.CAMPO_ESTAGIO && (
           <div>
-            <label className="block mb-1">Serviço</label>
+            <label className="block mb-1">Campo de Estágio</label>
             <Dropdown
               value={selectedUnit ?? null}
               options={units}
               onChange={(e) => setSelectedUnit(e.value)}
               optionLabel="name"
               optionValue="id"
-              placeholder="Selecione um serviço"
+              placeholder="Selecione um campo de estágio"
               className="w-full"
             />
           </div>

@@ -32,7 +32,11 @@ export default function ServiceRoomForm() {
 
   return (
     <div className="p-4">
-      <h2>{isEdit ? "Editar Sala" : "Nova Sala"}</h2>
+      <h2>
+        {isEdit
+          ? "Editar Sala do Campo de Estágio"
+          : "Nova Sala do Campo de Estágio"}
+      </h2>
       <div className="field mb-3">
         <label>Nome</label>
         <InputText

@@ -263,7 +263,7 @@ export const API_ROUTES = {
    - Adiciona token Bearer automaticamente
    ↓
 5. Backend API
-   GET /api/v1/gestao/students
+   GET /api/v1/students
    ↓
 6. Response com dados
    ↓
@@ -497,7 +497,7 @@ api.interceptors.request.use((config) => {
 ### 5. Request final
 
 ```
-GET http://localhost:8000/api/v1/gestao/students
+GET http://localhost:8000/api/v1/students
 Authorization: Bearer eyJhbGc...
 ```
 

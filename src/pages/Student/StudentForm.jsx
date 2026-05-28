@@ -4,15 +4,22 @@ import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CpfInput from "../../components/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
 import PhoneInput from "../../components/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
+import {
+  uploadPdfToCloudinary,
+  validatePdfFile,
+} from "../../services/cloudinary";
+import { repository } from "../../services/repository";
 
 export default function StudentForm() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const periodId = searchParams.get("periodId");
   const [form, setForm] = useState({
     name: "",
     cpf: "",
@@ -21,7 +28,9 @@ export default function StudentForm() {
     course_id: null,
     semester: null,
     institution_id: null,
+    document_url: "",
   });
+  const [documentFile, setDocumentFile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [error, setError] = useState("");
@@ -57,8 +66,37 @@ export default function StudentForm() {
   const loadStudent = async () => {
     try {
       const { data } = await api.get(API_ROUTES.GESTAO.STUDENTS_BY_ID(id));
-      setForm(data);
+      setForm({
+        name: data?.name || "",
+        cpf: data?.cpf || "",
+        email: data?.email || "",
+        phone: data?.phone || "",
+        course_id: data?.course_id ?? null,
+        semester: data?.semester ?? null,
+        institution_id: data?.institution_id ?? null,
+        document_url: data?.document_url || "",
+      });
     } catch (e) {}
+  };
+
+  const handleDocumentChange = (e) => {
+    const file = e.target.files?.[0] || null;
+
+    if (!file) {
+      setDocumentFile(null);
+      return;
+    }
+
+    const validationError = validatePdfFile(file);
+    if (validationError) {
+      setError(validationError);
+      setDocumentFile(null);
+      e.target.value = "";
+      return;
+    }
+
+    setError("");
+    setDocumentFile(file);
   };
 
   const handleSubmit = async (e) => {
@@ -66,11 +104,38 @@ export default function StudentForm() {
     setLoading(true);
     setError("");
     try {
-      if (id) await api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), form);
-      else await api.post(API_ROUTES.GESTAO.STUDENTS, form);
-      navigate("/students");
+      let documentUrl = form.document_url || "";
+
+      if (!id && !documentFile) {
+        throw new Error("Envie o PDF obrigatório do aluno.");
+      }
+
+      if (documentFile) {
+        documentUrl = await uploadPdfToCloudinary(documentFile);
+      }
+
+      const payload = {
+        ...form,
+        document_url: documentUrl,
+      };
+
+      let studentId = id;
+      if (id) {
+        await api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), payload);
+      } else {
+        const response = await api.post(API_ROUTES.GESTAO.STUDENTS, payload);
+        studentId = response.data?.id;
+      }
+
+      // Se tem periodId, vincular o aluno ao período
+      if (periodId && studentId) {
+        await repository.periods.addStudent(periodId, studentId);
+        console.log("✅ Aluno cadastrado e vinculado ao período com sucesso");
+      }
+
+      navigate("/periods");
     } catch (err) {
-      setError(err.response?.data?.detail || "Erro ao salvar");
+      setError(err.response?.data?.detail || err.message || "Erro ao salvar");
     } finally {
       setLoading(false);
     }
@@ -79,6 +144,14 @@ export default function StudentForm() {
   return (
     <div className="surface-card p-4 shadow-2 border-round w-full max-w-md">
       <h2 className="text-xl font-bold mb-3">{id ? "Editar" : "Novo"} Aluno</h2>
+
+      {periodId && (
+        <Message
+          severity="info"
+          text="Este aluno será automaticamente vinculado ao período."
+          className="mb-3"
+        />
+      )}
 
       {error && <Message severity="error" text={error} className="mb-3" />}
 
@@ -102,18 +175,44 @@ export default function StudentForm() {
           />
         </div>
 
-        <EmailInput
-          label="Email"
-          value={form.email}
-          onChange={(value) => setForm({ ...form, email: value })}
-          required
-        />
+        <div className="field mb-3">
+          <EmailInput
+            value={form.email}
+            onChange={(value) => setForm({ ...form, email: value })}
+            required
+          />
+        </div>
 
-        <PhoneInput
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          label="Telefone"
-        />
+        <div className="field mb-3">
+          <PhoneInput
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label className="block mb-2">PDF do documento {id ? "" : "*"}</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            className="w-full"
+            onChange={handleDocumentChange}
+            required={!id}
+          />
+          <small className="text-600 block mt-1">
+            PDF obrigatório, máximo 5MB.
+          </small>
+          {documentFile && (
+            <small className="block mt-2 text-green-700">
+              Arquivo selecionado: {documentFile.name}
+            </small>
+          )}
+          {id && form.document_url && !documentFile && (
+            <small className="block mt-2 text-600">
+              Documento atual já salvo no sistema.
+            </small>
+          )}
+        </div>
 
         <div className="field mb-3">
           <label>Curso *</label>
