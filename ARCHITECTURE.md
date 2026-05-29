@@ -16,7 +16,7 @@
 
 ## 🎯 Visão Geral
 
-**NEPS Frontend** é uma aplicação web desenvolvida em **React** com **Vite**, projetada para gerenciar salas de aula, horários, usuários, instituições, cursos e diversos recursos educacionais. A aplicação utiliza uma arquitetura modular com separação clara entre camadas de apresentação, lógica de negócio e comunicação com API.
+**NEPS Frontend** é uma aplicação web desenvolvida em **React** com **Vite**, projetada para gerenciar salas de aula, horários, usuários, instituições, disciplinas e diversos recursos educacionais. A aplicação utiliza uma arquitetura modular com separação clara entre camadas de apresentação, lógica de negócio e comunicação com API.
 
 **Versão**: 1.0.0  
 **Ambiente**: React 19.2.6 + Vite 8.0.11  
@@ -44,7 +44,7 @@ nepsFront/
 │   │   └── Phone/
 │   ├── pages/                     # Páginas principais
 │   │   ├── AccessDenied/          # Página de acesso negado
-│   │   ├── Courses/               # Gestão de cursos
+│   │   ├── Courses/               # Gestão de disciplinas
 │   │   │   ├── CoursesList.jsx
 │   │   │   └── CursesForm.tsx
 │   │   ├── EnrollmentPeriods/     # Períodos de matrícula
@@ -343,7 +343,7 @@ Verificar se usuário está autenticado antes de acessar uma página.
 | `/students/:id`                | `StudentForm.jsx`          | Editar aluno          |
 | `/users`                       | `UsersList.jsx`            | Lista de usuários     |
 | `/institutions`                | `InstitutionsList.jsx`     | Lista de instituições |
-| `/courses`                     | `CoursesList.jsx`          | Lista de cursos       |
+| `/courses`                     | `CoursesList.jsx`          | Lista de disciplinas       |
 | `/rooms`                       | `RoomsList.jsx`            | Lista de salas        |
 | `/rooms/new`                   | `RoomsForm.jsx`            | Nova sala             |
 | `/rooms/:id`                   | `RoomsForm.jsx`            | Editar sala           |

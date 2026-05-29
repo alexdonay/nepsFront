@@ -261,7 +261,7 @@ Se retornar apenas IDs, o frontend fará requisições adicionais para obter os 
 
 Ao listar alunos para a instituição de ensino, o backend deve considerar o escopo da instituição do usuário autenticado e devolver apenas alunos pertencentes àquela instituição.
 
-O endpoint deve suportar `include=course,institution` para que o frontend consiga renderizar nome do curso e nome da instituição sem chamadas extras.
+O endpoint deve suportar `include=course,institution` para que o frontend consiga renderizar nome do disciplina e nome da instituição sem chamadas extras.
 
 ### 5.4 Vincular aluno ao período
 
@@ -297,4 +297,4 @@ Considera-se a implementação concluída quando:
 - a tela administrativa de gestão do período mostra todos os alunos vinculados;
 - é possível vincular um aluno ao período;
 - é possível desvincular um aluno do período;
-- o frontend consegue obter curso e instituição do aluno sem request adicional na listagem de alunos.
+- o frontend consegue obter disciplina e instituição do aluno sem request adicional na listagem de alunos.

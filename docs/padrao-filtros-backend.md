@@ -109,7 +109,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 | `is_active` | boolean | exact | `?is_active=true` |
 | `priority` | integer | exact | `?priority=0` |
 
-### 3.4 Cursos — `GET /v1/courses`
+### 3.4 Disciplinas — `GET /v1/courses`
 
 | Parâmetro | Tipo | Operador | Exemplo |
 |---|---|---|---|
@@ -252,7 +252,7 @@ GET /v1/periods?
 
 5. **Limite de `_in`** — O operador `_in` deve aceitar no máximo 100 valores por requisição.
 
-6. **Cache de opções** — Para filtros `Dropdown` que carregam opções de outras tabelas (cursos, regiões, instituições), endpoints separados e cacheados devem ser mantidos.
+6. **Cache de opções** — Para filtros `Dropdown` que carregam opções de outras tabelas (disciplinas, regiões, instituições), endpoints separados e cacheados devem ser mantidos.
 
 ## 7. Sugestões de Endpoints de Apoio
 
@@ -260,8 +260,8 @@ Para popular os `Dropdown` dos filtros, o frontend precisa de endpoints que reto
 
 | Rota | Uso no Filtro | Já Existe |
 |---|---|---|
-| `GET /v1/courses` | Filtro de curso (Alunos) | Sim |
-| `GET /v1/regions` | Filtro de região (Cursos, Serviços) | Sim |
+| `GET /v1/courses` | Filtro de disciplina (Alunos) | Sim |
+| `GET /v1/regions` | Filtro de região (Disciplinas, Serviços) | Sim |
 | `GET /v1/services` | Filtro de serviço (Salas) | Sim |
 | `GET /v1/cadastros/institutions` | Filtro de instituição (Alunos) | Sim |
 | `GET /v1/users/roles` | Filtro de perfil (Usuários) | **Não** — criar |
