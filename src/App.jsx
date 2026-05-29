@@ -7,6 +7,7 @@ import CoursesForm from "./pages/Courses/CoursesForm";
 import CoursesList from "./pages/Courses/CoursesList";
 import EnrollmentManageInstitution from "./pages/EnrollmentPeriods/EnrollmentManageInstitution";
 import EnrollmentPeriodsForm from "./pages/EnrollmentPeriods/EnrollmentPeriodsForm";
+import EnrollmentPeriodsHistory from "./pages/EnrollmentPeriods/EnrollmentPeriodsHistory";
 import EnrollmentPeriodsList from "./pages/EnrollmentPeriods/EnrollmentPeriodsList";
 import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriodsManage";
 import Home from "./pages/Home/Home";
@@ -417,6 +418,16 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <EnrollmentPeriodsManage />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/periods/:id/history"
+        element={
+          <PrivateRoute permissions={ALL_PERMISSIONS}>
+            <Layout>
+              <EnrollmentPeriodsHistory />
             </Layout>
           </PrivateRoute>
         }

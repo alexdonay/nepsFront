@@ -41,6 +41,10 @@ export const API_ROUTES = {
     PERIODS_STUDENTS: (id) => `/v1/periods/${id}/students`,
   },
 
+  HISTORIES: {
+    BY_PERIOD: (periodId) => `/v1/histories/by-period/${periodId}`,
+  },
+
   ACOMPANHAMENTO: {
     LOCATIONS_AGENDA: "/v1/acompanhamento/locations-agenda",
   },
