@@ -221,6 +221,14 @@ export default function EnrollmentPeriodsList() {
           header="Ações"
           body={(row) => (
             <div className="flex gap-2">
+              <Button
+                icon="pi pi-clock"
+                rounded
+                text
+                size="small"
+                title="Ver histórico do período"
+                onClick={() => navigate(`/periods/${row.id}/history`)}
+              />
               {currentPermission === PERMISSIONS.ADMIN && (
                 <Button
                   icon="pi pi-users"

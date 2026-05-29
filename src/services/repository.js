@@ -131,6 +131,15 @@ export const repository = {
       }),
   },
 
+  histories: {
+    getByPeriod: (periodId, params = {}) =>
+      api.get(API_ROUTES.HISTORIES.BY_PERIOD(periodId), { params }),
+    getByRoom: (roomId, params = {}) =>
+      api.get(API_ROUTES.HISTORIES.BY_ROOM(roomId), { params }),
+    getBySchedule: (scheduleId, params = {}) =>
+      api.get(API_ROUTES.HISTORIES.BY_SCHEDULE(scheduleId), { params }),
+  },
+
   // Services
   services: {
     get: (params = {}) => api.get(API_ROUTES.SERVICES.BASE, { params }),
