@@ -85,7 +85,6 @@ export default function ServiceScheduleAssignment() {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
-
   const filtersArray = useMemo(
     () => Array.from(searchParams.entries()).length,
     [searchParams],
@@ -338,6 +337,18 @@ export default function ServiceScheduleAssignment() {
         </div>
 
         <div className="assignment-actions">
+          <Button
+            label="Histórico"
+            icon="pi pi-clock"
+            outlined
+            onClick={() =>
+              navigate(
+                isRoomContext
+                  ? `/rooms/${roomId}/schedules/${dayOfWeek}/${period}/history`
+                  : `/service-rooms/${roomId}/schedules/${dayOfWeek}/${period}/history`,
+              )
+            }
+          />
           <Button
             label="Filtros"
             icon="pi pi-filter"

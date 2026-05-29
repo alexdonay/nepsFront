@@ -43,6 +43,8 @@ export const API_ROUTES = {
 
   HISTORIES: {
     BY_PERIOD: (periodId) => `/v1/histories/by-period/${periodId}`,
+    BY_ROOM: (roomId) => `/v1/histories/by-room/${roomId}`,
+    BY_SCHEDULE: (scheduleId) => `/v1/histories/by-schedule/${scheduleId}`,
   },
 
   ACOMPANHAMENTO: {

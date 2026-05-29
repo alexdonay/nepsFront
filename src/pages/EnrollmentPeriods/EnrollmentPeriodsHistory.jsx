@@ -1,9 +1,25 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { repository } from "../../services/repository";
+
+const DAY_LABELS = {
+  MONDAY: "Segunda-feira",
+  TUESDAY: "Terça-feira",
+  WEDNESDAY: "Quarta-feira",
+  THURSDAY: "Quinta-feira",
+  FRIDAY: "Sexta-feira",
+  SATURDAY: "Sábado",
+  SUNDAY: "Domingo",
+};
+
+const PERIOD_LABELS = {
+  MORNING: "Manhã",
+  AFTERNOON: "Tarde",
+  EVENING: "Vespertino",
+};
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -13,7 +29,7 @@ const formatDate = (value) => {
 };
 
 export default function EnrollmentPeriodsHistory() {
-  const { id } = useParams();
+  const { id, roomId, dayOfWeek, period } = useParams();
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,20 +37,70 @@ export default function EnrollmentPeriodsHistory() {
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
   const [periodName, setPeriodName] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const [scheduleLabel, setScheduleLabel] = useState("");
   const [error, setError] = useState("");
+  const isScheduleHistory = Boolean(roomId && dayOfWeek && period);
+  const isRoomHistory = Boolean(roomId && !isScheduleHistory);
+  const currentId = roomId || id;
+
+  const title = useMemo(() => {
+    if (isScheduleHistory) return "Histórico do Schedule";
+    if (isRoomHistory) return "Histórico da Sala";
+    return "Histórico do Período";
+  }, [isRoomHistory, isScheduleHistory]);
 
   const loadHistory = useCallback(async () => {
-    if (!id) return;
+    if (!currentId) return;
 
     try {
       setLoading(true);
       setError("");
 
       const page = Math.floor(first / rows) + 1;
-      const { data } = await repository.histories.getByPeriod(id, {
-        page,
-        per_page: rows,
-      });
+      let data;
+
+      if (isScheduleHistory) {
+        const { data: scheduleData } = await repository.roomSchedules.get(
+          roomId,
+        );
+        const days = scheduleData?.days || [];
+        const currentDay = days.find((item) => item.dayOfWeek === dayOfWeek);
+        const currentPeriod = currentDay?.periods?.find(
+          (item) => item.period === period,
+        );
+        const scheduleId =
+          currentPeriod?.id ??
+          currentPeriod?.schedule_id ??
+          currentPeriod?.scheduleId ??
+          null;
+
+        if (!scheduleId) {
+          throw new Error("schedule_id ausente na agenda da sala");
+        }
+
+        setScheduleLabel(
+          `${DAY_LABELS[dayOfWeek] || dayOfWeek} • ${PERIOD_LABELS[period] || period}`,
+        );
+
+        const response = await repository.histories.getBySchedule(scheduleId, {
+          page,
+          per_page: rows,
+        });
+        data = response.data;
+      } else if (isRoomHistory) {
+        const response = await repository.histories.getByRoom(currentId, {
+          page,
+          per_page: rows,
+        });
+        data = response.data;
+      } else {
+        const response = await repository.histories.getByPeriod(currentId, {
+          page,
+          per_page: rows,
+        });
+        data = response.data;
+      }
 
       const items = data?.items || [];
       setHistory(items);
@@ -42,15 +108,22 @@ export default function EnrollmentPeriodsHistory() {
 
       if (items.length > 0) {
         setPeriodName(items[0]?.period?.name || "");
+        setRoomName(items[0]?.room_id ? `Sala ${items[0].room_id}` : "");
       }
     } catch (err) {
       setHistory([]);
       setTotalRecords(0);
-      setError("Não foi possível carregar o histórico deste período.");
+      setError(
+        isScheduleHistory
+          ? "Não foi possível carregar o histórico deste schedule."
+          : isRoomHistory
+          ? "Não foi possível carregar o histórico desta sala."
+          : "Não foi possível carregar o histórico deste período.",
+      );
     } finally {
       setLoading(false);
     }
-  }, [id, first, rows]);
+  }, [currentId, dayOfWeek, first, isRoomHistory, isScheduleHistory, period, roomId, rows]);
 
   useEffect(() => {
     loadHistory();
@@ -68,16 +141,28 @@ export default function EnrollmentPeriodsHistory() {
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3 gap-3">
         <div>
-          <h2 className="text-xl font-bold m-0">Histórico do Período</h2>
+          <h2 className="text-xl font-bold m-0">{title}</h2>
           <p className="text-600 m-0 mt-2">
-            {periodName ? `Período: ${periodName}` : `Período ID: ${id}`}
+            {isScheduleHistory
+              ? scheduleLabel || `${roomId} • ${dayOfWeek} • ${period}`
+              : isRoomHistory
+              ? roomName || `Sala ID: ${roomId}`
+              : periodName || `Período ID: ${id}`}
           </p>
         </div>
         <Button
           label="Voltar"
           icon="pi pi-arrow-left"
           severity="secondary"
-          onClick={() => navigate("/periods")}
+          onClick={() =>
+            navigate(
+              isScheduleHistory
+                ? `/rooms/${roomId}/schedules/${dayOfWeek}/${period}`
+                : isRoomHistory
+                  ? `/rooms/${roomId}/schedules`
+                  : "/periods",
+            )
+          }
         />
       </div>
 
@@ -109,6 +194,18 @@ export default function EnrollmentPeriodsHistory() {
           header="CPF"
           body={(row) => row?.student?.cpf || "-"}
         />
+        <Column
+          field="room_id"
+          header="Sala"
+          body={(row) => row?.room_id || "-"}
+        />
+        {isScheduleHistory && (
+          <Column
+            field="schedule_id"
+            header="Schedule"
+            body={(row) => row?.schedule_id || "-"}
+          />
+        )}
         <Column
           field="period.name"
           header="Período"

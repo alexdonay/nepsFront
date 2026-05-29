@@ -130,6 +130,19 @@ export default function ServiceSchedulesList() {
         </div>
 
         <Button
+          label="Histórico"
+          icon="pi pi-clock"
+          outlined
+          onClick={() =>
+            navigate(
+              isRoomContext
+                ? `/rooms/${roomId}/history`
+                : `/service-rooms/${roomId}/history`,
+            )
+          }
+        />
+
+        <Button
           label="Atualizar"
           icon="pi pi-refresh"
           outlined

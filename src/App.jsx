@@ -251,6 +251,17 @@ export default function App() {
       />
 
       <Route
+        path="/rooms/:roomId/history"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <EnrollmentPeriodsHistory />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/rooms/:roomId/schedules/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -267,6 +278,17 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceScheduleAssignment />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/rooms/:roomId/schedules/:dayOfWeek/:period/history"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <EnrollmentPeriodsHistory />
             </Layout>
           </PrivateRoute>
         }
@@ -350,6 +372,17 @@ export default function App() {
       />
 
       <Route
+        path="/service-rooms/:roomId/history"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <EnrollmentPeriodsHistory />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/service-rooms/:roomId/schedules/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -366,6 +399,17 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <ServiceScheduleAssignment />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/service-rooms/:roomId/schedules/:dayOfWeek/:period/history"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <EnrollmentPeriodsHistory />
             </Layout>
           </PrivateRoute>
         }
