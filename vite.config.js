@@ -5,7 +5,7 @@ const useHttps = process.env.VITE_DEV_HTTPS === 'true'
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/',
   server: {
     host: true,
     https: useHttps
