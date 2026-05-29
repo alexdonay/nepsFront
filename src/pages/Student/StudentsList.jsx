@@ -26,7 +26,7 @@ const FILTER_CONFIG = [
     placeholder: "Buscar por email...",
   },
   {
-    label: "Curso",
+    label: "Disciplina",
     key: "course_id",
     type: "dropdown",
     options: [],
@@ -219,7 +219,7 @@ export default function StudentsList() {
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />
         <Column field="email" header="Email" />
-        <Column header="Curso" body={courseTemplate} />
+        <Column header="Disciplina" body={courseTemplate} />
         <Column field="semester" header="Semestre" />
         <Column header="Instituição" body={institutionTemplate} />
         <Column body={actionsTemplate} header="Ações" />

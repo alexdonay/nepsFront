@@ -215,7 +215,7 @@ export default function StudentForm() {
         </div>
 
         <div className="field mb-3">
-          <label>Curso *</label>
+          <label>Disciplina *</label>
           <Dropdown
             value={form.course_id}
             options={courses}

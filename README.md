@@ -40,7 +40,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 Este projeto utiliza um componente compartilhado de filtros em drawer nas telas de listagem.
 
 - Componente principal: `src/components/FilterDrawer.jsx` — drawer reutilizável que renderiza campos a partir de uma configuração (`filters`).
-- Componente específico de cursos: `src/pages/Courses/CoursesFilter.jsx` — encapsula as opções e configurações de filtro para a listagem de cursos.
+- Componente específico de disciplinas: `src/pages/Courses/CoursesFilter.jsx` — encapsula as opções e configurações de filtro para a listagem de disciplinas.
 - Roles de usuário suportados pelo backend: `admin`, `education_institute` e `service`.
 - Convenções de query params:
   - Campos textuais usam sufixo `_like` por padrão (ex.: `name_like=joao`).

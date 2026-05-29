@@ -33,7 +33,7 @@ export const repository = {
     delete: (id) => api.delete(API_ROUTES.USERS.BY_ID(id)),
   },
 
-  // Cursos
+  // Curso
   courses: {
     get: (params = {}) => api.get(API_ROUTES.COURSES.BASE, { params }),
     getById: (id) => api.get(API_ROUTES.COURSES.BY_ID(id)),

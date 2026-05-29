@@ -59,7 +59,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Componente PrimeReact | Uso                                          | Casos                                 |
 | --------------------- | -------------------------------------------- | ------------------------------------- |
 | `InputText`           | Filtro textual (busca por nome, email, etc.) | nome, email, código                   |
-| `Dropdown`            | Seleção única de valor pré-definido          | status, perfil, região, curso         |
+| `Dropdown`            | Seleção única de valor pré-definido          | status, perfil, região, disciplina         |
 | `MultiSelect`         | Seleção múltipla                             | múltiplos status, múltiplas regiões   |
 | `Calendar`            | Data única ou intervalo de datas             | período de inscrição, data de criação |
 | `Checkbox`            | Booleano                                     | possui maca, prioritário              |
@@ -74,7 +74,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Nome        | `InputText` (contains) | livre                            |
 | CPF         | `InputText` (exact)    | livre                            |
 | Email       | `InputText` (contains) | livre                            |
-| Curso       | `Dropdown` (single)    | carregado da API de cursos       |
+| Disciplina       | `Dropdown` (single)    | carregado da API de disciplinas       |
 | Instituição | `Dropdown` (single)    | carregado da API de instituições |
 | Semestre    | `InputNumber` (exact)  | livre                            |
 
@@ -96,7 +96,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Status     | `Dropdown` (single)    | Ativo, Inativo               |
 | Prioridade | `Dropdown` (single)    | Prioritário, Não prioritário |
 
-### 5.4 Cursos (`/courses`)
+### 5.4 Disciplinas (`/courses`)
 
 | Campo  | Tipo                   | Opções                      |
 | ------ | ---------------------- | --------------------------- |
@@ -307,7 +307,7 @@ Notas de implementação:
 
 - O componente `FilterDrawer` mapeia tipos para chaves padrão (ex.: `text` -> `{key}_like`, `multiselect` -> `{key}_in`). Se um filtro necessitar de outro nome, defina `queryKey` na configuração do filtro.
 - As páginas de listagem atualmente serializam arrays para CSV ao montar `searchParams` (ex.: `value.join(',')`). Caso prefira centralizar a serialização, é possível alterar `FilterDrawer` para retornar strings em vez de arrays.
-- O componente de filtro dos cursos está em `src/pages/Courses/CoursesFilter.jsx` e recebe `regions` via prop para montar as opções do `Dropdown`.
+- O componente de filtro dos disciplinas está em `src/pages/Courses/CoursesFilter.jsx` e recebe `regions` via prop para montar as opções do `Dropdown`.
 
 Exemplo de serialização antes de atualizar os query params:
 

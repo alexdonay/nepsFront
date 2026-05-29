@@ -156,7 +156,7 @@ export default function EnrollmentManageInstitution() {
       const coursesList = Array.isArray(data) ? data : data.items || [];
       setCourses(coursesList);
     } catch (e) {
-      console.error("Erro ao carregar cursos:", e);
+      console.error("Erro ao carregar disciplinas:", e);
     }
   };
 
@@ -257,7 +257,7 @@ export default function EnrollmentManageInstitution() {
                   <Column field="cpf" header="CPF" />
                   <Column
                     field="course"
-                    header="Curso"
+                    header="Disciplina"
                     body={(row) => row.course?.name || row.course_name || "-"}
                   />
                   <Column
@@ -436,7 +436,7 @@ export default function EnrollmentManageInstitution() {
           )}
 
           <div className="field mb-4">
-            <label className="font-medium mb-2 block">Curso *</label>
+            <label className="font-medium mb-2 block">Disciplina *</label>
             <Dropdown
               value={registerForm.course_id}
               options={courses.map((course) => ({
@@ -446,7 +446,7 @@ export default function EnrollmentManageInstitution() {
               onChange={(e) =>
                 setRegisterForm({ ...registerForm, course_id: e.value })
               }
-              placeholder="Selecione um curso"
+              placeholder="Selecione um disciplina"
               required
             />
           </div>

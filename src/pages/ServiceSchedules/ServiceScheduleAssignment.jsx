@@ -44,7 +44,7 @@ const STUDENT_FILTERS = [
     type: "text",
     placeholder: "Buscar por email...",
   },
-  { label: "Curso", key: "course_id", type: "dropdown", options: [] },
+  { label: "Disciplina", key: "course_id", type: "dropdown", options: [] },
   {
     label: "Instituição",
     key: "institution_id",
@@ -399,7 +399,7 @@ export default function ServiceScheduleAssignment() {
                 sortable
               />
               <Column field="cpf" header="CPF" />
-              <Column header="Curso" body={courseTemplate} />
+              <Column header="Disciplina" body={courseTemplate} />
               <Column header="Instituição" body={institutionTemplate} />
               <Column field="semester" header="Semestre" />
             </DataTable>

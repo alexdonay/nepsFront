@@ -519,7 +519,7 @@ export default function EnrollmentPeriodsManage() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />
-        <Column header="Curso" body={getStudentCourseName} />
+        <Column header="Disciplina" body={getStudentCourseName} />
         <Column header="Instituição" body={getStudentInstitutionName} />
         <Column field="semester" header="Semestre" />
         <Column

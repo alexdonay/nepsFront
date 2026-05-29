@@ -10,7 +10,6 @@ import CoursesFilter from "./CoursesFilter";
 
 export default function CoursesList() {
   const [courses, setCourses] = useState([]);
-  const [regions, setRegions] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,10 +17,6 @@ export default function CoursesList() {
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadRegions();
-  }, []);
 
   useEffect(() => {
     loadCourses();
@@ -50,24 +45,13 @@ export default function CoursesList() {
       setCourses(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar cursos:", e);
+      console.error("Erro ao carregar disciplinas:", e);
       setCourses([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
     }
   }, [searchParams, first, rows]);
-
-  const loadRegions = async () => {
-    try {
-      const { data } = await repository.regions.get();
-      const regionsList = data.items || data || [];
-      setRegions(regionsList);
-    } catch (e) {
-      console.error("Erro ao carregar regiões:", e);
-      setRegions([]);
-    }
-  };
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -95,11 +79,6 @@ export default function CoursesList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
-  const regionTemplate = (rowData) => {
-    const region = regions.find((r) => r.id === rowData.region_id);
-    return region ? region.name : "-";
-  };
-
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
@@ -113,7 +92,7 @@ export default function CoursesList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Cursos</h2>
+        <h2 className="text-xl font-bold m-0">Disciplinas</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -123,7 +102,7 @@ export default function CoursesList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Novo Curso"
+            label="Novo Disciplina"
             icon="pi pi-plus"
             onClick={() => navigate("/courses/new")}
           />
@@ -141,12 +120,10 @@ export default function CoursesList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhum curso encontrado"
+        emptyMessage="Nenhum disciplina encontrado"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
-        <Column field="code" header="Código" />
-        <Column header="Região" body={regionTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
@@ -156,7 +133,6 @@ export default function CoursesList() {
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}
-        regions={regions}
       />
     </div>
   );
