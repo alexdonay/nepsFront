@@ -13,6 +13,7 @@ import PhoneInput from "../../components/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
 import {
+  fileToBase64,
   uploadPdfToCloudinary,
   validatePdfFile,
 } from "../../services/cloudinary";
@@ -40,6 +41,7 @@ export default function EnrollmentManageInstitution() {
   const [registering, setRegistering] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [documentFile, setDocumentFile] = useState(null);
+  const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
   const [registerForm, setRegisterForm] = useState({
     name: "",
     cpf: "",
@@ -48,6 +50,8 @@ export default function EnrollmentManageInstitution() {
     course_id: null,
     semester: null,
     institution_id: institutionId,
+    internship_start_date: "",
+    internship_expected_end_date: "",
   });
 
   const loadData = useCallback(async () => {
@@ -172,13 +176,27 @@ export default function EnrollmentManageInstitution() {
         throw new Error("Envie o PDF obrigatório do aluno.");
       }
 
+      if (!directorSignedPdfFile) {
+        throw new Error("Envie o PDF assinado pelo diretor.");
+      }
+
+      if (!registerForm.internship_start_date) {
+        throw new Error("Informe a data de início do estágio.");
+      }
+
+      if (!registerForm.internship_expected_end_date) {
+        throw new Error("Informe a data prevista de término do estágio.");
+      }
+
       setRegistering(true);
       const documentUrl = await uploadPdfToCloudinary(documentFile);
+      const directorSignedPdf = await fileToBase64(directorSignedPdfFile);
 
       // Cadastrar aluno
       const { data: newStudent } = await api.post(API_ROUTES.GESTAO.STUDENTS, {
         ...registerForm,
         document_url: documentUrl,
+        director_signed_pdf: directorSignedPdf,
       });
       const studentId = newStudent.id;
 
@@ -194,8 +212,11 @@ export default function EnrollmentManageInstitution() {
         course_id: null,
         semester: null,
         institution_id: institutionId,
+        internship_start_date: "",
+        internship_expected_end_date: "",
       });
       setDocumentFile(null);
+      setDirectorSignedPdfFile(null);
       setShowRegisterModal(false);
 
       // Recarregar dados
@@ -350,6 +371,7 @@ export default function EnrollmentManageInstitution() {
           setShowRegisterModal(false);
           setRegisterError("");
           setDocumentFile(null);
+          setDirectorSignedPdfFile(null);
         }}
         header="Cadastrar Novo Aluno"
         modal
@@ -433,6 +455,44 @@ export default function EnrollmentManageInstitution() {
             )}
           </div>
 
+          <div className="field mb-4">
+            <label className="font-medium mb-2 block">
+              PDF assinado pelo diretor *
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              className="w-full"
+              required
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                if (!file) {
+                  setDirectorSignedPdfFile(null);
+                  return;
+                }
+
+                const validationError = validatePdfFile(file);
+                if (validationError) {
+                  setRegisterError(validationError);
+                  setDirectorSignedPdfFile(null);
+                  e.target.value = "";
+                  return;
+                }
+
+                setRegisterError("");
+                setDirectorSignedPdfFile(file);
+              }}
+            />
+            <small className="text-600 block mt-1">
+              PDF obrigatório, máximo 5MB.
+            </small>
+            {directorSignedPdfFile && (
+              <small className="block mt-2 text-green-700">
+                Arquivo selecionado: {directorSignedPdfFile.name}
+              </small>
+            )}
+          </div>
+
           {registerError && (
             <div className="mb-3 text-red-500 text-sm">{registerError}</div>
           )}
@@ -464,6 +524,44 @@ export default function EnrollmentManageInstitution() {
               min={1}
               max={12}
             />
+          </div>
+
+          <div className="grid mb-4">
+            <div className="col-12 md:col-6 field">
+              <label className="font-medium mb-2 block">
+                Início do estágio *
+              </label>
+              <input
+                type="date"
+                className="w-full p-inputtext p-component"
+                value={registerForm.internship_start_date}
+                onChange={(e) =>
+                  setRegisterForm({
+                    ...registerForm,
+                    internship_start_date: e.target.value,
+                  })
+                }
+                required
+              />
+            </div>
+
+            <div className="col-12 md:col-6 field">
+              <label className="font-medium mb-2 block">
+                Fim previsto do estágio *
+              </label>
+              <input
+                type="date"
+                className="w-full p-inputtext p-component"
+                value={registerForm.internship_expected_end_date}
+                onChange={(e) =>
+                  setRegisterForm({
+                    ...registerForm,
+                    internship_expected_end_date: e.target.value,
+                  })
+                }
+                required
+              />
+            </div>
           </div>
 
           <div className="flex gap-2 justify-content-end">

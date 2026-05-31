@@ -51,6 +51,16 @@ Exemplo:
 - `POST /v1/students/by-institute` com `{ "institute_id": <id> }`
 - `POST /v1/histories/by-period|by-room|by-schedule|by-student` com `{ "id": <id> }`
 
+## Cadastro de aluno
+
+O fluxo de cadastro de aluno agora envia tambem os dados exigidos pelo vinculo de estagio:
+
+- `document_url` continua apontando para o PDF principal do aluno.
+- `director_signed_pdf` e enviado em base64 durante a criacao.
+- `internship_start_date` e `internship_expected_end_date` sao enviados no formato `YYYY-MM-DD`.
+
+Esses campos foram adicionados tanto em [src/pages/Student/StudentForm.jsx](../src/pages/Student/StudentForm.jsx) quanto no modal de cadastro rapido de [src/pages/EnrollmentPeriods/EnrollmentManageInstitution.jsx](../src/pages/EnrollmentPeriods/EnrollmentManageInstitution.jsx).
+
 ## Arquivos ajustados
 
 - `src/services/API_routes.js`

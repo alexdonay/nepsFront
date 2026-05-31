@@ -11,6 +11,7 @@ import PhoneInput from "../../components/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
 import {
+  fileToBase64,
   uploadPdfToCloudinary,
   validatePdfFile,
 } from "../../services/cloudinary";
@@ -31,8 +32,11 @@ export default function StudentForm() {
     semester: null,
     institution_id: null,
     document_url: "",
+    internship_start_date: "",
+    internship_expected_end_date: "",
   });
   const [documentFile, setDocumentFile] = useState(null);
+  const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [error, setError] = useState("");
@@ -77,6 +81,8 @@ export default function StudentForm() {
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
         document_url: data?.document_url || "",
+        internship_start_date: data?.internship_start_date || "",
+        internship_expected_end_date: data?.internship_expected_end_date || "",
       });
     } catch (e) {}
   };
@@ -101,25 +107,75 @@ export default function StudentForm() {
     setDocumentFile(file);
   };
 
+  const handleDirectorSignedPdfChange = (e) => {
+    const file = e.target.files?.[0] || null;
+
+    if (!file) {
+      setDirectorSignedPdfFile(null);
+      return;
+    }
+
+    const validationError = validatePdfFile(file);
+    if (validationError) {
+      setError(validationError);
+      setDirectorSignedPdfFile(null);
+      e.target.value = "";
+      return;
+    }
+
+    setError("");
+    setDirectorSignedPdfFile(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
       let documentUrl = form.document_url || "";
+      let directorSignedPdf = null;
 
       if (!id && !documentFile) {
         throw new Error("Envie o PDF obrigatório do aluno.");
+      }
+
+      if (!id && !directorSignedPdfFile) {
+        throw new Error("Envie o PDF assinado pelo diretor.");
+      }
+
+      if (!id && !form.internship_start_date) {
+        throw new Error("Informe a data de início do estágio.");
+      }
+
+      if (!id && !form.internship_expected_end_date) {
+        throw new Error("Informe a data prevista de término do estágio.");
       }
 
       if (documentFile) {
         documentUrl = await uploadPdfToCloudinary(documentFile);
       }
 
+      if (!id && directorSignedPdfFile) {
+        directorSignedPdf = await fileToBase64(directorSignedPdfFile);
+      }
+
       const payload = {
-        ...form,
+        name: form.name,
+        cpf: form.cpf,
+        email: form.email,
+        phone: form.phone,
+        course_id: form.course_id,
+        semester: form.semester,
+        institution_id: form.institution_id,
         document_url: documentUrl,
       };
+
+      if (!id) {
+        payload.director_signed_pdf = directorSignedPdf;
+        payload.internship_start_date = form.internship_start_date;
+        payload.internship_expected_end_date =
+          form.internship_expected_end_date;
+      }
 
       let studentId = id;
       if (id) {
@@ -215,6 +271,63 @@ export default function StudentForm() {
             </small>
           )}
         </div>
+
+        {!id && (
+          <>
+            <div className="field mb-3">
+              <label className="block mb-2">PDF assinado pelo diretor *</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                className="w-full"
+                onChange={handleDirectorSignedPdfChange}
+                required
+              />
+              <small className="text-600 block mt-1">
+                PDF obrigatório, máximo 5MB.
+              </small>
+              {directorSignedPdfFile && (
+                <small className="block mt-2 text-green-700">
+                  Arquivo selecionado: {directorSignedPdfFile.name}
+                </small>
+              )}
+            </div>
+
+            <div className="grid mb-3">
+              <div className="col-12 md:col-6">
+                <label className="block mb-2">Início do estágio *</label>
+                <input
+                  type="date"
+                  value={form.internship_start_date}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      internship_start_date: e.target.value,
+                    })
+                  }
+                  className="w-full p-inputtext p-component"
+                  required
+                />
+              </div>
+
+              <div className="col-12 md:col-6">
+                <label className="block mb-2">Fim previsto do estágio *</label>
+                <input
+                  type="date"
+                  value={form.internship_expected_end_date}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      internship_expected_end_date: e.target.value,
+                    })
+                  }
+                  className="w-full p-inputtext p-component"
+                  required
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="field mb-3">
           <label>Disciplina *</label>

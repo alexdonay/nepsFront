@@ -4,10 +4,13 @@ import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
 import { Sidebar } from "primereact/sidebar";
+import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { fileToBase64, validatePdfFile } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentCourseName = (student) =>
@@ -111,6 +114,18 @@ export default function EnrollmentPeriodsManage() {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [assignedSlots, setAssignedSlots] = useState([]);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [rooms, setRooms] = useState([]);
+  const [linkDialogVisible, setLinkDialogVisible] = useState(false);
+  const [linkSubmitting, setLinkSubmitting] = useState(false);
+  const [selectedSlotForLink, setSelectedSlotForLink] = useState(null);
+  const [studentDetailsVisible, setStudentDetailsVisible] = useState(false);
+  const [studentDetailsLoading, setStudentDetailsLoading] = useState(false);
+  const [selectedStudentDetails, setSelectedStudentDetails] = useState(null);
+  const [linkForm, setLinkForm] = useState({
+    directorFile: null,
+    internship_start_date: "",
+    internship_expected_end_date: "",
+  });
   const [slotFilters, setSlotFilters] = useState({
     room_id: "",
     day_of_week: "",
@@ -175,14 +190,16 @@ export default function EnrollmentPeriodsManage() {
   const buildRoomMap = useCallback(async () => {
     try {
       const { data } = await repository.rooms.get();
-      const rooms = data?.items || data || [];
-      const mapped = rooms.reduce((acc, room) => {
+      const loadedRooms = data?.items || data || [];
+      const mapped = loadedRooms.reduce((acc, room) => {
         acc[String(room.id)] = room;
         return acc;
       }, {});
+      setRooms(loadedRooms);
       setRoomMap(mapped);
     } catch (e) {
       console.error("Erro ao carregar salas:", e);
+      setRooms([]);
       setRoomMap({});
     }
   }, []);
@@ -345,6 +362,104 @@ export default function EnrollmentPeriodsManage() {
     }
   };
 
+  const openLinkDialog = (slot) => {
+    setSelectedSlotForLink(slot);
+    setLinkForm({ directorFile: null, internship_start_date: "", internship_expected_end_date: "" });
+    setLinkDialogVisible(true);
+  };
+
+  const closeLinkDialog = () => {
+    setSelectedSlotForLink(null);
+    setLinkForm({ directorFile: null, internship_start_date: "", internship_expected_end_date: "" });
+    setLinkDialogVisible(false);
+    setLinkSubmitting(false);
+  };
+
+  const handleLinkFormChange = (patch) => {
+    setLinkForm((p) => ({ ...p, ...patch }));
+  };
+
+  const handleLinkSubmit = async () => {
+    if (!managingStudent || !selectedSlotForLink) return;
+    const validation = validatePdfFile(linkForm.directorFile);
+    if (validation) {
+      alert(validation);
+      return;
+    }
+
+    try {
+      setLinkSubmitting(true);
+      const base64 = await fileToBase64(linkForm.directorFile);
+
+      const updatePayload = {
+        director_signed_pdf: base64,
+        internship_start_date: linkForm.internship_start_date || null,
+        internship_expected_end_date:
+          linkForm.internship_expected_end_date || null,
+      };
+
+      await repository.students.put(managingStudent.id, updatePayload);
+
+      const periodId = period?.id || id;
+      await repository.roomSchedules.addStudent(
+        selectedSlotForLink.room_id,
+        selectedSlotForLink.day_of_week || selectedSlotForLink.dayOfWeek,
+        selectedSlotForLink.period,
+        periodId,
+        managingStudent.id,
+      );
+
+      await loadPeriodStudents();
+      closeLinkDialog();
+      clearManage();
+      navigate("/periods/manage");
+    } catch (e) {
+      console.error("Erro ao vincular com dados do diretor:", e);
+      alert("Erro ao vincular aluno. Veja o console para mais detalhes.");
+      setLinkSubmitting(false);
+    }
+  };
+
+  const openStudentDetails = async (student) => {
+    if (!student?.id) return;
+    setStudentDetailsVisible(true);
+    setStudentDetailsLoading(true);
+
+    try {
+      const { data } = await repository.students.getById(student.id);
+      setSelectedStudentDetails(data || student);
+    } catch (e) {
+      console.error("Erro ao carregar detalhes do aluno:", e);
+      setSelectedStudentDetails(student);
+    } finally {
+      setStudentDetailsLoading(false);
+    }
+  };
+
+  const closeStudentDetails = () => {
+    setStudentDetailsVisible(false);
+    setSelectedStudentDetails(null);
+    setStudentDetailsLoading(false);
+  };
+
+  const resolveStudentDocumentUrl = (student) =>
+    student?.document_url ||
+    student?.documentUrl ||
+    student?.institution_document_url ||
+    "";
+
+  const handleDownloadInstitutionDocument = () => {
+    const url = resolveStudentDocumentUrl(selectedStudentDetails);
+    if (!url) return;
+
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.download = "documento-instituicao.pdf";
+    anchor.click();
+  };
+
   const handleRemoveStudentFromSlot = async (slot) => {
     if (isRemoving) {
       return;
@@ -466,6 +581,13 @@ export default function EnrollmentPeriodsManage() {
     return `${period.name || "Período"} • ${period.start_date ? new Date(period.start_date).toLocaleDateString() : "-"} - ${period.end_date ? new Date(period.end_date).toLocaleDateString() : "-"}`;
   }, [period]);
 
+  const formatDateValue = (value) => {
+    if (!value) return "-";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString();
+  };
+
   const renderSlotRoomName = (slot) =>
     slot.room_name ||
     roomMap[String(slot.room_id)]?.name ||
@@ -544,6 +666,21 @@ export default function EnrollmentPeriodsManage() {
         {students.length}
       </div>
 
+      <div className="surface-100 p-3 border-round mb-3">
+        <strong>Salas carregadas:</strong> {rooms.length}
+        <div className="mt-2 flex flex-wrap gap-2">
+          {rooms.length > 0 ? (
+            rooms.map((room) => (
+              <span key={room.id} className="surface-0 border-round px-3 py-2">
+                {room.name} • {room.room_capacity} vagas
+              </span>
+            ))
+          ) : (
+            <span className="text-600">Nenhuma sala retornada pela API.</span>
+          )}
+        </div>
+      </div>
+
       <DataTable
         value={filteredStudents}
         loading={loading}
@@ -561,13 +698,24 @@ export default function EnrollmentPeriodsManage() {
         <Column
           header="Ações"
           body={(rowData) => (
-            <Button
-              label="Gerir horário"
-              icon="pi pi-calendar-plus"
-              onClick={() => openManageForStudent(rowData)}
-              severity="secondary"
-              className="p-button-text"
-            />
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                icon="pi pi-eye"
+                onClick={() => openStudentDetails(rowData)}
+                severity="info"
+                className="p-button-text"
+                tooltip="Visualizar dados do aluno"
+                tooltipOptions={{ position: "top" }}
+              />
+              <Button
+                icon="pi pi-calendar-plus"
+                onClick={() => openManageForStudent(rowData)}
+                severity="secondary"
+                className="p-button-text"
+                tooltip="Gerir horário"
+                tooltipOptions={{ position: "top" }}
+              />
+            </div>
           )}
         />
       </DataTable>
@@ -708,7 +856,7 @@ export default function EnrollmentPeriodsManage() {
                     <Button
                       label="Vincular"
                       icon="pi pi-link"
-                      onClick={() => handleAssignStudentToSlot(s)}
+                      onClick={() => openLinkDialog(s)}
                       disabled={renderVacancies(s) <= 0}
                     />
                   );
@@ -716,8 +864,201 @@ export default function EnrollmentPeriodsManage() {
               />
             </DataTable>
           </div>
+          <Dialog
+            header="Vincular aluno — dados do documento"
+            visible={linkDialogVisible}
+            style={{ width: "40rem" }}
+            onHide={closeLinkDialog}
+            blockScroll
+            footer={
+              <div>
+                <Button
+                  label="Cancelar"
+                  onClick={closeLinkDialog}
+                  className="p-button-text"
+                />
+                <Button
+                  label="Confirmar vínculo"
+                  onClick={handleLinkSubmit}
+                  disabled={linkSubmitting}
+                  loading={linkSubmitting}
+                />
+              </div>
+            }
+          >
+            <div className="p-fluid">
+              <div className="surface-100 p-3 border-round mb-3">
+                <label className="font-medium">Arquivo assinado pelo diretor (PDF)</label>
+                <div
+                  className="p-d-flex p-ai-center p-jc-center border-dashed p-p-3 mt-2"
+                  style={{ minHeight: 120, cursor: "pointer", background: "var(--surface-b)" }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const f = e.dataTransfer?.files?.[0];
+                    if (f) handleLinkFormChange({ directorFile: f });
+                  }}
+                  onClick={() => document.getElementById("director-file-input")?.click()}
+                >
+                  <div className="text-center">
+                    <i className="pi pi-file-pdf" style={{ fontSize: 36 }} />
+                    <div className="mt-2">Arraste o PDF aqui ou clique para selecionar</div>
+                    {linkForm.directorFile && (
+                      <div className="mt-2 text-sm">
+                        <strong>{linkForm.directorFile.name}</strong> • {(linkForm.directorFile.size / 1024).toFixed(0)} KB
+                        <Button
+                          icon="pi pi-times"
+                          className="p-button-text p-button-danger ml-2"
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            handleLinkFormChange({ directorFile: null });
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <input
+                  id="director-file-input"
+                  type="file"
+                  accept="application/pdf"
+                  style={{ display: "none" }}
+                  onChange={(e) => handleLinkFormChange({ directorFile: e.target.files[0] })}
+                />
+                <small className="text-600">Tamanho máximo: 5MB. Formato: PDF.</small>
+              </div>
+
+              <div className="grid">
+                <div className="col-12 md:col-6">
+                  <label className="font-medium">Data de início do estágio</label>
+                  <Calendar
+                    className="w-full"
+                    value={linkForm.internship_start_date ? new Date(linkForm.internship_start_date) : null}
+                    onChange={(e) => {
+                      const d = e.value ? new Date(e.value) : null;
+                      handleLinkFormChange({ internship_start_date: d ? d.toISOString().slice(0, 10) : "" });
+                    }}
+                    dateFormat="yy-mm-dd"
+                    showIcon
+                    placeholder="AAAA-MM-DD"
+                  />
+                </div>
+
+                <div className="col-12 md:col-6">
+                  <label className="font-medium">Data prevista de fim do estágio</label>
+                  <Calendar
+                    className="w-full"
+                    value={linkForm.internship_expected_end_date ? new Date(linkForm.internship_expected_end_date) : null}
+                    onChange={(e) => {
+                      const d = e.value ? new Date(e.value) : null;
+                      handleLinkFormChange({ internship_expected_end_date: d ? d.toISOString().slice(0, 10) : "" });
+                    }}
+                    dateFormat="yy-mm-dd"
+                    showIcon
+                    placeholder="AAAA-MM-DD"
+                  />
+                </div>
+              </div>
+            </div>
+          </Dialog>
         </div>
       </Sidebar>
+
+      <Dialog
+        header="Dados do aluno"
+        visible={studentDetailsVisible}
+        style={{ width: "46rem", maxWidth: "96vw" }}
+        onHide={closeStudentDetails}
+        blockScroll
+      >
+        {studentDetailsLoading ? (
+          <div className="p-3 text-600">Carregando dados do aluno...</div>
+        ) : (
+          <div className="p-fluid">
+            <div className="surface-100 p-3 border-round mb-3">
+              <h4 className="m-0 mb-3">Dados principais</h4>
+              <div className="grid">
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Nome</small>
+                  <strong>{selectedStudentDetails?.name || "-"}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">CPF</small>
+                  <strong>{selectedStudentDetails?.cpf || "-"}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">E-mail</small>
+                  <strong>{selectedStudentDetails?.email || "-"}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Telefone</small>
+                  <strong>{selectedStudentDetails?.phone || "-"}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Instituição</small>
+                  <strong>{getStudentInstitutionName(selectedStudentDetails)}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Curso/Disciplina</small>
+                  <strong>{getStudentCourseName(selectedStudentDetails)}</strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Semestre</small>
+                  <strong>{selectedStudentDetails?.semester || "-"}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="surface-100 p-3 border-round mb-3">
+              <h4 className="m-0 mb-3">Dados de estágio</h4>
+              <div className="grid">
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Início do estágio</small>
+                  <strong>
+                    {formatDateValue(selectedStudentDetails?.internship_start_date)}
+                  </strong>
+                </div>
+                <div className="col-12 md:col-6">
+                  <small className="text-600 block mb-1">Previsão de fim</small>
+                  <strong>
+                    {formatDateValue(
+                      selectedStudentDetails?.internship_expected_end_date,
+                    )}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="surface-100 p-3 border-round">
+              <h4 className="m-0 mb-3">Documento enviado pela instituição</h4>
+              {resolveStudentDocumentUrl(selectedStudentDetails) ? (
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    label="Abrir documento"
+                    icon="pi pi-external-link"
+                    onClick={() =>
+                      window.open(
+                        resolveStudentDocumentUrl(selectedStudentDetails),
+                        "_blank",
+                        "noopener,noreferrer",
+                      )
+                    }
+                    outlined
+                  />
+                  <Button
+                    label="Download"
+                    icon="pi pi-download"
+                    onClick={handleDownloadInstitutionDocument}
+                    severity="contrast"
+                  />
+                </div>
+              ) : (
+                <span className="text-600">Nenhum documento disponível.</span>
+              )}
+            </div>
+          </div>
+        )}
+      </Dialog>
 
       <FilterDrawer
         visible={filterVisible}

@@ -19,6 +19,26 @@ export function validatePdfFile(file) {
   return null;
 }
 
+export function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== "string") {
+        reject(new Error("Falha ao ler o arquivo PDF."));
+        return;
+      }
+
+      const base64 = result.includes(",") ? result.split(",")[1] : result;
+      resolve(base64);
+    };
+
+    reader.onerror = () => reject(new Error("Falha ao ler o arquivo PDF."));
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function uploadPdfToCloudinary(file) {
   const validationError = validatePdfFile(file);
   if (validationError) {
