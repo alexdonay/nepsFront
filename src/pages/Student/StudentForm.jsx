@@ -15,9 +15,11 @@ import {
   validatePdfFile,
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function StudentForm() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.student, {});
+  const { id } = routeContext;
   const [searchParams] = useSearchParams();
   const periodId = searchParams.get("periodId");
   const [form, setForm] = useState({
@@ -65,7 +67,7 @@ export default function StudentForm() {
 
   const loadStudent = async () => {
     try {
-      const { data } = await api.get(API_ROUTES.GESTAO.STUDENTS_BY_ID(id));
+      const { data } = await repository.students.getById(id);
       setForm({
         name: data?.name || "",
         cpf: data?.cpf || "",
@@ -121,7 +123,7 @@ export default function StudentForm() {
 
       let studentId = id;
       if (id) {
-        await api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), payload);
+        await repository.students.put(id, payload);
       } else {
         const response = await api.post(API_ROUTES.GESTAO.STUDENTS, payload);
         studentId = response.data?.id;
@@ -133,7 +135,7 @@ export default function StudentForm() {
         console.log("✅ Aluno cadastrado e vinculado ao período com sucesso");
       }
 
-      navigate("/periods");
+      navigate("/students");
     } catch (err) {
       setError(err.response?.data?.detail || err.message || "Erro ao salvar");
     } finally {

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -137,7 +138,10 @@ export default function ServicesList() {
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/services/${rowData.id}`)}
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.service, { id: rowData.id });
+          navigate("/services/edit");
+        }}
       />
     </div>
   );

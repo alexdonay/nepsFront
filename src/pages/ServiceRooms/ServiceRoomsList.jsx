@@ -2,11 +2,17 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import {
+  ROUTE_CONTEXT_KEYS,
+  getRouteContext,
+  setRouteContext,
+} from "../../utils/routeContext";
 
 export default function ServiceRoomsList() {
-  const { serviceId } = useParams();
+  const serviceContext = getRouteContext(ROUTE_CONTEXT_KEYS.service, {});
+  const serviceId = serviceContext.id;
   const [rooms, setRooms] = useState([]);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
@@ -45,11 +51,7 @@ export default function ServiceRoomsList() {
         <Button
           label="Nova Sala"
           onClick={() =>
-            navigate(
-              serviceId
-                ? `/services/${serviceId}/rooms/new`
-                : "/service-rooms/new",
-            )
+            navigate(serviceId ? "/services/rooms/new" : "/service-rooms/edit")
           }
         />
       </div>

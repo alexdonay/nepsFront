@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { repository } from "../../services/repository";
 import CoursesFilter from "./CoursesFilter";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 // FILTER_CONFIG moved to CoursesFilter component
 
@@ -84,7 +85,10 @@ export default function CoursesList() {
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/courses/${rowData.id}`)}
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.course, { id: rowData.id });
+          navigate("/courses/edit");
+        }}
       />
     </div>
   );

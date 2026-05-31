@@ -2,15 +2,17 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 type FormState = {
   name: string;
 };
 
 export default function CoursesForm() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.course, {});
+  const id = routeContext.id;
   const isEdit = !!id;
   const navigate = useNavigate();
 

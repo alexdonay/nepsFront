@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -106,7 +107,10 @@ export default function RegionsList() {
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/regions/${rowData.id}`)}
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.region, { id: rowData.id });
+          navigate("/regions/edit");
+        }}
       />
     </div>
   );

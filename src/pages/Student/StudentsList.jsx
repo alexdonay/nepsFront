@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -161,9 +162,34 @@ export default function StudentsList() {
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
+        icon="pi pi-history"
+        className="p-button-text"
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: rowData.id });
+          navigate("/students/history");
+        }}
+        tooltip="Histórico"
+        tooltipOptions={{ position: "top" }}
+      />
+      <Button
+        icon="pi pi-eye"
+        className="p-button-text"
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: rowData.id });
+          navigate("/students/details");
+        }}
+        tooltip="Detalhes"
+        tooltipOptions={{ position: "top" }}
+      />
+      <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/students/${rowData.id}`)}
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: rowData.id });
+          navigate("/students/edit");
+        }}
+        tooltip="Editar"
+        tooltipOptions={{ position: "top" }}
       />
     </div>
   );

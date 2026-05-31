@@ -2,8 +2,9 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const DAYS = [
   { label: "Domingo", value: 0 },
@@ -16,8 +17,10 @@ const DAYS = [
 ];
 
 export default function ServiceScheduleForm() {
-  const { id, roomId } = useParams();
   const location = useLocation();
+  const scheduleContext = getRouteContext(ROUTE_CONTEXT_KEYS.schedule, {});
+  const id = scheduleContext.id;
+  const roomId = scheduleContext.roomId;
   const isEdit = !!id;
   const isRoomContext = location.pathname.startsWith("/rooms/");
   const [form, setForm] = useState({
@@ -40,11 +43,7 @@ export default function ServiceScheduleForm() {
     try {
       if (isEdit) await repository.serviceSchedules.put(id, form);
       else await repository.serviceSchedules.post(form);
-      navigate(
-        roomId
-          ? `${isRoomContext ? "/rooms" : "/service-rooms"}/${roomId}/schedules`
-          : "/service-schedules",
-      );
+      navigate(isRoomContext ? "/rooms/schedules" : "/service-rooms/schedules");
     } catch (e) {}
   };
 

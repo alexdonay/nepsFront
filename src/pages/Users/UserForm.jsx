@@ -4,10 +4,11 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { Password } from "primereact/password";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
 import { normalizePermission } from "../../utils/auth";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const normalizeErrorMessage = (err) => {
   const detail = err?.response?.data?.detail;
@@ -35,7 +36,8 @@ const normalizeErrorMessage = (err) => {
 };
 
 export default function UserForm() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.user, {});
+  const id = routeContext.id;
   const isEdit = !!id;
 
   const [name, setName] = useState("");
@@ -104,19 +106,20 @@ export default function UserForm() {
     setLoading(true);
 
     try {
-      const payload = isEdit
-        ? {
-            name,
-            email,
-            role: profile,
-            is_active: isActive,
-          }
-        : {
-            name,
-            email,
-            role: profile,
-            is_active: isActive,
-          };
+      const payload = {
+        name,
+        email,
+        role: profile,
+        is_active: isActive,
+        education_institute_id:
+          profile === PERMISSIONS.INSTITUICAO_ENSINO
+            ? selectedInstitution?.id ?? selectedInstitution ?? null
+            : null,
+        service_id:
+          profile === PERMISSIONS.CAMPO_ESTAGIO
+            ? selectedUnit?.id ?? selectedUnit ?? null
+            : null,
+      };
 
       if (!isEdit) {
         // incluir senha apenas na criação
@@ -132,7 +135,6 @@ export default function UserForm() {
         if (profile === PERMISSIONS.CAMPO_ESTAGIO) {
           if (!selectedUnit) throw new Error("Selecione o campo de estágio");
           const unitId = selectedUnit.id ?? selectedUnit;
-          payload.health_unit_id = unitId;
           payload.service_id = unitId;
         }
       }

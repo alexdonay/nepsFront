@@ -14,37 +14,42 @@ export const API_ROUTES = {
   USERS: {
     BASE: "/v1/users/",
     ME: "/v1/users/me",
-    BY_ID: (id) => `/v1/users/${id}`,
+    DETAIL: "/v1/users/detail",
+    BY_ID: () => "/v1/users/detail",
   },
 
   COURSES: {
     BASE: "/v1/courses",
-    BY_ID: (id) => `/v1/courses/${id}`,
+    DETAIL: "/v1/courses/detail",
+    BY_ID: () => "/v1/courses/detail",
   },
 
   CADASTROS: {
     COURSES: "/v1/courses",
     INSTITUTIONS: "/v1/education-institutes",
-    INSTITUTIONS_BY_ID: (id) => `/v1/education-institutes/${id}`,
+    INSTITUTIONS_DETAIL: "/v1/education-institutes/detail",
+    INSTITUTIONS_BY_ID: () => "/v1/education-institutes/detail",
     LOCATIONS: "/v1/cadastros/locations",
-    LOCATIONS_BY_ID: (id) => `/v1/cadastros/locations/${id}`,
+    LOCATIONS_BY_ID: () => "/v1/cadastros/locations/detail",
   },
 
   GESTAO: {
     STUDENTS: "/v1/students",
-    STUDENTS_BY_ID: (id) => `/v1/students/${id}`,
-    STUDENTS_BY_COURSE: (courseId) => `/v1/students/by-course/${courseId}`,
-    STUDENTS_BY_INSTITUTE: (instituteId) =>
-      `/v1/students/by-institute/${instituteId}`,
+    STUDENTS_DETAIL: "/v1/students/detail",
+    STUDENTS_BY_ID: () => "/v1/students/detail",
+    STUDENTS_BY_COURSE: "/v1/students/by-course",
+    STUDENTS_BY_INSTITUTE: "/v1/students/by-institute",
     PERIODS: "/v1/periods",
-    PERIODS_BY_ID: (id) => `/v1/periods/${id}`,
-    PERIODS_STUDENTS: (id) => `/v1/periods/${id}/students`,
+    PERIODS_DETAIL: "/v1/periods/detail",
+    PERIODS_BY_ID: () => "/v1/periods/detail",
+    PERIODS_STUDENTS: "/v1/periods/students",
   },
 
   HISTORIES: {
-    BY_PERIOD: (periodId) => `/v1/histories/by-period/${periodId}`,
-    BY_ROOM: (roomId) => `/v1/histories/by-room/${roomId}`,
-    BY_SCHEDULE: (scheduleId) => `/v1/histories/by-schedule/${scheduleId}`,
+    BY_PERIOD: "/v1/histories/by-period",
+    BY_ROOM: "/v1/histories/by-room",
+    BY_SCHEDULE: "/v1/histories/by-schedule",
+    BY_STUDENT: "/v1/histories/by-student",
   },
 
   ACOMPANHAMENTO: {
@@ -53,36 +58,39 @@ export const API_ROUTES = {
 
   SERVICES: {
     BASE: "/v1/services",
-    BY_ID: (id) => `/v1/services/${id}`,
-    BY_REGION: (regionId) => `/v1/services/by-region/${regionId}`,
+    DETAIL: "/v1/services/detail",
+    BY_ID: () => "/v1/services/detail",
+    BY_REGION: "/v1/services/by-region",
   },
 
   REGIONS: {
     BASE: "/v1/regions",
-    BY_ID: (id) => `/v1/regions/${id}`,
+    DETAIL: "/v1/regions/detail",
+    BY_ID: () => "/v1/regions/detail",
   },
 
   SERVICE_ROOMS: {
     BASE: "/v1/service-rooms",
-    BY_ID: (id) => `/v1/service-rooms/${id}`,
-    BY_SERVICE: (serviceId) => `/v1/service-rooms/by-service/${serviceId}`,
+    DETAIL: "/v1/service-rooms/detail",
+    BY_ID: () => "/v1/service-rooms/detail",
+    BY_SERVICE: "/v1/service-rooms/by-service",
   },
 
   SERVICE_SCHEDULES: {
     BASE: "/v1/service-schedules",
-    BY_ID: (id) => `/v1/service-schedules/${id}`,
-    BY_ROOM: (roomId) => `/v1/service-schedules/by-room/${roomId}`,
-    BY_ROOM_DAY: (roomId, weekDay) =>
-      `/v1/service-schedules/by-room/${roomId}/by-day/${weekDay}`,
+    DETAIL: "/v1/service-schedules/detail",
+    BY_ID: () => "/v1/service-schedules/detail",
+    BY_ROOM: "/v1/service-schedules/by-room",
+    BY_ROOM_DAY: "/v1/service-schedules/by-room/by-day",
   },
 
   ROOMS: {
     BASE: "/v1/rooms",
-    BY_ID: (id) => `/v1/rooms/${id}`,
-    BY_SERVICE: (serviceId) => `/v1/rooms/by-service/${serviceId}`,
+    DETAIL: "/v1/rooms/detail",
+    BY_ID: () => "/v1/rooms/detail",
+    BY_SERVICE: "/v1/rooms/by-service",
     AVAILABLE_SLOTS: "/v1/rooms/available-slots",
-    SCHEDULE: (roomId) => `/v1/rooms/${roomId}/schedule`,
-    SCHEDULE_STUDENT: (roomId, dayOfWeek, period) =>
-      `/v1/rooms/${roomId}/schedule/${dayOfWeek}/${period}/student`,
+    SCHEDULE: "/v1/rooms/schedule",
+    SCHEDULE_STUDENT: "/v1/rooms/schedule/student",
   },
 };

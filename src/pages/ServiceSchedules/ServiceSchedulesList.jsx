@@ -1,8 +1,13 @@
 import { Button } from "primereact/button";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import {
+  ROUTE_CONTEXT_KEYS,
+  getRouteContext,
+  setRouteContext,
+} from "../../utils/routeContext";
 import "./ServiceSchedulesList.css";
 
 const DAY_ORDER = [
@@ -34,10 +39,14 @@ const PERIODS = {
 };
 
 export default function ServiceSchedulesList() {
-  const { roomId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const isRoomContext = location.pathname.startsWith("/rooms/");
+  const roomContext = getRouteContext(
+    isRoomContext ? ROUTE_CONTEXT_KEYS.room : ROUTE_CONTEXT_KEYS.serviceRoom,
+    {},
+  );
+  const roomId = roomContext.id;
 
   const [room, setRoom] = useState(null);
   const [schedule, setSchedule] = useState(null);
@@ -134,11 +143,7 @@ export default function ServiceSchedulesList() {
           icon="pi pi-clock"
           outlined
           onClick={() =>
-            navigate(
-              isRoomContext
-                ? `/rooms/${roomId}/history`
-                : `/service-rooms/${roomId}/history`,
-            )
+            navigate(isRoomContext ? "/rooms/history" : "/service-rooms/history")
           }
         />
 
@@ -180,9 +185,19 @@ export default function ServiceSchedulesList() {
                         isFilled ? "filled" : "empty"
                       } shift-${period.color}`}
                       onClick={() =>
-                        navigate(
-                          `${isRoomContext ? "/rooms" : "/service-rooms"}/${roomId}/schedules/${day.dayOfWeek}/${period.period}`,
-                        )
+                        {
+                          setRouteContext(ROUTE_CONTEXT_KEYS.schedule, {
+                            roomId,
+                            dayOfWeek: day.dayOfWeek,
+                            period: period.period,
+                            isRoomContext,
+                          });
+                          navigate(
+                            isRoomContext
+                              ? "/rooms/schedules/assignment"
+                              : "/service-rooms/schedules/assignment",
+                          );
+                        }
                       }
                       title="Clique para vincular alunos neste período"
                     >

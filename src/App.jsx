@@ -31,6 +31,8 @@ import ServiceScheduleAssignment from "./pages/ServiceSchedules/ServiceScheduleA
 import ServiceScheduleForm from "./pages/ServiceSchedules/ServiceScheduleForm";
 import ServiceSchedulesList from "./pages/ServiceSchedules/ServiceSchedulesList";
 import StudentForm from "./pages/Student/StudentForm";
+import StudentDetails from "./pages/Student/StudentDetails";
+import StudentHistory from "./pages/Student/StudentHistory";
 import StudentsList from "./pages/Student/StudentsList";
 import UserForm from "./pages/Users/UserForm";
 import UsersList from "./pages/Users/UsersList";
@@ -240,7 +242,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId/schedules"
+        path="/rooms/schedules"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -251,7 +253,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId/history"
+        path="/rooms/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -262,7 +264,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId/schedules/new"
+        path="/rooms/schedules/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -273,7 +275,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId/schedules/:dayOfWeek/:period"
+        path="/rooms/schedules/assignment"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -284,7 +286,7 @@ export default function App() {
       />
 
       <Route
-        path="/rooms/:roomId/schedules/:dayOfWeek/:period/history"
+        path="/rooms/schedules/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -328,7 +330,7 @@ export default function App() {
       />
 
       <Route
-        path="/services/:serviceId/rooms"
+        path="/services/rooms"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -339,7 +341,7 @@ export default function App() {
       />
 
       <Route
-        path="/services/:serviceId/rooms/new"
+        path="/services/rooms/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -350,7 +352,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:id"
+        path="/service-rooms/edit"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -361,7 +363,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:roomId/schedules"
+        path="/service-rooms/schedules"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -372,7 +374,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:roomId/history"
+        path="/service-rooms/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -383,7 +385,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:roomId/schedules/new"
+        path="/service-rooms/schedules/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -394,7 +396,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:roomId/schedules/:dayOfWeek/:period"
+        path="/service-rooms/schedules/assignment"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -405,7 +407,7 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/:roomId/schedules/:dayOfWeek/:period/history"
+        path="/service-rooms/schedules/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -457,7 +459,7 @@ export default function App() {
         }
       />
       <Route
-        path="/periods/:id/manage"
+        path="/periods/manage"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -467,7 +469,7 @@ export default function App() {
         }
       />
       <Route
-        path="/periods/:id/history"
+        path="/periods/history"
         element={
           <PrivateRoute permissions={ALL_PERMISSIONS}>
             <Layout>
@@ -477,7 +479,7 @@ export default function App() {
         }
       />
       <Route
-        path="/periods/:periodId/manage-institution"
+        path="/periods/manage-institution"
         element={
           <PrivateRoute permissions={[PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
@@ -512,6 +514,28 @@ export default function App() {
           <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
             <Layout>
               <StudentForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/students/details"
+        element={
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+            <Layout>
+              <StudentDetails />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/students/history"
+        element={
+          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+            <Layout>
+              <StudentHistory />
             </Layout>
           </PrivateRoute>
         }

@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -43,6 +44,19 @@ const FILTER_CONFIG = [
     ],
   },
 ];
+
+const getRoleLabel = (role) => {
+  switch (role) {
+    case PERMISSIONS.ADMIN:
+      return "Administrador";
+    case PERMISSIONS.CAMPO_ESTAGIO:
+      return "Campo de Estágio";
+    case PERMISSIONS.INSTITUICAO_ENSINO:
+      return "Instituição de Ensino";
+    default:
+      return role || "-";
+  }
+};
 
 const getStatusLabel = (user) => {
   const active = user.is_active ?? user.active;
@@ -165,7 +179,7 @@ export default function UsersList() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="email" header="E-mail" />
-        <Column field="role" header="Perfil" />
+        <Column body={(rowData) => getRoleLabel(rowData.role)} header="Perfil" />
         <Column body={(rowData) => getStatusLabel(rowData)} header="Status" />
         <Column
           body={(rowData) => (
@@ -173,7 +187,10 @@ export default function UsersList() {
               <Button
                 icon="pi pi-pencil"
                 className="p-button-text"
-                onClick={() => navigate(`/users/${rowData.id}`)}
+                onClick={() => {
+                  setRouteContext(ROUTE_CONTEXT_KEYS.user, { id: rowData.id });
+                  navigate("/users/edit");
+                }}
               />
             </div>
           )}

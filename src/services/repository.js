@@ -7,6 +7,10 @@
 import { API_ROUTES } from "./API_routes";
 import api from "./api";
 
+const getWithBody = (url, data = {}) => api.request({ method: "GET", url, data });
+const deleteWithBody = (url, data = {}) =>
+  api.request({ method: "DELETE", url, data });
+
 export const repository = {
   // Autenticação
   auth: {
@@ -26,152 +30,259 @@ export const repository = {
   users: {
     me: () => api.get(API_ROUTES.USERS.ME),
     updateMe: (data) => api.put(API_ROUTES.USERS.ME, data),
-    get: (params = {}) => api.get(API_ROUTES.USERS.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.USERS.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.USERS.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.USERS.DETAIL, { user_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.USERS.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.USERS.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.USERS.BY_ID(id)),
+    put: (id, data) =>
+      api.put(API_ROUTES.USERS.BASE, { ...data, user_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.USERS.BASE, { user_id: Number(id) }),
   },
 
   // Curso
   courses: {
-    get: (params = {}) => api.get(API_ROUTES.COURSES.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.COURSES.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.COURSES.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.COURSES.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.COURSES.BY_ID(id)),
+    put: (id, data) =>
+      api.put(API_ROUTES.COURSES.BASE, { ...data, course_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.COURSES.BASE, { course_id: Number(id) }),
   },
 
   // Regiões
   regions: {
-    get: (params = {}) => api.get(API_ROUTES.REGIONS.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.REGIONS.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.REGIONS.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.REGIONS.DETAIL, { region_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.REGIONS.BASE, data),
-    put: (id, data) => api.patch(API_ROUTES.REGIONS.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.REGIONS.BY_ID(id)),
+    put: (id, data) =>
+      api.patch(API_ROUTES.REGIONS.BASE, { ...data, region_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.REGIONS.BASE, { region_id: Number(id) }),
   },
 
   // Unidades de Saúde
   healthUnits: {
-    get: (params = {}) => api.get(API_ROUTES.SERVICES.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.SERVICES.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.SERVICES.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.SERVICES.DETAIL, { service_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.SERVICES.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.SERVICES.BY_ID(id)),
+    put: (id, data) =>
+      api.put(API_ROUTES.SERVICES.BASE, { ...data, service_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.SERVICES.BASE, { service_id: Number(id) }),
   },
 
   // Instituições
   institutions: {
     get: (params = {}) =>
-      api.get(API_ROUTES.CADASTROS.INSTITUTIONS, { params }),
-    getById: (id) => api.get(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id)),
+      getWithBody(API_ROUTES.CADASTROS.INSTITUTIONS, params),
+    getById: (id) =>
+      api.post(API_ROUTES.CADASTROS.INSTITUTIONS_DETAIL, {
+        institute_id: Number(id),
+      }),
     post: (data) => api.post(API_ROUTES.CADASTROS.INSTITUTIONS, data),
     put: (id, data) =>
-      api.put(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.CADASTROS.INSTITUTIONS_BY_ID(id)),
+      api.put(API_ROUTES.CADASTROS.INSTITUTIONS, {
+        ...data,
+        institute_id: Number(id),
+      }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.CADASTROS.INSTITUTIONS, {
+        institute_id: Number(id),
+      }),
   },
 
   // Salas
   rooms: {
-    get: (params = {}) => api.get(API_ROUTES.ROOMS.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.ROOMS.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.ROOMS.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.ROOMS.DETAIL, { room_id: Number(id) }),
     getAvailableSlots: (params = {}) =>
-      api.get(API_ROUTES.ROOMS.AVAILABLE_SLOTS, { params }),
+      api.post(API_ROUTES.ROOMS.AVAILABLE_SLOTS, params),
     post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),
-    put: (id, data) => api.patch(API_ROUTES.ROOMS.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.ROOMS.BY_ID(id)),
+    put: (id, data) =>
+      api.patch(API_ROUTES.ROOMS.BASE, { ...data, room_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.ROOMS.BASE, { room_id: Number(id) }),
   },
 
   roomSchedules: {
-    get: (roomId) => api.get(API_ROUTES.ROOMS.SCHEDULE(roomId)),
-    addStudent: (roomId, dayOfWeek, period, studentId) =>
-      api.post(API_ROUTES.ROOMS.SCHEDULE_STUDENT(roomId, dayOfWeek, period), {
+    get: (roomId) =>
+      api.post(API_ROUTES.ROOMS.SCHEDULE, { room_id: Number(roomId) }),
+    addStudent: (roomId, dayOfWeek, period, periodId, studentId) =>
+      api.post(API_ROUTES.ROOMS.SCHEDULE_STUDENT, {
+        room_id: roomId,
+        day_of_week: dayOfWeek,
+        period,
+        period_id: periodId,
         student_id: studentId,
       }),
-    removeStudent: (roomId, dayOfWeek, period, studentId) =>
-      api.delete(API_ROUTES.ROOMS.SCHEDULE_STUDENT(roomId, dayOfWeek, period), {
-        data: { student_id: studentId },
+    removeStudent: (roomId, dayOfWeek, period, periodId, studentId) =>
+      api.delete(API_ROUTES.ROOMS.SCHEDULE_STUDENT, {
+        data: {
+          room_id: roomId,
+          day_of_week: dayOfWeek,
+          period,
+          period_id: periodId,
+          student_id: studentId,
+        },
       }),
   },
 
   // Estudantes
   students: {
-    get: (params = {}) => api.get(API_ROUTES.GESTAO.STUDENTS, { params }),
-    getById: (id) => api.get(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.GESTAO.STUDENTS, params),
+    getById: (id) =>
+      api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, { student_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
-    put: (id, data) => api.put(API_ROUTES.GESTAO.STUDENTS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.GESTAO.STUDENTS_BY_ID(id)),
+    put: (id, data) =>
+      api.patch(API_ROUTES.GESTAO.STUDENTS, {
+        ...data,
+        student_id: Number(id),
+      }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.GESTAO.STUDENTS, { student_id: Number(id) }),
     byCourse: (courseId, params = {}) =>
-      api.get(API_ROUTES.GESTAO.STUDENTS_BY_COURSE(courseId), { params }),
+      api.post(API_ROUTES.GESTAO.STUDENTS_BY_COURSE, {
+        ...params,
+        course_id: Number(courseId),
+      }),
     byInstitute: (instituteId, params = {}) =>
-      api.get(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE(instituteId), {
-        params,
+      api.post(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE, {
+        ...params,
+        institute_id: Number(instituteId),
       }),
   },
 
   // Períodos (se existir no backend)
   periods: {
-    get: (params = {}) => api.get(API_ROUTES.GESTAO.PERIODS, { params }),
+    get: (params = {}) => getWithBody(API_ROUTES.GESTAO.PERIODS, params),
     getById: (id, params = {}) =>
-      api.get(API_ROUTES.GESTAO.PERIODS_BY_ID(id), { params }),
-    findOne: (id) => api.get(API_ROUTES.GESTAO.PERIODS_BY_ID(id)),
+      api.post(API_ROUTES.GESTAO.PERIODS_DETAIL, {
+        ...params,
+        period_id: Number(id),
+      }),
+    findOne: (id) =>
+      api.post(API_ROUTES.GESTAO.PERIODS_DETAIL, {
+        period_id: Number(id),
+      }),
     post: (data) => api.post(API_ROUTES.GESTAO.PERIODS, data),
-    put: (id, data) => api.put(API_ROUTES.GESTAO.PERIODS_BY_ID(id), data),
-    patch: (id, data) => api.patch(API_ROUTES.GESTAO.PERIODS_BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.GESTAO.PERIODS_BY_ID(id)),
+    put: (id, data) =>
+      api.put(API_ROUTES.GESTAO.PERIODS, { ...data, period_id: Number(id) }),
+    patch: (id, data) =>
+      api.patch(API_ROUTES.GESTAO.PERIODS, {
+        ...data,
+        period_id: Number(id),
+      }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.GESTAO.PERIODS, { period_id: Number(id) }),
     getStudents: (id, params = {}) =>
-      api.get(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), { params }),
+      api.post(API_ROUTES.GESTAO.PERIODS_DETAIL, {
+        ...params,
+        period_id: Number(id),
+        include: "students",
+      }),
     addStudent: (id, studentId) =>
-      api.post(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), {
-        student_id: studentId,
+      api.post(API_ROUTES.GESTAO.PERIODS_STUDENTS, {
+        period_id: Number(id),
+        student_id: Number(studentId),
       }),
     removeStudent: (id, studentId) =>
-      api.delete(API_ROUTES.GESTAO.PERIODS_STUDENTS(id), {
-        data: { student_id: studentId },
+      api.delete(API_ROUTES.GESTAO.PERIODS_STUDENTS, {
+        data: { period_id: Number(id), student_id: Number(studentId) },
       }),
   },
 
   histories: {
     getByPeriod: (periodId, params = {}) =>
-      api.get(API_ROUTES.HISTORIES.BY_PERIOD(periodId), { params }),
+      api.post(API_ROUTES.HISTORIES.BY_PERIOD, {
+        ...params,
+        id: Number(periodId),
+      }),
     getByRoom: (roomId, params = {}) =>
-      api.get(API_ROUTES.HISTORIES.BY_ROOM(roomId), { params }),
+      api.post(API_ROUTES.HISTORIES.BY_ROOM, {
+        ...params,
+        id: Number(roomId),
+      }),
     getBySchedule: (scheduleId, params = {}) =>
-      api.get(API_ROUTES.HISTORIES.BY_SCHEDULE(scheduleId), { params }),
+      api.post(API_ROUTES.HISTORIES.BY_SCHEDULE, {
+        ...params,
+        id: Number(scheduleId),
+      }),
+    getByStudent: (studentId, params = {}) =>
+      api.post(API_ROUTES.HISTORIES.BY_STUDENT, {
+        ...params,
+        id: Number(studentId),
+      }),
   },
 
   // Services
   services: {
-    get: (params = {}) => api.get(API_ROUTES.SERVICES.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.SERVICES.BY_ID(id)),
+    get: (params = {}) => getWithBody(API_ROUTES.SERVICES.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.SERVICES.DETAIL, { service_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.SERVICES.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.SERVICES.BY_ID(id)),
+    put: (id, data) =>
+      api.put(API_ROUTES.SERVICES.BASE, { ...data, service_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.SERVICES.BASE, { service_id: Number(id) }),
   },
 
   // Service Rooms
   serviceRooms: {
-    get: (params = {}) => api.get(API_ROUTES.SERVICE_ROOMS.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.SERVICE_ROOMS.BY_ID(id)),
-    getByService: (serviceId) =>
-      api.get(API_ROUTES.SERVICE_ROOMS.BY_SERVICE(serviceId)),
+    get: (params = {}) => getWithBody(API_ROUTES.SERVICE_ROOMS.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.SERVICE_ROOMS.DETAIL, {
+        service_room_id: Number(id),
+      }),
+    getByService: (serviceId, params = {}) =>
+      api.post(API_ROUTES.SERVICE_ROOMS.BY_SERVICE, {
+        ...params,
+        service_id: Number(serviceId),
+      }),
     post: (data) => api.post(API_ROUTES.SERVICE_ROOMS.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.SERVICE_ROOMS.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.SERVICE_ROOMS.BY_ID(id)),
+    put: (id, data) =>
+      api.patch(API_ROUTES.SERVICE_ROOMS.BASE, {
+        ...data,
+        service_room_id: Number(id),
+      }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.SERVICE_ROOMS.BASE, {
+        service_room_id: Number(id),
+      }),
   },
 
   // Service Schedules
   serviceSchedules: {
     get: (params = {}) =>
-      api.get(API_ROUTES.SERVICE_SCHEDULES.BASE, { params }),
-    getById: (id) => api.get(API_ROUTES.SERVICE_SCHEDULES.BY_ID(id)),
+      getWithBody(API_ROUTES.SERVICE_SCHEDULES.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.SERVICE_SCHEDULES.DETAIL, {
+        service_schedule_id: Number(id),
+      }),
     getByRoom: (roomId) =>
-      api.get(API_ROUTES.SERVICE_SCHEDULES.BY_ROOM(roomId)),
+      api.post(API_ROUTES.SERVICE_SCHEDULES.BY_ROOM, {
+        service_room_id: Number(roomId),
+      }),
     getByRoomDay: (roomId, day) =>
-      api.get(API_ROUTES.SERVICE_SCHEDULES.BY_ROOM_DAY(roomId, day)),
+      api.post(API_ROUTES.SERVICE_SCHEDULES.BY_ROOM_DAY, {
+        service_room_id: Number(roomId),
+        week_day: day,
+      }),
     post: (data) => api.post(API_ROUTES.SERVICE_SCHEDULES.BASE, data),
-    put: (id, data) => api.put(API_ROUTES.SERVICE_SCHEDULES.BY_ID(id), data),
-    delete: (id) => api.delete(API_ROUTES.SERVICE_SCHEDULES.BY_ID(id)),
+    put: (id, data) =>
+      api.patch(API_ROUTES.SERVICE_SCHEDULES.BASE, {
+        ...data,
+        service_schedule_id: Number(id),
+      }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.SERVICE_SCHEDULES.BASE, {
+        service_schedule_id: Number(id),
+      }),
   },
 
   // Acompanhamento

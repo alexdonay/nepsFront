@@ -2,8 +2,9 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const DAY_LABELS = {
   MONDAY: "Segunda-feira",
@@ -29,7 +30,13 @@ const formatDate = (value) => {
 };
 
 export default function EnrollmentPeriodsHistory() {
-  const { id, roomId, dayOfWeek, period } = useParams();
+  const periodContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
+  const roomContext = getRouteContext(ROUTE_CONTEXT_KEYS.room, {});
+  const scheduleContext = getRouteContext(ROUTE_CONTEXT_KEYS.schedule, {});
+  const id = periodContext.id;
+  const roomId = roomContext.id || scheduleContext.roomId;
+  const dayOfWeek = scheduleContext.dayOfWeek;
+  const period = scheduleContext.period;
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -157,9 +164,13 @@ export default function EnrollmentPeriodsHistory() {
           onClick={() =>
             navigate(
               isScheduleHistory
-                ? `/rooms/${roomId}/schedules/${dayOfWeek}/${period}`
+                ? isRoomContext
+                  ? "/rooms/schedules"
+                  : "/service-rooms/schedules"
                 : isRoomHistory
-                  ? `/rooms/${roomId}/schedules`
+                  ? isRoomContext
+                    ? "/rooms/schedules"
+                    : "/service-rooms/schedules"
                   : "/periods",
             )
           }

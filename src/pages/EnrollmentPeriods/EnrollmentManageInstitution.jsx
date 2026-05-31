@@ -18,9 +18,11 @@ import {
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { getCurrentInstitutionId } from "../../utils/auth";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function EnrollmentManageInstitution() {
-  const { periodId } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
+  const periodId = routeContext.id;
   const navigate = useNavigate();
   const institutionId = getCurrentInstitutionId();
 

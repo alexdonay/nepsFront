@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -124,7 +125,9 @@ export default function RoomsList() {
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
   const handleManage = (rowData) => {
-    navigate(`/rooms/${rowData.id}/schedules`);
+    setRouteContext(ROUTE_CONTEXT_KEYS.room, { id: rowData.id });
+    setRouteContext(ROUTE_CONTEXT_KEYS.schedule, { roomId: rowData.id });
+    navigate("/rooms/schedules");
   };
 
   const actionsTemplate = (rowData) => (
@@ -139,7 +142,10 @@ export default function RoomsList() {
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
-        onClick={() => navigate(`/rooms/${rowData.id}`)}
+        onClick={() => {
+          setRouteContext(ROUTE_CONTEXT_KEYS.room, { id: rowData.id });
+          navigate("/rooms/edit");
+        }}
       />
     </div>
   );

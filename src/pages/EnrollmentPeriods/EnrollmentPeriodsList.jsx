@@ -10,6 +10,7 @@ import {
   getCurrentPermission,
   normalizePermission,
 } from "../../utils/auth";
+import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 import EnrollmentPeriodsFilters from "./EnrollmentPeriodsFilters";
 
 export default function EnrollmentPeriodsList() {
@@ -227,7 +228,10 @@ export default function EnrollmentPeriodsList() {
                 text
                 size="small"
                 title="Ver histórico do período"
-                onClick={() => navigate(`/periods/${row.id}/history`)}
+                onClick={() => {
+                  setRouteContext(ROUTE_CONTEXT_KEYS.period, { id: row.id });
+                  navigate("/periods/history");
+                }}
               />
               {currentPermission === PERMISSIONS.ADMIN && (
                 <Button
@@ -236,9 +240,10 @@ export default function EnrollmentPeriodsList() {
                   text
                   size="small"
                   title="Gerir alunos do período"
-                  onClick={() =>
-                    (window.location.href = `/periods/${row.id}/manage`)
-                  }
+                  onClick={() => {
+                    setRouteContext(ROUTE_CONTEXT_KEYS.period, { id: row.id });
+                    window.location.href = "/periods/manage";
+                  }}
                 />
               )}
               {currentPermission === PERMISSIONS.INSTITUICAO_ENSINO && (
@@ -248,9 +253,10 @@ export default function EnrollmentPeriodsList() {
                   text
                   size="small"
                   title="Gerenciar inscrições"
-                  onClick={() =>
-                    navigate(`/periods/${row.id}/manage-institution`)
-                  }
+                  onClick={() => {
+                    setRouteContext(ROUTE_CONTEXT_KEYS.period, { id: row.id });
+                    navigate("/periods/manage-institution");
+                  }}
                 />
               )}
               {canCreatePeriod && (
@@ -259,7 +265,10 @@ export default function EnrollmentPeriodsList() {
                   rounded
                   text
                   size="small"
-                  onClick={() => (window.location.href = `/periods/${row.id}`)}
+                  onClick={() => {
+                    setRouteContext(ROUTE_CONTEXT_KEYS.period, { id: row.id });
+                    window.location.href = "/periods/edit";
+                  }}
                 />
               )}
             </div>

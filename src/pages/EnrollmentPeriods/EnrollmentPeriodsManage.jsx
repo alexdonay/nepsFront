@@ -5,9 +5,10 @@ import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
 import { Sidebar } from "primereact/sidebar";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentCourseName = (student) =>
   student?.course?.name || student?.course_name || "-";
@@ -99,7 +100,8 @@ const hasStudentSlotLink = (student) => {
 };
 
 export default function EnrollmentPeriodsManage() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
+  const { id } = routeContext;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState(null);
@@ -322,22 +324,28 @@ export default function EnrollmentPeriodsManage() {
   const handleAssignStudentToSlot = async (slot) => {
     if (!managingStudent || !slot) return;
     try {
+      const periodId = period?.id || id;
+      if (!periodId) {
+        console.error("periodId não definido");
+        return;
+      }
       await repository.roomSchedules.addStudent(
         slot.room_id,
         slot.day_of_week || slot.dayOfWeek,
         slot.period,
+        periodId,
         managingStudent.id,
       );
 
       await loadPeriodStudents();
       clearManage();
-      navigate(`/periods/${id}/manage`);
+      navigate("/periods/manage");
     } catch (e) {
       console.error("Erro ao vincular aluno ao horário:", e);
     }
   };
 
-  const handleRemoveStudentFromSlot = async () => {
+  const handleRemoveStudentFromSlot = async (slot) => {
     if (isRemoving) {
       return;
     }
@@ -349,16 +357,44 @@ export default function EnrollmentPeriodsManage() {
       console.error("periodId não definido");
       return;
     }
+    if (!slot) {
+      console.error("slot não definido para desvinculação");
+      return;
+    }
 
     setIsRemoving(true);
     try {
-      const response = await repository.periods.removeStudent(
+      await repository.roomSchedules.removeStudent(
+        slot.room_id,
+        slot.day_of_week || slot.dayOfWeek,
+        slot.period,
         periodId,
         managingStudent.id,
       );
-      setIsRemoving(false);
+      await loadPeriodStudents();
+      setStudents((currentStudents) =>
+        currentStudents.map((student) =>
+          student.id === managingStudent.id
+            ? {
+                ...student,
+                slot: null,
+                slots: [],
+                schedule: null,
+                schedules: [],
+                room_schedule: null,
+                room_schedules: [],
+                linked_slot: null,
+                linked_slots: [],
+                assigned_slot: null,
+                assigned_slots: [],
+                assignment: null,
+                assignments: [],
+              }
+            : student,
+        ),
+      );
       clearManage();
-      navigate(`/periods/${id}/manage`);
+      window.location.replace("/periods/manage");
     } catch (e) {
       console.error("❌ Erro ao desvincular:", e);
       console.error("Status:", e.response?.status);
@@ -392,11 +428,6 @@ export default function EnrollmentPeriodsManage() {
     return matchRoom && matchDay && matchPeriod;
   };
 
-  const periodLabel = useMemo(() => {
-    if (!period) return "";
-    return `${period.name || "Período"} • ${period.start_date ? new Date(period.start_date).toLocaleDateString() : "-"} - ${period.end_date ? new Date(period.end_date).toLocaleDateString() : "-"}`;
-  }, [period]);
-
   const filteredStudents = useMemo(() => {
     const nameQuery = (studentFilters.name || "").trim().toLowerCase();
 
@@ -429,6 +460,11 @@ export default function EnrollmentPeriodsManage() {
     if (studentFilters.name?.trim()) count += 1;
     return count;
   }, [studentFilters]);
+
+  const periodLabel = useMemo(() => {
+    if (!period) return "";
+    return `${period.name || "Período"} • ${period.start_date ? new Date(period.start_date).toLocaleDateString() : "-"} - ${period.end_date ? new Date(period.end_date).toLocaleDateString() : "-"}`;
+  }, [period]);
 
   const renderSlotRoomName = (slot) =>
     slot.room_name ||
@@ -663,7 +699,7 @@ export default function EnrollmentPeriodsManage() {
                     <Button
                       label="Desvincular"
                       icon="pi pi-unlink"
-                      onClick={() => handleRemoveStudentFromSlot()}
+                      onClick={() => handleRemoveStudentFromSlot(s)}
                       severity="warning"
                       disabled={isRemoving}
                       loading={isRemoving}

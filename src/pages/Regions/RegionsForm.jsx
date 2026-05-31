@@ -1,11 +1,13 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function RegionsForm() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.region, {});
+  const id = routeContext.id;
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", is_active: true });
   const [loading, setLoading] = useState(false);

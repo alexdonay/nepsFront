@@ -50,6 +50,17 @@ Este projeto utiliza um componente compartilhado de filtros em drawer nas telas 
 
 As páginas de listagem usam `useSearchParams` para persistir filtros na URL e `src/services/repository.js` aceita `params` para repassar query strings para a API.
 
+## Migração de vínculo em horário
+
+As rotas de vínculo e desvínculo de aluno em horário não recebem mais dados na URL.
+
+O frontend deve enviar `room_id`, `day_of_week`, `period`, `period_id` e `student_id` no body.
+
+Rotas novas:
+
+- `POST /api/v1/rooms/schedule/student`
+- `DELETE /api/v1/rooms/schedule/student`
+
 ## Variáveis de ambiente
 
 Este projeto usa o arquivo `.env.local` na raiz do repositório para configurar integrações locais.

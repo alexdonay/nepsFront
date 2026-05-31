@@ -1,11 +1,15 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function ServiceRoomForm() {
-  const { id, serviceId } = useParams();
+  const serviceRoomContext = getRouteContext(ROUTE_CONTEXT_KEYS.serviceRoom, {});
+  const serviceContext = getRouteContext(ROUTE_CONTEXT_KEYS.service, {});
+  const id = serviceRoomContext.id;
+  const serviceId = serviceRoomContext.serviceId || serviceContext.id || null;
   const isEdit = !!id;
   const [form, setForm] = useState({
     name: "",
@@ -26,7 +30,7 @@ export default function ServiceRoomForm() {
     try {
       if (isEdit) await repository.serviceRooms.put(id, form);
       else await repository.serviceRooms.post(form);
-      navigate(serviceId ? `/services/${serviceId}/rooms` : "/service-rooms");
+      navigate(serviceId ? "/services/rooms" : "/service-rooms/edit");
     } catch (e) {}
   };
 

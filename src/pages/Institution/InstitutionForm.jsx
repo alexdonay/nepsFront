@@ -6,14 +6,16 @@ import { Message } from "primereact/message";
 import { MultiSelect } from "primereact/multiselect";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CNPJInput from "../../components/CNPJInput";
 import EmailInput from "../../components/Email/EmailInput";
 import PhoneInput from "../../components/PhoneInput";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function InstitutionForm() {
-  const { id } = useParams();
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.institution, {});
+  const id = routeContext.id;
   const [activeTab, setActiveTab] = useState(0);
   const [form, setForm] = useState({
     name: "",

@@ -7,11 +7,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useLocation,
   useNavigate,
-  useParams,
   useSearchParams,
 } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import "./ServiceScheduleAssignment.css";
 
 const DAY_LABELS = {
@@ -60,13 +60,14 @@ const STUDENT_FILTERS = [
 ];
 
 export default function ServiceScheduleAssignment() {
-  const { roomId, dayOfWeek, period } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const isRoomContext = location.pathname.startsWith("/rooms/");
-  const basePath = isRoomContext
-    ? `/rooms/${roomId}/schedules`
-    : `/service-rooms/${roomId}/schedules`;
+  const scheduleContext = getRouteContext(ROUTE_CONTEXT_KEYS.schedule, {});
+  const roomId = scheduleContext.roomId;
+  const dayOfWeek = scheduleContext.dayOfWeek;
+  const period = scheduleContext.period;
+  const basePath = isRoomContext ? "/rooms/schedules" : "/service-rooms/schedules";
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [room, setRoom] = useState(null);
@@ -208,6 +209,7 @@ export default function ServiceScheduleAssignment() {
   const currentPeriodStudentIds = currentPeriod.studentIds || [];
   const currentLinkedCount = currentPeriodStudentIds.length;
   const remainingVacancies = Math.max(roomCapacity - currentLinkedCount, 0);
+  const currentPeriodId = currentPeriod?.id || currentPeriod?.period_id;
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -280,12 +282,16 @@ export default function ServiceScheduleAssignment() {
 
     try {
       setSaving(true);
+      if (!currentPeriodId) {
+        throw new Error("period_id indisponível para vínculo");
+      }
       for (const student of selectedStudents) {
         // eslint-disable-next-line no-await-in-loop
         await repository.roomSchedules.addStudent(
           roomId,
           dayOfWeek,
           period,
+          currentPeriodId,
           student.id,
         );
       }
@@ -304,10 +310,14 @@ export default function ServiceScheduleAssignment() {
   const handleRemoveStudent = async (studentId) => {
     try {
       setUnlinking(true);
+      if (!currentPeriodId) {
+        throw new Error("period_id indisponível para desvínculo");
+      }
       await repository.roomSchedules.removeStudent(
         roomId,
         dayOfWeek,
         period,
+        currentPeriodId,
         studentId,
       );
       setMessageSeverity("success");
@@ -344,8 +354,8 @@ export default function ServiceScheduleAssignment() {
             onClick={() =>
               navigate(
                 isRoomContext
-                  ? `/rooms/${roomId}/schedules/${dayOfWeek}/${period}/history`
-                  : `/service-rooms/${roomId}/schedules/${dayOfWeek}/${period}/history`,
+                  ? "/rooms/schedules/history"
+                  : "/service-rooms/schedules/history",
               )
             }
           />
