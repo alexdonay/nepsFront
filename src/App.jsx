@@ -25,7 +25,7 @@ import RoomsList from "./pages/Rooms/RoomsList";
 
 import Schedule from "./pages/Schedule/Schedule";
 
-import InternshipsList from "./pages/Internships/InternshipsList";
+import InternshipsList from "./pages/internships/internshipsList";
 import InternshipsForm from "./pages/internships/internshipsForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
