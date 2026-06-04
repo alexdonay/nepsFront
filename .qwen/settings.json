@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Agent(Explore)",
+      "Bash(npm run *)",
+      "Bash(netstat *)",
+      "Bash(findstr *)"
+    ]
+  },
+  "$version": 4
+}

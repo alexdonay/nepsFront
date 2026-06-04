@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
@@ -76,7 +76,7 @@ export default function UsersList() {
   const [users, setUsers] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState({});
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -84,16 +84,7 @@ export default function UsersList() {
 
   useEffect(() => {
     loadUsers();
-  }, [searchParams, first, rows]);
-
-  useEffect(() => {
-    const hasFilters = searchParams.toString().length > 0;
-    if (hasFilters) {
-      setFilterVisible(true);
-    }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filters, first, rows]);
 
   const loadUsers = useCallback(async () => {
     try {
@@ -101,8 +92,13 @@ export default function UsersList() {
       const page = Math.floor(first / rows) + 1;
       const params = { page, per_page: rows };
 
-      searchParams.forEach((value, key) => {
-        params[key] = value;
+      // Adicionar filtros locais aos parâmetros da API
+      Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          params[key] = value.join(",");
+        } else {
+          params[key] = value;
+        }
       });
 
       const { data } = await repository.users.get(params);
@@ -115,23 +111,15 @@ export default function UsersList() {
     } finally {
       setLoading(false);
     }
-  }, [searchParams, first, rows]);
+  }, [filters, first, rows]);
 
   const handleApplyFilters = (appliedFilters) => {
-    const params = new URLSearchParams();
-    Object.entries(appliedFilters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        params.append(key, value.join(","));
-      } else {
-        params.append(key, value);
-      }
-    });
-    setSearchParams(params);
+    setFilters(appliedFilters);
     setFirst(0);
   };
 
   const handleClearFilters = () => {
-    setSearchParams(new URLSearchParams());
+    setFilters({});
     setFirst(0);
     setFilterVisible(false);
   };
@@ -141,7 +129,7 @@ export default function UsersList() {
     setRows(event.rows);
   };
 
-  const activeFilterCount = Array.from(searchParams.entries()).length;
+  const activeFilterCount = Object.keys(filters).length;
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">

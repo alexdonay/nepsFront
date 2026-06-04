@@ -3,8 +3,8 @@ import "./App.css";
 import Layout from "./components/Layout";
 import { PERMISSIONS } from "./constants/permissions";
 import AccessDenied from "./pages/AccessDenied/AccessDenied";
-import CoursesForm from "./pages/Courses/CoursesForm";
-import CoursesList from "./pages/Courses/CoursesList";
+import DisciplinesForm from "./pages/Discipline/DisciplineForm";
+import DisciplinesList from "./pages/Discipline/DisciplineList";
 import EnrollmentManageInstitution from "./pages/EnrollmentPeriods/EnrollmentManageInstitution";
 import EnrollmentPeriodsForm from "./pages/EnrollmentPeriods/EnrollmentPeriodsForm";
 import EnrollmentPeriodsHistory from "./pages/EnrollmentPeriods/EnrollmentPeriodsHistory";
@@ -13,6 +13,7 @@ import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriods
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
+
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
@@ -23,13 +24,15 @@ import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
 
 import Schedule from "./pages/Schedule/Schedule";
-import ServiceRoomForm from "./pages/ServiceRooms/ServiceRoomForm";
-import ServiceRoomsList from "./pages/ServiceRooms/ServiceRoomsList";
-import ServiceForm from "./pages/Services/ServiceForm";
-import ServicesList from "./pages/Services/ServicesList";
-import ServiceScheduleAssignment from "./pages/ServiceSchedules/ServiceScheduleAssignment";
-import ServiceScheduleForm from "./pages/ServiceSchedules/ServiceScheduleForm";
-import ServiceSchedulesList from "./pages/ServiceSchedules/ServiceSchedulesList";
+
+import InternshipsList from "./pages/Internships/InternshipsList";
+import InternshipsForm from "./pages/internships/internshipsForm";
+import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
+import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
+import InternshipsListSchedulesList from "./pages/internshipsSchedules/InternshipsSchedulesList";
+import InternshipsScheduleForm from "./pages/internshipsSchedules/internshipsScheduleForm";
+import InternshipsScheduleAssignment from "./pages/internshipsSchedules/InternshipsScheduleAssignment";
+
 import StudentForm from "./pages/Student/StudentForm";
 import StudentDetails from "./pages/Student/StudentDetails";
 import StudentHistory from "./pages/Student/StudentHistory";
@@ -179,31 +182,31 @@ export default function App() {
       />
 
       <Route
-        path="/courses"
+        path="/disciplines"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <CoursesList />
+              <DisciplinesList />
             </Layout>
           </PrivateRoute>
         }
       />
       <Route
-        path="/courses/new"
+        path="/disciplines/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <CoursesForm />
+              <DisciplinesForm />
             </Layout>
           </PrivateRoute>
         }
       />
       <Route
-        path="/courses/:id"
+        path="/disciplines/:id"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <CoursesForm />
+              <DisciplinesForm />
             </Layout>
           </PrivateRoute>
         }
@@ -246,7 +249,7 @@ export default function App() {
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceSchedulesList />
+              <InternshipsListSchedulesList />
             </Layout>
           </PrivateRoute>
         }
@@ -268,7 +271,7 @@ export default function App() {
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceScheduleForm />
+              <InternshipsScheduleForm />
             </Layout>
           </PrivateRoute>
         }
@@ -279,7 +282,7 @@ export default function App() {
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceScheduleAssignment />
+              <InternshipsScheduleAssignment />
             </Layout>
           </PrivateRoute>
         }
@@ -297,84 +300,84 @@ export default function App() {
       />
 
       <Route
-        path="/services"
+        path="/internships"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServicesList />
+              <InternshipsList />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/services/new"
+        path="/internships/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceForm />
+              <InternshipsForm />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/services/:id"
+        path="/internships/:id"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceForm />
+              <InternshipsForm />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/services/rooms"
+        path="/internships/rooms"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceRoomsList />
+              <InternshipsRoomsList />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/services/rooms/new"
+        path="/internships/rooms/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceRoomForm />
+              <InternshipsRoomForm />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/service-rooms/edit"
+        path="/internships/rooms/edit"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceRoomForm />
+              <InternshipsRoomForm />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/service-rooms/schedules"
+        path="/internships-rooms/schedules"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceSchedulesList />
+              <InternshipsListSchedulesList />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/service-rooms/history"
+        path="/internships-rooms/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -385,29 +388,29 @@ export default function App() {
       />
 
       <Route
-        path="/service-rooms/schedules/new"
+        path="/internships-rooms/schedules/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceScheduleForm />
+              <InternshipsScheduleForm />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/service-rooms/schedules/assignment"
+        path="/internships-rooms/schedules/assignment"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceScheduleAssignment />
+              <InternshipsScheduleAssignment />
             </Layout>
           </PrivateRoute>
         }
       />
 
       <Route
-        path="/service-rooms/schedules/history"
+        path="/internships-rooms/schedules/history"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
@@ -418,11 +421,11 @@ export default function App() {
       />
 
       <Route
-        path="/service-schedules/:id"
+        path="/internships-schedules/:id"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
-              <ServiceScheduleForm />
+              <InternshipsScheduleForm />
             </Layout>
           </PrivateRoute>
         }
@@ -547,27 +550,6 @@ export default function App() {
           <PrivateRoute
             permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}
           >
-            <Route
-              path="/courses/new"
-              element={
-                <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
-                  <Layout>
-                    <CoursesForm />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
-
-            <Route
-              path="/courses/:id"
-              element={
-                <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
-                  <Layout>
-                    <CoursesForm />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
             <Layout>
               <Schedule />
             </Layout>

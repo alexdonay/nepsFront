@@ -37,7 +37,7 @@ export default function EnrollmentManageInstitution() {
 
   // Estados para modal de cadastro
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [courses, setCourses] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
   const [registering, setRegistering] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [documentFile, setDocumentFile] = useState(null);
@@ -47,7 +47,7 @@ export default function EnrollmentManageInstitution() {
     cpf: "",
     email: "",
     phone: "",
-    course_id: null,
+    discipline_id: null,
     semester: null,
     institution_id: institutionId,
     internship_start_date: "",
@@ -68,7 +68,7 @@ export default function EnrollmentManageInstitution() {
 
       // Carregar alunos da instituição
       const studentsRes = await repository.students.byInstitute(institutionId, {
-        include: "course,institution",
+        include: "discipline,institution",
       });
       const instituteStudents = Array.isArray(studentsRes.data)
         ? studentsRes.data
@@ -124,7 +124,7 @@ export default function EnrollmentManageInstitution() {
 
   useEffect(() => {
     loadData();
-    loadCourses();
+    loadDisciplines();
   }, [loadData]);
 
   const handleLinkStudent = async () => {
@@ -156,11 +156,11 @@ export default function EnrollmentManageInstitution() {
     }
   };
 
-  const loadCourses = async () => {
+  const loadDisciplines = async () => {
     try {
       const { data } = await api.get(API_ROUTES.CADASTROS.COURSES);
-      const coursesList = Array.isArray(data) ? data : data.items || [];
-      setCourses(coursesList);
+      const disciplinesList = Array.isArray(data) ? data : data.items || [];
+      setDisciplines(disciplinesList);
     } catch (e) {
       console.error("Erro ao carregar disciplinas:", e);
     }
@@ -209,7 +209,7 @@ export default function EnrollmentManageInstitution() {
         cpf: "",
         email: "",
         phone: "",
-        course_id: null,
+        discipline_id: null,
         semester: null,
         institution_id: institutionId,
         internship_start_date: "",
@@ -279,9 +279,9 @@ export default function EnrollmentManageInstitution() {
                   <Column field="name" header="Nome" />
                   <Column field="cpf" header="CPF" />
                   <Column
-                    field="course"
+                    field="discipline"
                     header="Disciplina"
-                    body={(row) => row.course?.name || row.course_name || "-"}
+                    body={(row) => row.discipline?.name || row.discipline_name || "-"}
                   />
                   <Column
                     header="Ação"
@@ -500,13 +500,13 @@ export default function EnrollmentManageInstitution() {
           <div className="field mb-4">
             <label className="font-medium mb-2 block">Disciplina *</label>
             <Dropdown
-              value={registerForm.course_id}
-              options={courses.map((course) => ({
-                label: course.name,
-                value: course.id,
+              value={registerForm.discipline_id}
+              options={disciplines.map((discipline) => ({
+                label: discipline.name,
+                value: discipline.id,
               }))}
               onChange={(e) =>
-                setRegisterForm({ ...registerForm, course_id: e.value })
+                setRegisterForm({ ...registerForm, discipline_id: e.value })
               }
               placeholder="Selecione um disciplina"
               required

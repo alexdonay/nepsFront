@@ -82,7 +82,7 @@ export default function UserForm() {
             user.education_institute?.id ??
             null;
           const unitId =
-            user.service_id ?? user.health_unit_id ?? user.service?.id ?? null;
+            user.internship_id ?? user.health_unit_id ?? user.service?.id ?? null;
 
           if (institutionId) setSelectedInstitution(institutionId);
           if (unitId) setSelectedUnit(unitId);
@@ -115,7 +115,7 @@ export default function UserForm() {
           profile === PERMISSIONS.INSTITUICAO_ENSINO
             ? selectedInstitution?.id ?? selectedInstitution ?? null
             : null,
-        service_id:
+        internship_id:
           profile === PERMISSIONS.CAMPO_ESTAGIO
             ? selectedUnit?.id ?? selectedUnit ?? null
             : null,
@@ -135,7 +135,7 @@ export default function UserForm() {
         if (profile === PERMISSIONS.CAMPO_ESTAGIO) {
           if (!selectedUnit) throw new Error("Selecione o campo de estágio");
           const unitId = selectedUnit.id ?? selectedUnit;
-          payload.service_id = unitId;
+          payload.internship_id = unitId;
         }
       }
 

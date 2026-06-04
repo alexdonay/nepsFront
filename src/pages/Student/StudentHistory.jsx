@@ -65,8 +65,8 @@ export default function StudentHistory() {
   }, [loadHistory]);
 
   const studentName = useMemo(() => student?.name || `Aluno ID: ${id}`, [id, student]);
-  const studentCourse = useMemo(
-    () => student?.course?.name || student?.course_name || "-",
+  const studentDiscipline = useMemo(
+    () => student?.discipline?.name || student?.discipline_name || "-",
     [student],
   );
   const studentInstitution = useMemo(
@@ -130,7 +130,7 @@ export default function StudentHistory() {
               </div>
               <div className="col-12 md:col-4">
                 <small className="text-600 block mb-1">Disciplina</small>
-                <strong>{studentCourse}</strong>
+                <strong>{studentDiscipline}</strong>
               </div>
               <div className="col-12 md:col-4">
                 <small className="text-600 block mb-1">Instituição</small>

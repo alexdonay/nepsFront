@@ -14,7 +14,7 @@ Todas as rotas de listagem (`GET`) devem aceitar **query parameters** para filtr
 Todos os filtros são enviados como **query parameters** na URL, no formato `?chave=valor`:
 
 ```
-GET /v1/students?name=joao&course_id=5&status=active
+GET /v1/students?name=joao&discipline_id=5&status=active
 ```
 
 ### 2.3 Operadores de Filtro
@@ -35,7 +35,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 
 | Convenção | Exemplo |
 |---|---|
-| `snake_case` | `course_id`, `start_date`, `is_active` |
+| `snake_case` | `discipline_id`, `start_date`, `is_active` |
 | Operador `_like` para contains | `name_like`, `email_like` |
 | Operador `_in` para múltiplos valores | `role_in`, `status_in` |
 | Operador `_from`/`_to` para range de data | `start_date_from`, `start_date_to` |
@@ -69,8 +69,8 @@ GET /v1/students?name=joao&course_id=5&status=active
     "total_pages": 5
   },
   "filters": {
-    "applied": ["name_like", "course_id"],
-    "available": ["name", "email", "course_id", "institution_id", "semester"]
+    "applied": ["name_like", "discipline_id"],
+    "available": ["name", "email", "discipline_id", "institution_id", "semester"]
   }
 }
 ```
@@ -86,7 +86,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 | `name_like` | texto | contains | `?name_like=joao` |
 | `cpf` | texto | exact | `?cpf=12345678900` |
 | `email_like` | texto | contains | `?email_like=gmail` |
-| `course_id` | integer | exact | `?course_id=5` |
+| `discipline_id` | integer | exact | `?discipline_id=5` |
 | `institution_id` | integer | exact | `?institution_id=2` |
 | `semester` | integer | exact | `?semester=3` |
 
@@ -109,7 +109,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 | `is_active` | boolean | exact | `?is_active=true` |
 | `priority` | integer | exact | `?priority=0` |
 
-### 3.4 Disciplinas — `GET /v1/courses`
+### 3.4 Disciplinas — `GET /v1/disciplines`
 
 | Parâmetro | Tipo | Operador | Exemplo |
 |---|---|---|---|
@@ -122,7 +122,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 | Parâmetro | Tipo | Operador | Exemplo |
 |---|---|---|---|
 | `name_like` | texto | contains | `?name_like=sala` |
-| `service_id` | integer | exact | `?service_id=5` |
+| `internship_id` | integer | exact | `?internship_id=5` |
 | `has_gurney` | boolean | exact | `?has_gurney=true` |
 | `capacity_min` | integer | range | `?capacity_min=10` |
 | `capacity_max` | integer | range | `?capacity_max=50` |
@@ -134,7 +134,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 | `name_like` | texto | contains | `?name_like=norte` |
 | `is_active` | boolean | exact | `?is_active=true` |
 
-### 3.7 Serviços — `GET /v1/services`
+### 3.7 Serviços — `GET /v1/internships`
 
 | Parâmetro | Tipo | Operador | Exemplo |
 |---|---|---|---|
@@ -160,7 +160,7 @@ GET /v1/students?name=joao&course_id=5&status=active
 ```
 GET /v1/students?
   name_like=joao&
-  course_id=5&
+  discipline_id=5&
   is_active=true&
   page=2&
   per_page=20&
@@ -198,8 +198,8 @@ GET /v1/periods?
     "total_pages": 0
   },
   "filters": {
-    "applied": ["name_like", "course_id"],
-    "available": ["name", "email", "course_id", "institution_id", "semester"]
+    "applied": ["name_like", "discipline_id"],
+    "available": ["name", "email", "discipline_id", "institution_id", "semester"]
   }
 }
 ```
@@ -212,7 +212,7 @@ GET /v1/periods?
 {
   "error": "invalid_filter",
   "message": "O campo 'nome_errado' não é um filtro válido para este recurso",
-  "valid_filters": ["name_like", "email", "course_id", "institution_id", "semester", "is_active"]
+  "valid_filters": ["name_like", "email", "discipline_id", "institution_id", "semester", "is_active"]
 }
 ```
 
@@ -248,7 +248,7 @@ GET /v1/periods?
 
 3. **Case-insensitive** — Filtros de texto com `_like` devem ser case-insensitive.
 
-4. **Índices de banco** — Criar índices compostos para os campos mais usados em conjunto (ex: `course_id + is_active`, `region_id + is_active`).
+4. **Índices de banco** — Criar índices compostos para os campos mais usados em conjunto (ex: `discipline_id + is_active`, `region_id + is_active`).
 
 5. **Limite de `_in`** — O operador `_in` deve aceitar no máximo 100 valores por requisição.
 
@@ -260,9 +260,9 @@ Para popular os `Dropdown` dos filtros, o frontend precisa de endpoints que reto
 
 | Rota | Uso no Filtro | Já Existe |
 |---|---|---|
-| `GET /v1/courses` | Filtro de disciplina (Alunos) | Sim |
+| `GET /v1/disciplines` | Filtro de disciplina (Alunos) | Sim |
 | `GET /v1/regions` | Filtro de região (Disciplinas, Serviços) | Sim |
-| `GET /v1/services` | Filtro de serviço (Salas) | Sim |
+| `GET /v1/internships` | Filtro de serviço (Salas) | Sim |
 | `GET /v1/cadastros/institutions` | Filtro de instituição (Alunos) | Sim |
 | `GET /v1/users/roles` | Filtro de perfil (Usuários) | **Não** — criar |
 

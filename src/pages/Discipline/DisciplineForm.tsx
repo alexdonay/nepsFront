@@ -3,16 +3,16 @@ import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { repository } from "../../services/repository";
 
 type FormState = {
   name: string;
 };
 
-export default function CoursesForm() {
-  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.course, {});
-  const id = routeContext.id;
+export default function DisciplinesForm() {
+  const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.discipline, undefined);
+  const id = routeContext?.id;
   const isEdit = !!id;
   const navigate = useNavigate();
 
@@ -23,12 +23,14 @@ export default function CoursesForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isEdit) loadCourse();
-  }, [id]);
+    if (isEdit && id) loadDiscipline();
+  }, [id, isEdit]);
 
-  const loadCourse = async () => {
+  const loadDiscipline = async () => {
+    if (!id) return;
+    
     try {
-      const { data } = await repository.courses.getById(id as string);
+      const { data } = await repository.disciplines.getById(id as string);
       setForm({
         name: data.name || "",
       });
@@ -48,11 +50,11 @@ export default function CoursesForm() {
       };
 
       if (isEdit) {
-        await repository.courses.put(id as string, payload);
+        await repository.disciplines.put(id as string, payload);
       } else {
-        await repository.courses.post(payload);
+        await repository.disciplines.post(payload);
       }
-      navigate("/courses");
+      navigate("/disciplines");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Erro ao salvar o disciplina");
     } finally {
@@ -70,7 +72,7 @@ export default function CoursesForm() {
           label="Voltar"
           icon="pi pi-arrow-left"
           className="p-button-text"
-          onClick={() => navigate("/courses")}
+          onClick={() => navigate("/disciplines")}
         />
       </div>
 
@@ -92,7 +94,7 @@ export default function CoursesForm() {
             type="button"
             label="Cancelar"
             className="p-button-secondary"
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/disciplines")}
           />
           <Button type="submit" label="Salvar" loading={loading} />
         </div>

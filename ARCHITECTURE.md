@@ -44,8 +44,8 @@ nepsFront/
 │   │   └── Phone/
 │   ├── pages/                     # Páginas principais
 │   │   ├── AccessDenied/          # Página de acesso negado
-│   │   ├── Courses/               # Gestão de disciplinas
-│   │   │   ├── CoursesList.jsx
+│   │   ├── Disciplines/               # Gestão de disciplinas
+│   │   │   ├── DisciplinesList.jsx
 │   │   │   └── CursesForm.tsx
 │   │   ├── EnrollmentPeriods/     # Períodos de matrícula
 │   │   │   ├── EnrollmentPeriods.jsx
@@ -72,9 +72,9 @@ nepsFront/
 │   │   ├── ServiceRooms/          # Salas de serviço
 │   │   │   ├── ServiceRoomForm.jsx
 │   │   │   └── ServiceRoomsList.jsx
-│   │   ├── Services/              # Gestão de serviços
+│   │   ├── Internships/              # Gestão de serviços
 │   │   │   ├── ServiceForm.jsx
-│   │   │   └── ServicesList.jsx
+│   │   │   └── InternshipsList.jsx
 │   │   ├── ServiceSchedules/      # Horários de serviço
 │   │   │   ├── ServiceScheduleForm.jsx
 │   │   │   └── ServiceSchedulesList.jsx
@@ -84,7 +84,7 @@ nepsFront/
 │   │   └── Users/                 # Gestão de usuários
 │   │       ├── UserForm.jsx
 │   │       └── UsersList.jsx
-│   ├── services/                  # Serviços e integrações
+│   ├── internships/                  # Serviços e integrações
 │   │   ├── API_routes.js          # Definição de rotas da API
 │   │   ├── api.js                 # Instância Axios configurada
 │   │   ├── auth.js                # Lógica de autenticação
@@ -143,7 +143,7 @@ nepsFront/
 └────────────────┬────────────────────────┘
                  │
 ┌────────────────▼────────────────────────┐
-│      Logic Layer (Services)             │
+│      Logic Layer (Internships)             │
 │    - Repository Pattern                 │
 │    - Autenticação                       │
 │    - Validações                         │
@@ -343,13 +343,13 @@ Verificar se usuário está autenticado antes de acessar uma página.
 | `/students/:id`                | `StudentForm.jsx`          | Editar aluno          |
 | `/users`                       | `UsersList.jsx`            | Lista de usuários     |
 | `/institutions`                | `InstitutionsList.jsx`     | Lista de instituições |
-| `/courses`                     | `CoursesList.jsx`          | Lista de disciplinas       |
+| `/disciplines`                     | `DisciplinesList.jsx`          | Lista de disciplinas       |
 | `/rooms`                       | `RoomsList.jsx`            | Lista de salas        |
 | `/rooms/new`                   | `RoomsForm.jsx`            | Nova sala             |
 | `/rooms/:id`                   | `RoomsForm.jsx`            | Editar sala           |
 | `/rooms/:roomId/schedules`     | `ServiceSchedulesList.jsx` | Agenda da sala        |
 | `/rooms/:roomId/schedules/new` | `ServiceScheduleForm.jsx`  | Novo horário da sala  |
-| `/services`                    | `ServicesList.jsx`         | Lista de serviços     |
+| `/internships`                    | `InternshipsList.jsx`         | Lista de serviços     |
 | `/regions`                     | `RegionsList.jsx`          | Lista de regiões      |
 | `/schedule`                    | `Schedule.jsx`             | Agenda                |
 | `/access-denied`               | `AccessDenied.jsx`         | Acesso negado         |
@@ -398,27 +398,27 @@ npm run preview:https
 
 ## 📦 Principais Modules e Suas Responsabilidades
 
-### `src/services/api.js`
+### `src/internships/api.js`
 
 - Configura instância Axios
 - Define baseURL da API
 - Adiciona interceptadores para autenticação
 - Injeta token JWT em todas as requisições
 
-### `src/services/API_routes.js`
+### `src/internships/API_routes.js`
 
 - Centraliza todas as rotas de API
 - Organiza rotas por módulo (AUTH, USERS, COURSES, etc)
 - Suporta URLs dinâmicas com IDs
 
-### `src/services/repository.js`
+### `src/internships/repository.js`
 
 - **Repository Pattern**: Interface CRUD para cada recurso
 - Encapsula chamadas de API
 - Padroniza requisições GET, POST, PUT, DELETE
 - Suporta casos especiais (filtros, relacionamentos)
 
-### `src/services/auth.js`
+### `src/internships/auth.js`
 
 - Lógica de autenticação
 - Login, logout
@@ -460,7 +460,7 @@ const loadStudents = async () => {
 ### 2. Repository executa requisição
 
 ```javascript
-// src/services/repository.js
+// src/internships/repository.js
 students: {
   get: () => api.get(API_ROUTES.GESTAO.STUDENTS),
   // ...
@@ -470,7 +470,7 @@ students: {
 ### 3. API Route define URL
 
 ```javascript
-// src/services/API_routes.js
+// src/internships/API_routes.js
 GESTAO: {
   STUDENTS: "/v1/gestao/students",
   // ...
@@ -480,7 +480,7 @@ GESTAO: {
 ### 4. Axios faz requisição
 
 ```javascript
-// src/services/api.js
+// src/internships/api.js
 const api = axios.create({
   baseURL: "http://localhost:8000/api",
   headers: { "Content-Type": "application/json" },

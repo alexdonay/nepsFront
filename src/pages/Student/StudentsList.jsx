@@ -28,7 +28,7 @@ const FILTER_CONFIG = [
   },
   {
     label: "Disciplina",
-    key: "course_id",
+    key: "discipline_id",
     type: "dropdown",
     options: [],
   },
@@ -50,6 +50,8 @@ export default function StudentsList() {
   const [students, setStudents] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadedDisciplines, setLoadedDisciplines] = useState({});
+  const [loadedInstitutions, setLoadedInstitutions] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
@@ -70,7 +72,7 @@ export default function StudentsList() {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
-      const params = { page, per_page: rows, include: "course,institution" };
+      const params = { page, per_page: rows, include: "discipline,institution" };
 
       searchParams.forEach((value, key) => {
         params[key] = value;
@@ -119,13 +121,13 @@ export default function StudentsList() {
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
   const filters = useMemo(() => {
-    const coursesOptions = Array.from(
+    const disciplinesOptions = Array.from(
       new Map(
         students
-          .filter((student) => student.course?.id && student.course?.name)
+          .filter((student) => student.discipline?.id && student.discipline?.name)
           .map((student) => [
-            student.course.id,
-            { label: student.course.name, value: student.course.id },
+            student.discipline.id,
+            { label: student.discipline.name, value: student.discipline.id },
           ]),
       ).values(),
     );
@@ -147,8 +149,8 @@ export default function StudentsList() {
     );
 
     return FILTER_CONFIG.map((filter) => {
-      if (filter.key === "course_id") {
-        return { ...filter, options: coursesOptions };
+      if (filter.key === "discipline_id") {
+        return { ...filter, options: disciplinesOptions };
       }
 
       if (filter.key === "institution_id") {
@@ -194,11 +196,11 @@ export default function StudentsList() {
     </div>
   );
 
-  const courseTemplate = (rowData) => {
-    if (rowData.course && typeof rowData.course === "object") {
-      return rowData.course.name;
+  const disciplineTemplate = (rowData) => {
+    if (rowData.discipline && typeof rowData.discipline === "object") {
+      return rowData.discipline.name;
     }
-    return rowData.course_name || "-";
+    return rowData.discipline_name || "-";
   };
 
   const institutionTemplate = (rowData) => {
@@ -245,7 +247,7 @@ export default function StudentsList() {
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />
         <Column field="email" header="Email" />
-        <Column header="Disciplina" body={courseTemplate} />
+        <Column header="Disciplina" body={disciplineTemplate} />
         <Column field="semester" header="Semestre" />
         <Column header="Instituição" body={institutionTemplate} />
         <Column body={actionsTemplate} header="Ações" />

@@ -3,14 +3,37 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import CoursesFilter from "./CoursesFilter";
 import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
 
-// FILTER_CONFIG moved to CoursesFilter component
+const FILTER_CONFIG = [
+  {
+    label: "Nome",
+    key: "name",
+    type: "text",
+    placeholder: "Buscar por nome...",
+  },
+  {
+    label: "Região",
+    key: "region_id",
+    type: "dropdown",
+    options: [],
+  },
+  {
+    label: "Status",
+    key: "is_active",
+    type: "dropdown",
+    options: [
+      { label: "Ativo", value: "1" },
+      { label: "Inativo", value: "0" },
+    ],
+  },
+];
 
-export default function CoursesList() {
-  const [courses, setCourses] = useState([]);
+export default function InternshipsList() {
+  const [internships, setInternships] = useState([]);
+  const [regions, setRegions] = useState({});
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,7 +43,11 @@ export default function CoursesList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadCourses();
+    loadRegions();
+  }, []);
+
+  useEffect(() => {
+    loadInternships();
   }, [searchParams, first, rows]);
 
   useEffect(() => {
@@ -32,7 +59,7 @@ export default function CoursesList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadCourses = useCallback(async () => {
+  const loadInternships = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
@@ -42,17 +69,35 @@ export default function CoursesList() {
         params[key] = value;
       });
 
-      const { data } = await repository.courses.get(params);
-      setCourses(data.items || data);
+      const { data } = await repository.internships.get(params);
+      setInternships(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar disciplinas:", e);
-      setCourses([]);
+      console.error("Erro ao carregar campos de estágio:", e);
+      setInternships([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
     }
   }, [searchParams, first, rows]);
+
+  const loadRegions = async () => {
+    try {
+      const { data } = await repository.regions.get();
+      const regionsList = data.items || data || [];
+
+      const regionsMap = {};
+      regionsList.forEach((r) => {
+        regionsMap[r.id] = r.name;
+      });
+      setRegions(regionsMap);
+
+      FILTER_CONFIG.find((f) => f.key === "region_id").options =
+        regionsList.map((r) => ({ label: r.name, value: r.id }));
+    } catch (e) {
+      console.error("Erro ao carregar regiões:", e);
+    }
+  };
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -64,12 +109,12 @@ export default function CoursesList() {
       }
     });
     setSearchParams(params);
-    setFirst(0); // Reset para primeira página quando aplica filtros
+    setFirst(0);
   };
 
   const handleClearFilters = () => {
     setSearchParams({});
-    setFirst(0); // Reset para primeira página quando limpa filtros
+    setFirst(0);
     setFilterVisible(false);
   };
 
@@ -80,14 +125,22 @@ export default function CoursesList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
+  const nameTemplate = (rowData) => rowData.name || "-";
+  const regionTemplate = (rowData) => regions[rowData.region_id] || "-";
+  const activeTemplate = (rowData) => (
+    <span className={rowData.is_active ? "text-green-500" : "text-red-500"}>
+      {rowData.is_active ? "Ativo" : "Inativo"}
+    </span>
+  );
+
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
         onClick={() => {
-          setRouteContext(ROUTE_CONTEXT_KEYS.course, { id: rowData.id });
-          navigate("/courses/edit");
+          setRouteContext(ROUTE_CONTEXT_KEYS.service, { id: rowData.id });
+          navigate("/internships/edit");
         }}
       />
     </div>
@@ -96,7 +149,7 @@ export default function CoursesList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Disciplinas</h2>
+        <h2 className="text-xl font-bold m-0">Campos de Estágio</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -106,15 +159,15 @@ export default function CoursesList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Novo Disciplina"
+            label="Novo Campo de Estágio"
             icon="pi pi-plus"
-            onClick={() => navigate("/courses/new")}
+            onClick={() => navigate("/internships/new")}
           />
         </div>
       </div>
 
       <DataTable
-        value={courses}
+        value={internships}
         tableStyle={{ minWidth: "50rem" }}
         paginator
         first={first}
@@ -124,16 +177,19 @@ export default function CoursesList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhum disciplina encontrado"
+        emptyMessage="Nenhum campo de estágio encontrado"
       >
         <Column field="id" header="ID" sortable />
-        <Column field="name" header="Nome" sortable />
+        <Column field="name" header="Nome" sortable body={nameTemplate} />
+        <Column header="Região" sortable body={regionTemplate} />
+        <Column field="is_active" header="Status" body={activeTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <CoursesFilter
+      <FilterDrawer
         visible={filterVisible}
         onHide={() => setFilterVisible(false)}
+        filters={FILTER_CONFIG}
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}

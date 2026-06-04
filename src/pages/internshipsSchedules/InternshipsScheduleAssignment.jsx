@@ -12,7 +12,6 @@ import {
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
-import "./ServiceScheduleAssignment.css";
 
 const DAY_LABELS = {
   MONDAY: "Segunda-feira",
@@ -44,7 +43,7 @@ const STUDENT_FILTERS = [
     type: "text",
     placeholder: "Buscar por email...",
   },
-  { label: "Disciplina", key: "course_id", type: "dropdown", options: [] },
+  { label: "Disciplina", key: "discipline_id", type: "dropdown", options: [] },
   {
     label: "Instituição",
     key: "institution_id",
@@ -73,7 +72,7 @@ export default function ServiceScheduleAssignment() {
   const [room, setRoom] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -95,23 +94,23 @@ export default function ServiceScheduleAssignment() {
 
   const loadReferenceData = useCallback(async () => {
     try {
-      const [coursesRes, institutionsRes] = await Promise.all([
-        repository.courses.get(),
+      const [disciplinesRes, institutionsRes] = await Promise.all([
+        repository.disciplines.get(),
         repository.institutions.get(),
       ]);
 
-      const coursesList = Array.isArray(coursesRes.data)
-        ? coursesRes.data
-        : coursesRes.data.items || [];
+      const disciplinesList = Array.isArray(disciplinesRes.data)
+        ? disciplinesRes.data
+        : disciplinesRes.data.items || [];
       const institutionsList = Array.isArray(institutionsRes.data)
         ? institutionsRes.data
         : institutionsRes.data.items || [];
 
-      setCourses(coursesList);
+      setDisciplines(disciplinesList);
       setInstitutions(institutionsList);
 
-      STUDENT_FILTERS.find((filter) => filter.key === "course_id").options =
-        coursesList.map((course) => ({ label: course.name, value: course.id }));
+      STUDENT_FILTERS.find((filter) => filter.key === "discipline_id").options =
+        disciplinesList.map((discipline) => ({ label: discipline.name, value: discipline.id }));
       STUDENT_FILTERS.find(
         (filter) => filter.key === "institution_id",
       ).options = institutionsList.map((institution) => ({
@@ -120,7 +119,7 @@ export default function ServiceScheduleAssignment() {
       }));
     } catch (e) {
       console.error("Erro ao carregar referências:", e);
-      setCourses([]);
+      setDisciplines([]);
       setInstitutions([]);
     }
   }, []);
@@ -240,9 +239,9 @@ export default function ServiceScheduleAssignment() {
     </div>
   );
 
-  const courseTemplate = (rowData) => {
-    const course = courses.find((item) => item.id === rowData.course_id);
-    return course ? course.name : "-";
+  const disciplineTemplate = (rowData) => {
+    const discipline = disciplines.find((item) => item.id === rowData.discipline_id);
+    return discipline ? discipline.name : "-";
   };
 
   const institutionTemplate = (rowData) => {
@@ -420,7 +419,7 @@ export default function ServiceScheduleAssignment() {
                 sortable
               />
               <Column field="cpf" header="CPF" />
-              <Column header="Disciplina" body={courseTemplate} />
+              <Column header="Disciplina" body={disciplineTemplate} />
               <Column header="Instituição" body={institutionTemplate} />
               <Column field="semester" header="Semestre" />
             </DataTable>

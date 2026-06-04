@@ -49,6 +49,7 @@ export default function EnrollmentPeriodsHistory() {
   const [error, setError] = useState("");
   const isScheduleHistory = Boolean(roomId && dayOfWeek && period);
   const isRoomHistory = Boolean(roomId && !isScheduleHistory);
+  const isRoomContext = Boolean(roomContext.id);
   const currentId = roomId || id;
 
   const title = useMemo(() => {

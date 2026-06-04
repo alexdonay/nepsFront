@@ -16,7 +16,7 @@ const FILTER_CONFIG = [
   },
   {
     label: "Campo de Estágio",
-    key: "service_id",
+    key: "internship_id",
     type: "dropdown",
     options: [],
   },
@@ -33,7 +33,7 @@ const FILTER_CONFIG = [
 
 export default function RoomsList() {
   const [rooms, setRooms] = useState([]);
-  const [services, setServices] = useState([]);
+  const [internships, setInternships] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,7 +43,7 @@ export default function RoomsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadServices();
+    loadInternships();
   }, []);
 
   useEffect(() => {
@@ -81,20 +81,20 @@ export default function RoomsList() {
     }
   }, [searchParams, first, rows]);
 
-  const loadServices = async () => {
+  const loadInternships = async () => {
     try {
-      const { data } = await repository.services.get();
+      const { data } = await repository.internships.get();
       const list = data.items || data || [];
-      const servicesList = list.map((service) => ({
+      const internshipsList = list.map((service) => ({
         label: service.name,
         value: service.id,
       }));
-      setServices(servicesList);
+      setInternships(internshipsList);
 
-      FILTER_CONFIG.find((f) => f.key === "service_id").options = servicesList;
+      FILTER_CONFIG.find((f) => f.key === "internship_id").options = internshipsList;
     } catch (e) {
       console.error("Erro ao carregar campos de estágio:", e);
-      setServices([]);
+      setInternships([]);
     }
   };
 
@@ -151,7 +151,7 @@ export default function RoomsList() {
   );
 
   const serviceTemplate = (rowData) => {
-    const service = services.find((item) => item.value === rowData.service_id);
+    const service = internships.find((item) => item.value === rowData.internship_id);
     return service ? service.label : "-";
   };
 

@@ -51,7 +51,7 @@ export default function ServiceRoomsList() {
         <Button
           label="Nova Sala"
           onClick={() =>
-            navigate(serviceId ? "/services/rooms/new" : "/service-rooms/edit")
+            navigate(serviceId ? "/internships/rooms/new" : "/service-rooms/edit")
           }
         />
       </div>

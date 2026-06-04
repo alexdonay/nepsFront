@@ -1,7 +1,7 @@
 const STORAGE_PREFIX = "nepsFront.routeContext.";
 
 export const ROUTE_CONTEXT_KEYS = {
-  course: "course",
+  discipline: "discipline",
   institution: "institution",
   period: "period",
   region: "region",

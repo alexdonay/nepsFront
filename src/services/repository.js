@@ -1,13 +1,13 @@
 /**
  * Repository Pattern
  * Centraliza e abstrai todas as chamadas à API
- * Uso: repository.courses.get(), repository.students.post(data), etc.
+ * Uso: repository.disciplines.get(), repository.students.post(data), etc.
  */
 
 import { API_ROUTES } from "./API_routes";
 import api from "./api";
 
-const getWithBody = (url, data = {}) => api.request({ method: "GET", url, data });
+const getWithParams = (url, params = {}) => api.request({ method: "GET", url, params });
 const deleteWithBody = (url, data = {}) =>
   api.request({ method: "DELETE", url, data });
 
@@ -30,7 +30,7 @@ export const repository = {
   users: {
     me: () => api.get(API_ROUTES.USERS.ME),
     updateMe: (data) => api.put(API_ROUTES.USERS.ME, data),
-    get: (params = {}) => getWithBody(API_ROUTES.USERS.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.USERS.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.USERS.DETAIL, { user_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.USERS.BASE, data),
@@ -41,20 +41,20 @@ export const repository = {
   },
 
   // Curso
-  courses: {
-    get: (params = {}) => getWithBody(API_ROUTES.COURSES.BASE, params),
+  disciplines: {
+    get: (params = {}) => getWithParams(API_ROUTES.COURSES.BASE, params),
     getById: (id) =>
-      api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
+      api.post(API_ROUTES.COURSES.DETAIL, { discipline_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.COURSES.BASE, { ...data, course_id: Number(id) }),
+      api.put(API_ROUTES.COURSES.BASE, { ...data, discipline_id: Number(id) }),
     delete: (id) =>
-      deleteWithBody(API_ROUTES.COURSES.BASE, { course_id: Number(id) }),
+      deleteWithBody(API_ROUTES.COURSES.BASE, { discipline_id: Number(id) }),
   },
 
   // Regiões
   regions: {
-    get: (params = {}) => getWithBody(API_ROUTES.REGIONS.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.REGIONS.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.REGIONS.DETAIL, { region_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.REGIONS.BASE, data),
@@ -66,20 +66,20 @@ export const repository = {
 
   // Unidades de Saúde
   healthUnits: {
-    get: (params = {}) => getWithBody(API_ROUTES.SERVICES.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.SERVICES.BASE, params),
     getById: (id) =>
-      api.post(API_ROUTES.SERVICES.DETAIL, { service_id: Number(id) }),
+      api.post(API_ROUTES.SERVICES.DETAIL, { internship_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.SERVICES.BASE, { ...data, service_id: Number(id) }),
+      api.put(API_ROUTES.SERVICES.BASE, { ...data, internship_id: Number(id) }),
     delete: (id) =>
-      deleteWithBody(API_ROUTES.SERVICES.BASE, { service_id: Number(id) }),
+      deleteWithBody(API_ROUTES.SERVICES.BASE, { internship_id: Number(id) }),
   },
 
   // Instituições
   institutions: {
     get: (params = {}) =>
-      getWithBody(API_ROUTES.CADASTROS.INSTITUTIONS, params),
+      getWithParams(API_ROUTES.CADASTROS.INSTITUTIONS, params),
     getById: (id) =>
       api.post(API_ROUTES.CADASTROS.INSTITUTIONS_DETAIL, {
         institute_id: Number(id),
@@ -98,7 +98,7 @@ export const repository = {
 
   // Salas
   rooms: {
-    get: (params = {}) => getWithBody(API_ROUTES.ROOMS.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.ROOMS.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.ROOMS.DETAIL, { room_id: Number(id) }),
     getAvailableSlots: (params = {}) =>
@@ -135,7 +135,7 @@ export const repository = {
 
   // Estudantes
   students: {
-    get: (params = {}) => getWithBody(API_ROUTES.GESTAO.STUDENTS, params),
+    get: (params = {}) => getWithParams(API_ROUTES.GESTAO.STUDENTS, params),
     getById: (id) =>
       api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, { student_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
@@ -146,10 +146,10 @@ export const repository = {
       }),
     delete: (id) =>
       deleteWithBody(API_ROUTES.GESTAO.STUDENTS, { student_id: Number(id) }),
-    byCourse: (courseId, params = {}) =>
+    byDiscipline: (disciplineId, params = {}) =>
       api.post(API_ROUTES.GESTAO.STUDENTS_BY_COURSE, {
         ...params,
-        course_id: Number(courseId),
+        discipline_id: Number(disciplineId),
       }),
     byInstitute: (instituteId, params = {}) =>
       api.post(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE, {
@@ -160,7 +160,7 @@ export const repository = {
 
   // Períodos (se existir no backend)
   periods: {
-    get: (params = {}) => getWithBody(API_ROUTES.GESTAO.PERIODS, params),
+    get: (params = {}) => getWithParams(API_ROUTES.GESTAO.PERIODS, params),
     getById: (id, params = {}) =>
       api.post(API_ROUTES.GESTAO.PERIODS_DETAIL, {
         ...params,
@@ -220,21 +220,21 @@ export const repository = {
       }),
   },
 
-  // Services
-  services: {
-    get: (params = {}) => getWithBody(API_ROUTES.SERVICES.BASE, params),
+  // Internships
+  internships: {
+    get: (params = {}) => getWithParams(API_ROUTES.SERVICES.BASE, params),
     getById: (id) =>
-      api.post(API_ROUTES.SERVICES.DETAIL, { service_id: Number(id) }),
+      api.post(API_ROUTES.SERVICES.DETAIL, { internship_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.SERVICES.BASE, { ...data, service_id: Number(id) }),
+      api.put(API_ROUTES.SERVICES.BASE, { ...data, internship_id: Number(id) }),
     delete: (id) =>
-      deleteWithBody(API_ROUTES.SERVICES.BASE, { service_id: Number(id) }),
+      deleteWithBody(API_ROUTES.SERVICES.BASE, { internship_id: Number(id) }),
   },
 
   // Service Rooms
   serviceRooms: {
-    get: (params = {}) => getWithBody(API_ROUTES.SERVICE_ROOMS.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.SERVICE_ROOMS.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.SERVICE_ROOMS.DETAIL, {
         service_room_id: Number(id),
@@ -242,7 +242,7 @@ export const repository = {
     getByService: (serviceId, params = {}) =>
       api.post(API_ROUTES.SERVICE_ROOMS.BY_SERVICE, {
         ...params,
-        service_id: Number(serviceId),
+        internship_id: Number(serviceId),
       }),
     post: (data) => api.post(API_ROUTES.SERVICE_ROOMS.BASE, data),
     put: (id, data) =>
@@ -259,7 +259,7 @@ export const repository = {
   // Service Schedules
   serviceSchedules: {
     get: (params = {}) =>
-      getWithBody(API_ROUTES.SERVICE_SCHEDULES.BASE, params),
+      getWithParams(API_ROUTES.SERVICE_SCHEDULES.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.SERVICE_SCHEDULES.DETAIL, {
         service_schedule_id: Number(id),

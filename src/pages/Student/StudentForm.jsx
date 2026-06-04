@@ -28,7 +28,7 @@ export default function StudentForm() {
     cpf: "",
     email: "",
     phone: "",
-    course_id: null,
+    discipline_id: null,
     semester: null,
     institution_id: null,
     document_url: "",
@@ -37,7 +37,7 @@ export default function StudentForm() {
   });
   const [documentFile, setDocumentFile] = useState(null);
   const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
-  const [courses, setCourses] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,21 +50,21 @@ export default function StudentForm() {
 
   const loadOptions = async () => {
     try {
-      const [coursesRes, instRes] = await Promise.all([
+      const [disciplinesRes, instRes] = await Promise.all([
         api.get(API_ROUTES.CADASTROS.COURSES),
         api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
       ]);
-      setCourses(
-        Array.isArray(coursesRes.data)
-          ? coursesRes.data
-          : coursesRes.data.items || [],
+      setDisciplines(
+        Array.isArray(disciplinesRes.data)
+          ? disciplinesRes.data
+          : disciplinesRes.data.items || [],
       );
       setInstitutions(
         Array.isArray(instRes.data) ? instRes.data : instRes.data.items || [],
       );
     } catch (e) {
       console.error("Erro ao carregar opções:", e);
-      setCourses([]);
+      setDisciplines([]);
       setInstitutions([]);
     }
   };
@@ -77,7 +77,7 @@ export default function StudentForm() {
         cpf: data?.cpf || "",
         email: data?.email || "",
         phone: data?.phone || "",
-        course_id: data?.course_id ?? null,
+        discipline_id: data?.discipline_id ?? null,
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
         document_url: data?.document_url || "",
@@ -164,7 +164,7 @@ export default function StudentForm() {
         cpf: form.cpf,
         email: form.email,
         phone: form.phone,
-        course_id: form.course_id,
+        discipline_id: form.discipline_id,
         semester: form.semester,
         institution_id: form.institution_id,
         document_url: documentUrl,
@@ -332,11 +332,11 @@ export default function StudentForm() {
         <div className="field mb-3">
           <label>Disciplina *</label>
           <Dropdown
-            value={form.course_id}
-            options={courses}
+            value={form.discipline_id}
+            options={disciplines}
             optionLabel="name"
             optionValue="id"
-            onChange={(e) => setForm({ ...form, course_id: e.value })}
+            onChange={(e) => setForm({ ...form, discipline_id: e.value })}
             className="w-full"
             placeholder="Selecione"
             required

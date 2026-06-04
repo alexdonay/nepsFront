@@ -17,29 +17,29 @@ export default function RoomsForm() {
 
   const [form, setForm] = useState({
     name: "",
-    service_id: null,
+    internship_id: null,
     room_capacity: null,
     has_gurney: false,
     is_active: true,
   });
-  const [services, setServices] = useState([]);
+  const [internships, setInternships] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadServices();
+    loadInternships();
     if (isEdit) loadRoom();
   }, [id]);
 
-  const loadServices = async () => {
+  const loadInternships = async () => {
     try {
-      const { data } = await repository.services.get();
+      const { data } = await repository.internships.get();
       const list = data.items || data || [];
-      setServices(
+      setInternships(
         list.map((service) => ({ label: service.name, value: service.id })),
       );
     } catch (e) {
-      setServices([]);
+      setInternships([]);
     }
   };
 
@@ -48,7 +48,7 @@ export default function RoomsForm() {
       const { data } = await repository.rooms.getById(id);
       setForm({
         name: data.name || "",
-        service_id: data.service_id || null,
+        internship_id: data.internship_id || null,
         room_capacity: data.room_capacity ?? null,
         has_gurney: data.has_gurney ?? false,
         is_active: data.is_active ?? true,
@@ -66,7 +66,7 @@ export default function RoomsForm() {
     try {
       const payload = {
         name: form.name,
-        service_id: form.service_id,
+        internship_id: form.internship_id,
         room_capacity: form.room_capacity,
         has_gurney: form.has_gurney,
         is_active: form.is_active,
@@ -118,11 +118,11 @@ export default function RoomsForm() {
             Campo de Estágio *
           </label>
           <Dropdown
-            value={form.service_id}
-            options={services}
+            value={form.internship_id}
+            options={internships}
             optionLabel="label"
             optionValue="value"
-            onChange={(e) => setForm({ ...form, service_id: e.value })}
+            onChange={(e) => setForm({ ...form, internship_id: e.value })}
             placeholder="Selecione um campo de estágio"
             className="w-full"
             required

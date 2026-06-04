@@ -77,7 +77,7 @@ O backend pode retornar os alunos vinculados de uma das duas formas abaixo:
       "id": 10,
       "name": "Maria Silva",
       "cpf": "12345678900",
-      "course": {
+      "discipline": {
         "id": 5,
         "name": "Enfermagem"
       },
@@ -117,7 +117,7 @@ O backend não precisa expor um endpoint novo para essa tela, desde que o endpoi
 ### 2.3 Listar alunos de uma instituição
 
 ```http
-GET /v1/gestao/students?institution_id={institutionId}&include=course,institution
+GET /v1/gestao/students?institution_id={institutionId}&include=discipline,institution
 ```
 
 #### Resposta esperada
@@ -129,9 +129,9 @@ GET /v1/gestao/students?institution_id={institutionId}&include=course,institutio
       "id": 10,
       "name": "Maria Silva",
       "cpf": "12345678900",
-      "course_id": 5,
+      "discipline_id": 5,
       "institution_id": 2,
-      "course": {
+      "discipline": {
         "id": 5,
         "name": "Enfermagem"
       },
@@ -233,7 +233,7 @@ O frontend já está preparado para:
 
 - chamar `GET /v1/periods` com filtros de paginação;
 - chamar `GET /v1/periods/{id}?include=students`;
-- chamar `GET /v1/gestao/students?institution_id={id}&include=course,institution`;
+- chamar `GET /v1/gestao/students?institution_id={id}&include=discipline,institution`;
 - chamar `POST /v1/periods/{id}/students`;
 - chamar `DELETE /v1/periods/{id}/students`.
 
@@ -261,7 +261,7 @@ Se retornar apenas IDs, o frontend fará requisições adicionais para obter os 
 
 Ao listar alunos para a instituição de ensino, o backend deve considerar o escopo da instituição do usuário autenticado e devolver apenas alunos pertencentes àquela instituição.
 
-O endpoint deve suportar `include=course,institution` para que o frontend consiga renderizar nome do disciplina e nome da instituição sem chamadas extras.
+O endpoint deve suportar `include=discipline,institution` para que o frontend consiga renderizar nome do disciplina e nome da instituição sem chamadas extras.
 
 ### 5.4 Vincular aluno ao período
 

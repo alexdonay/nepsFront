@@ -13,7 +13,7 @@ const FIELD_SECTIONS = [
   },
   {
     title: "Dados acadêmicos",
-    fields: ["course", "semester", "institution"],
+    fields: ["discipline", "semester", "institution"],
   },
   {
     title: "Documentação",
@@ -55,8 +55,8 @@ export default function StudentDetails() {
     loadStudent();
   }, [id]);
 
-  const courseName = useMemo(
-    () => student?.course?.name || student?.course_name || "-",
+  const disciplineName = useMemo(
+    () => student?.discipline?.name || student?.discipline_name || "-",
     [student],
   );
 
@@ -123,9 +123,9 @@ export default function StudentDetails() {
                     let label = field;
                     let value = student?.[field];
 
-                    if (field === "course") {
+                    if (field === "discipline") {
                       label = "Disciplina";
-                      value = courseName;
+                      value = disciplineName;
                     }
 
                     if (field === "semester") {

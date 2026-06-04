@@ -30,7 +30,7 @@ export default function Layout({ children }) {
         {
           label: "Campos de Estágio",
           icon: "pi pi-cog",
-          path: "/services",
+          path: "/internships",
           permissions: [PERMISSIONS.ADMIN],
         },
         {
@@ -48,7 +48,7 @@ export default function Layout({ children }) {
         {
           label: "Disciplinas",
           icon: "pi pi-book",
-          path: "/courses",
+          path: "/disciplines",
           permissions: [PERMISSIONS.ADMIN],
         },
         {

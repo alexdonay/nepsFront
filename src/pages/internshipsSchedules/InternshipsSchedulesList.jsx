@@ -8,7 +8,6 @@ import {
   getRouteContext,
   setRouteContext,
 } from "../../utils/routeContext";
-import "./ServiceSchedulesList.css";
 
 const DAY_ORDER = [
   "MONDAY",

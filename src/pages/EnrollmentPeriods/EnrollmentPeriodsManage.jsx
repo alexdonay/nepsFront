@@ -13,8 +13,8 @@ import { repository } from "../../services/repository";
 import { fileToBase64, validatePdfFile } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
-const getStudentCourseName = (student) =>
-  student?.course?.name || student?.course_name || "-";
+const getStudentDisciplineName = (student) =>
+  student?.discipline?.name || student?.discipline_name || "-";
 
 const getStudentInstitutionName = (student) =>
   student?.institution?.name || student?.institution_name || "-";
@@ -551,7 +551,7 @@ export default function EnrollmentPeriodsManage() {
         const searchable = [
           student?.name,
           student?.cpf,
-          getStudentCourseName(student),
+          getStudentDisciplineName(student),
           getStudentInstitutionName(student),
         ]
           .filter(Boolean)
@@ -692,7 +692,7 @@ export default function EnrollmentPeriodsManage() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="cpf" header="CPF" />
-        <Column header="Disciplina" body={getStudentCourseName} />
+        <Column header="Disciplina" body={getStudentDisciplineName} />
         <Column header="Instituição" body={getStudentInstitutionName} />
         <Column field="semester" header="Semestre" />
         <Column
@@ -1000,7 +1000,7 @@ export default function EnrollmentPeriodsManage() {
                 </div>
                 <div className="col-12 md:col-6">
                   <small className="text-600 block mb-1">Curso/Disciplina</small>
-                  <strong>{getStudentCourseName(selectedStudentDetails)}</strong>
+                  <strong>{getStudentDisciplineName(selectedStudentDetails)}</strong>
                 </div>
                 <div className="col-12 md:col-6">
                   <small className="text-600 block mb-1">Semestre</small>

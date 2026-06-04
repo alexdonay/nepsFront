@@ -11,10 +11,10 @@ Endpoints exigidos
 
 - Método: GET
 - Rota (sugerida): `/v1/service-rooms` com query param `region_id={id}`
-- Query params opcionais: `page`, `per_page`, `service_id`
+- Query params opcionais: `page`, `per_page`, `internship_id`
 - Resposta (200):
   {
-  "items": [ { "id": 1, "name": "Sala A", "room_capacity": 10, "service_id": 5, ... } ],
+  "items": [ { "id": 1, "name": "Sala A", "room_capacity": 10, "internship_id": 5, ... } ],
   "pagination": { "page":1, "per_page":10, "total": 42 }
   }
 
@@ -137,7 +137,7 @@ Contrato recomendado para o backend
 
 - Em `GET /api/v1/periods/{period_id}?include=students`, retornar cada aluno com:
   - dados básicos do aluno (`id`, `name`, `cpf`, `semester`, etc.)
-  - `course` e `institution` quando disponíveis
+  - `discipline` e `institution` quando disponíveis
   - `has_slot` calculado a partir da existência de vínculo com horário
   - opcionalmente um objeto `slot` com o vínculo atual:
     - `room_id`
@@ -153,7 +153,7 @@ Exemplo de aluno com vínculo
   "name": "Maria Silva",
   "cpf": "00000000000",
   "semester": 3,
-  "course": { "id": 1, "name": "Teste" },
+  "discipline": { "id": 1, "name": "Teste" },
   "institution": { "id": 1, "name": "Instituição X" },
   "has_slot": true,
   "slot": {
@@ -173,7 +173,7 @@ Exemplo de aluno sem vínculo
   "name": "João Souza",
   "cpf": "11111111111",
   "semester": 2,
-  "course": { "id": 1, "name": "Teste" },
+  "discipline": { "id": 1, "name": "Teste" },
   "institution": { "id": 1, "name": "Instituição X" },
   "has_slot": false,
   "slot": null

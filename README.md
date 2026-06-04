@@ -40,7 +40,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 Este projeto utiliza um componente compartilhado de filtros em drawer nas telas de listagem.
 
 - Componente principal: `src/components/FilterDrawer.jsx` — drawer reutilizável que renderiza campos a partir de uma configuração (`filters`).
-- Componente específico de disciplinas: `src/pages/Courses/CoursesFilter.jsx` — encapsula as opções e configurações de filtro para a listagem de disciplinas.
+- Componente específico de disciplinas: `src/pages/Disciplines/DisciplinesFilter.jsx` — encapsula as opções e configurações de filtro para a listagem de disciplinas.
 - Roles de usuário suportados pelo backend: `admin`, `education_institute` e `service`.
 - Convenções de query params:
   - Campos textuais usam sufixo `_like` por padrão (ex.: `name_like=joao`).
@@ -48,7 +48,7 @@ Este projeto utiliza um componente compartilhado de filtros em drawer nas telas 
   - Date range produz dois params: `{key}_start` e `{key}_end` (formato `YYYY-MM-DD`).
   - Caso seja necessário outro nome de parâmetro, o filtro pode definir `queryKey` na configuração.
 
-As páginas de listagem usam `useSearchParams` para persistir filtros na URL e `src/services/repository.js` aceita `params` para repassar query strings para a API.
+As páginas de listagem usam `useSearchParams` para persistir filtros na URL e `src/internships/repository.js` aceita `params` para repassar query strings para a API.
 
 ## Migração de vínculo em horário
 

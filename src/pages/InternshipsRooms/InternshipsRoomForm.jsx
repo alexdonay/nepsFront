@@ -14,7 +14,7 @@ export default function ServiceRoomForm() {
   const [form, setForm] = useState({
     name: "",
     capacity: 0,
-    service_id: serviceId || null,
+    internship_id: serviceId || null,
   });
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export default function ServiceRoomForm() {
     try {
       if (isEdit) await repository.serviceRooms.put(id, form);
       else await repository.serviceRooms.post(form);
-      navigate(serviceId ? "/services/rooms" : "/service-rooms/edit");
+      navigate(serviceId ? "/internships/rooms" : "/service-rooms/edit");
     } catch (e) {}
   };
 

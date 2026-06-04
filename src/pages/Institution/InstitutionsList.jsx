@@ -145,7 +145,7 @@ export default function InstitutionsList() {
           <Button
             label="Nova Instituição"
             icon="pi pi-plus"
-            onClick={() => navigate("/institutions/new")}
+            onClick={() => setRouteContext(ROUTE_CONTEXT_KEYS.institution, navigate("/institutions/new"))}
           />
         </div>
       </div>

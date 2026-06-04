@@ -19,13 +19,13 @@ export const API_ROUTES = {
   },
 
   COURSES: {
-    BASE: "/v1/courses",
-    DETAIL: "/v1/courses/detail",
-    BY_ID: () => "/v1/courses/detail",
+    BASE: "/v1/disciplines",
+    DETAIL: "/v1/disciplines/detail",
+    BY_ID: () => "/v1/disciplines/detail",
   },
 
   CADASTROS: {
-    COURSES: "/v1/courses",
+    COURSES: "/v1/disciplines",
     INSTITUTIONS: "/v1/education-institutes",
     INSTITUTIONS_DETAIL: "/v1/education-institutes/detail",
     INSTITUTIONS_BY_ID: () => "/v1/education-institutes/detail",
@@ -37,7 +37,7 @@ export const API_ROUTES = {
     STUDENTS: "/v1/students",
     STUDENTS_DETAIL: "/v1/students/detail",
     STUDENTS_BY_ID: () => "/v1/students/detail",
-    STUDENTS_BY_COURSE: "/v1/students/by-course",
+    STUDENTS_BY_COURSE: "/v1/students/by-discipline",
     STUDENTS_BY_INSTITUTE: "/v1/students/by-institute",
     PERIODS: "/v1/periods",
     PERIODS_DETAIL: "/v1/periods/detail",
@@ -57,10 +57,10 @@ export const API_ROUTES = {
   },
 
   SERVICES: {
-    BASE: "/v1/services",
-    DETAIL: "/v1/services/detail",
-    BY_ID: () => "/v1/services/detail",
-    BY_REGION: "/v1/services/by-region",
+    BASE: "/v1/internships",
+    DETAIL: "/v1/internships/detail",
+    BY_ID: () => "/v1/internships/detail",
+    BY_REGION: "/v1/internships/by-region",
   },
 
   REGIONS: {

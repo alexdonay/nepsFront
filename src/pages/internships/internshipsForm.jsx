@@ -23,7 +23,7 @@ export default function ServiceForm() {
   useEffect(() => {
     loadRegions();
     if (isEdit) {
-      repository.services
+      repository.internships
         .getById(id)
         .then((r) => {
           const data = r.data;
@@ -61,11 +61,11 @@ export default function ServiceForm() {
         user_email: form.user_email || null,
       };
       if (isEdit) {
-        await repository.services.put(id, payload);
+        await repository.internships.put(id, payload);
       } else {
-        await repository.services.post(payload);
+        await repository.internships.post(payload);
       }
-      navigate("/services");
+      navigate("/internships");
     } catch (e) {
       const msg = e.response?.data?.detail || "Erro ao salvar";
     } finally {
@@ -142,7 +142,7 @@ export default function ServiceForm() {
             label="Cancelar"
             type="button"
             className="p-button-secondary"
-            onClick={() => navigate("/services")}
+            onClick={() => navigate("/internships")}
           />
         </div>
       </form>

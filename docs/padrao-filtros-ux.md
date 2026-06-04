@@ -96,7 +96,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Status     | `Dropdown` (single)    | Ativo, Inativo               |
 | Prioridade | `Dropdown` (single)    | Prioritário, Não prioritário |
 
-### 5.4 Disciplinas (`/courses`)
+### 5.4 Disciplinas (`/disciplines`)
 
 | Campo  | Tipo                   | Opções                      |
 | ------ | ---------------------- | --------------------------- |
@@ -119,7 +119,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Nome   | `InputText` (contains) | livre          |
 | Status | `Dropdown` (single)    | Ativo, Inativo |
 
-### 5.7 Serviços (`/services`)
+### 5.7 Serviços (`/internships`)
 
 | Campo  | Tipo                   | Opções                      |
 | ------ | ---------------------- | --------------------------- |
@@ -196,7 +196,7 @@ Deve ser inserido ao lado do botão "Novo", no header da página:
 Os filtros ativos são refletidos na URL como query parameters:
 
 ```
-/students?name=joao&course_id=5&status=active
+/students?name=joao&discipline_id=5&status=active
 ```
 
 - Ao entrar na página com query params, os filtros são pré-carregados
@@ -284,8 +284,8 @@ A listagem é limpa e um toast/mensagem de erro é exibida.
 | `src/components/FilterDrawer.jsx` | Novo       | Componente reutilizável do drawer de filtros |
 | `src/components/FilterDrawer.css` | Novo       | Estilos do drawer (se necessário)            |
 | `src/pages/**/*List.jsx`          | Modificado | Todas as listagens recebem o FilterDrawer    |
-| `src/services/repository.js`      | Modificado | Métodos `get` aceitam parâmetros de filtro   |
-| `src/services/API_routes.js`      | Modificado | Rotas podem receber query string             |
+| `src/internships/repository.js`      | Modificado | Métodos `get` aceitam parâmetros de filtro   |
+| `src/internships/API_routes.js`      | Modificado | Rotas podem receber query string             |
 
 ### Dependências
 
@@ -307,7 +307,7 @@ Notas de implementação:
 
 - O componente `FilterDrawer` mapeia tipos para chaves padrão (ex.: `text` -> `{key}_like`, `multiselect` -> `{key}_in`). Se um filtro necessitar de outro nome, defina `queryKey` na configuração do filtro.
 - As páginas de listagem atualmente serializam arrays para CSV ao montar `searchParams` (ex.: `value.join(',')`). Caso prefira centralizar a serialização, é possível alterar `FilterDrawer` para retornar strings em vez de arrays.
-- O componente de filtro dos disciplinas está em `src/pages/Courses/CoursesFilter.jsx` e recebe `regions` via prop para montar as opções do `Dropdown`.
+- O componente de filtro dos disciplinas está em `src/pages/Disciplines/DisciplinesFilter.jsx` e recebe `regions` via prop para montar as opções do `Dropdown`.
 
 Exemplo de serialização antes de atualizar os query params:
 

@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
 import {
@@ -17,7 +17,7 @@ export default function EnrollmentPeriodsList() {
   const [periods, setPeriods] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState({});
   const navigate = useNavigate();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
@@ -30,15 +30,7 @@ export default function EnrollmentPeriodsList() {
 
   useEffect(() => {
     loadPeriods();
-  }, [searchParams, first, rows]);
-
-  useEffect(() => {
-    const hasFilters = searchParams.toString().length > 0;
-    if (hasFilters) {
-      setFilterVisible(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filters, first, rows]);
 
   const filterPeriodsForEducationInstitute = (periodsList) => {
     if (currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO) {

@@ -40,7 +40,8 @@ export default function InstitutionForm() {
   const loadRegions = async () => {
     try {
       const { data } = await repository.regions.get();
-      setRegions(data.items || data || []);
+      const items = data?.items || data || [];
+      setRegions(Array.isArray(items) ? items : []);
     } catch (e) {
       setRegions([]);
     }
@@ -48,7 +49,10 @@ export default function InstitutionForm() {
 
   const loadInstitution = async () => {
     try {
+      console.log("Carregando instituição com ID:", id, "Tipo:", typeof id);
       const { data } = await repository.institutions.getById(id);
+      console.log("Resposta da API:", data);
+      
       const normalized = {
         name: data?.name ?? "",
         cnpj: data?.cnpj ?? "",
@@ -60,38 +64,9 @@ export default function InstitutionForm() {
         region_ids: (data?.regions || []).map((region) => region.id),
       };
 
-      const hasMissingFields =
-        !data?.cnpj ||
-        data?.address == null ||
-        data?.phone == null ||
-        data?.email == null ||
-        data?.priority == null;
-
-      if (hasMissingFields) {
-        const { data: listData } = await repository.institutions.get();
-        const fromList = (listData || []).find(
-          (institution) => institution.id === Number(id),
-        );
-
-        if (fromList) {
-          setForm({
-            ...normalized,
-            cnpj: fromList.cnpj ?? normalized.cnpj,
-            address: fromList.address ?? normalized.address,
-            phone: fromList.phone ?? normalized.phone,
-            email: fromList.email ?? normalized.email,
-            is_active: fromList.is_active ?? normalized.is_active,
-            priority: fromList.priority ?? normalized.priority,
-            region_ids: (fromList.regions || normalized.region_ids || []).map(
-              (region) => (typeof region === "number" ? region : region.id),
-            ),
-          });
-          return;
-        }
-      }
-
       setForm(normalized);
     } catch (e) {
+      console.error("Erro ao carregar instituição:", e);
       setError("Erro ao carregar instituição");
     }
   };
