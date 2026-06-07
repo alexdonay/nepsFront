@@ -22,17 +22,13 @@ import RegionsForm from "./pages/Regions/RegionsForm";
 import RegionsList from "./pages/Regions/RegionsList";
 import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
-
 import Schedule from "./pages/Schedule/Schedule";
-
-
 import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
 import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
 import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
 import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/InternshipsScheduleAssignment";
-
 import StudentForm from "./pages/Student/StudentForm";
 import StudentDetails from "./pages/Student/StudentDetails";
 import StudentHistory from "./pages/Student/StudentHistory";
