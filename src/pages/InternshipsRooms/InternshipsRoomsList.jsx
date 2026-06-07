@@ -8,6 +8,7 @@ import {
   ROUTE_CONTEXT_KEYS,
   getRouteContext,
   setRouteContext,
+  clearRouteContext,
 } from "../../utils/routeContext";
 
 export default function ServiceRoomsList() {
@@ -50,9 +51,10 @@ export default function ServiceRoomsList() {
         <h2>Salas do Campo de Estágio</h2>
         <Button
           label="Nova Sala"
-          onClick={() =>
-            navigate(serviceId ? "/internships/rooms/new" : "/service-rooms/edit")
-          }
+          onClick={() => {
+            clearRouteContext(ROUTE_CONTEXT_KEYS.serviceRoom);
+            navigate(serviceId ? "/internships/rooms/new" : "/service-rooms/edit");
+          }}
         />
       </div>
       <DataTable

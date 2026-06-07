@@ -17,6 +17,7 @@ import {
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function StudentForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.student, {});
@@ -193,7 +194,7 @@ export default function StudentForm() {
 
       navigate("/students");
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || "Erro ao salvar");
+      setError(getErrorMessage(err, "Erro ao salvar"));
     } finally {
       setLoading(false);
     }

@@ -1,9 +1,11 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function RegionsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.region, {});
@@ -27,7 +29,7 @@ export default function RegionsForm() {
       const { data } = await repository.regions.getById(id);
       setForm({ name: data.name, is_active: data.is_active ?? true });
     } catch (err) {
-      setError("Erro ao carregar região");
+      setError(getErrorMessage(err, "Erro ao carregar região"));
     } finally {
       setLoading(false);
     }
@@ -42,6 +44,7 @@ export default function RegionsForm() {
 
     try {
       setLoading(true);
+      setError("");
       const payload = { name: form.name, is_active: form.is_active };
 
       if (isEdit) {
@@ -52,7 +55,7 @@ export default function RegionsForm() {
 
       navigate("/regions");
     } catch (err) {
-      setError("Erro ao salvar região");
+      setError(getErrorMessage(err, "Erro ao salvar região"));
     } finally {
       setLoading(false);
     }

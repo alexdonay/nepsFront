@@ -12,6 +12,7 @@ import EmailInput from "../../components/Email/EmailInput";
 import PhoneInput from "../../components/PhoneInput";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function InstitutionForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.institution, {});
@@ -80,7 +81,7 @@ export default function InstitutionForm() {
       else await repository.institutions.post(form);
       navigate("/institutions");
     } catch (err) {
-      setError(err.response?.data?.detail || "Erro ao salvar");
+      setError(getErrorMessage(err, "Erro ao salvar"));
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
+import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -172,7 +172,10 @@ export default function RoomsList() {
           <Button
             label="Nova Sala"
             icon="pi pi-plus"
-            onClick={() => navigate("/rooms/new")}
+            onClick={() => {
+              clearRouteContext(ROUTE_CONTEXT_KEYS.room);
+              navigate("/rooms/new");
+            }}
           />
         </div>
       </div>
