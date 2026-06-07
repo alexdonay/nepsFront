@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { repository } from "../../services/repository";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 type FormState = {
   name: string;
@@ -56,7 +57,7 @@ export default function DisciplinesForm() {
       }
       navigate("/disciplines");
     } catch (err: any) {
-      setError(err.response?.data?.detail || "Erro ao salvar o disciplina");
+      setError(getErrorMessage(err, "Erro ao salvar o disciplina"));
     } finally {
       setLoading(false);
     }

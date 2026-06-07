@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function RoomsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.room, {});
@@ -80,7 +81,7 @@ export default function RoomsForm() {
 
       navigate("/rooms");
     } catch (err) {
-      setError(err.response?.data?.detail || "Erro ao salvar a sala");
+      setError(getErrorMessage(err, "Erro ao salvar a sala"));
     } finally {
       setLoading(false);
     }

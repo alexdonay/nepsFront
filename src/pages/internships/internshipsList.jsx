@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
+import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -73,7 +73,11 @@ export default function InternshipsList() {
       setInternships(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar campos de estágio:", e);
+      if (e.response?.status === 401) {
+        console.warn("Sessão expirada. Faça login novamente.");
+      } else {
+        console.error("Erro ao carregar campos de estágio:", e);
+      }
       setInternships([]);
       setTotalRecords(0);
     } finally {
@@ -161,7 +165,10 @@ export default function InternshipsList() {
           <Button
             label="Novo Campo de Estágio"
             icon="pi pi-plus"
-            onClick={() => navigate("/internships/new")}
+            onClick={() => {
+              clearRouteContext(ROUTE_CONTEXT_KEYS.service);
+              navigate("/internships/new");
+            }}
           />
         </div>
       </div>
