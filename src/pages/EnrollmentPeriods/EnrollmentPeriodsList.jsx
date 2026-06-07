@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
@@ -22,6 +23,7 @@ export default function EnrollmentPeriodsList() {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentPermission = normalizePermission(getCurrentPermission());
   const canCreatePeriod = currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO;
   const institutionId = getCurrentInstitutionId();
