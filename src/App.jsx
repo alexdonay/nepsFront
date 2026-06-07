@@ -13,7 +13,7 @@ import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriods
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
-
+import InternshipsList from "./pages/Internships/InternshipsList"
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
@@ -25,8 +25,8 @@ import RoomsList from "./pages/Rooms/RoomsList";
 
 import Schedule from "./pages/Schedule/Schedule";
 
-import InternshipsList from "./pages/internships/internshipsList";
-import InternshipsForm from "./pages/internships/internshipsForm";
+
+import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
 import InternshipsListSchedulesList from "./pages/internshipsSchedules/InternshipsSchedulesList";
