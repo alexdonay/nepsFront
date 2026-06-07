@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
+import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -130,7 +130,10 @@ export default function RegionsList() {
           <Button
             label="Nova Região"
             icon="pi pi-plus"
-            onClick={() => navigate("/regions/new")}
+            onClick={() => {
+              clearRouteContext(ROUTE_CONTEXT_KEYS.region);
+              navigate("/regions/new");
+            }}
           />
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function EnrollmentPeriodsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
@@ -39,7 +41,7 @@ export default function EnrollmentPeriodsForm() {
         end_date: data.end_date ? new Date(data.end_date) : null,
       });
     } catch (err) {
-      setError("Erro ao carregar período");
+      setError(getErrorMessage(err, "Erro ao carregar período"));
     } finally {
       setLoading(false);
     }
@@ -54,15 +56,27 @@ export default function EnrollmentPeriodsForm() {
 
     try {
       setLoading(true);
+      setError("");
       const payload = {
         name: form.name,
-        priority_start_date: form.priority_start_date
-          ?.toISOString()
-          .split("T")[0],
-        priority_end_date: form.priority_end_date?.toISOString().split("T")[0],
-        start_date: form.start_date?.toISOString().split("T")[0],
-        end_date: form.end_date?.toISOString().split("T")[0],
       };
+
+      if (form.priority_start_date) {
+        payload.priority_start_date = form.priority_start_date
+          .toISOString()
+          .split("T")[0];
+      }
+      if (form.priority_end_date) {
+        payload.priority_end_date = form.priority_end_date
+          .toISOString()
+          .split("T")[0];
+      }
+      if (form.start_date) {
+        payload.start_date = form.start_date.toISOString().split("T")[0];
+      }
+      if (form.end_date) {
+        payload.end_date = form.end_date.toISOString().split("T")[0];
+      }
 
       if (isEdit) {
         await repository.periods.patch(id, payload);
@@ -72,7 +86,7 @@ export default function EnrollmentPeriodsForm() {
 
       navigate("/periods");
     } catch (err) {
-      setError("Erro ao salvar período");
+      setError(getErrorMessage(err, "Erro ao salvar período"));
     } finally {
       setLoading(false);
     }

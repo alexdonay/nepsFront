@@ -1,10 +1,12 @@
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
+import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 export default function ServiceForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.service, {});
@@ -18,6 +20,7 @@ export default function ServiceForm() {
   });
   const [regions, setRegions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +56,7 @@ export default function ServiceForm() {
       return;
     }
     setLoading(true);
+    setError("");
     try {
       const payload = {
         name: form.name,
@@ -67,7 +71,7 @@ export default function ServiceForm() {
       }
       navigate("/internships");
     } catch (e) {
-      const msg = e.response?.data?.detail || "Erro ao salvar";
+      setError(getErrorMessage(e, "Erro ao salvar campo de estágio"));
     } finally {
       setLoading(false);
     }
@@ -78,6 +82,8 @@ export default function ServiceForm() {
       <h2 className="text-xl font-bold mb-4">
         {isEdit ? "Editar Campo de Estágio" : "Novo Campo de Estágio"}
       </h2>
+
+      {error && <Message severity="error" text={error} className="mb-4" />}
 
       <form
         autoComplete="new-password"

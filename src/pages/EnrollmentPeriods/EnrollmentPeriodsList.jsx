@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
 import {
@@ -19,6 +19,7 @@ export default function EnrollmentPeriodsList() {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({});
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -104,7 +105,7 @@ export default function EnrollmentPeriodsList() {
     } finally {
       setLoading(false);
     }
-  }, [searchParams, first, rows, currentPermission, institutionId]);
+  }, [first, rows, currentPermission, institutionId, searchParams]);
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
