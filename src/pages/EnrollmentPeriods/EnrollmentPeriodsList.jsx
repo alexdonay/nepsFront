@@ -19,7 +19,6 @@ export default function EnrollmentPeriodsList() {
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({});
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
