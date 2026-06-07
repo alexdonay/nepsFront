@@ -4,7 +4,9 @@
       "Agent(Explore)",
       "Bash(npm run *)",
       "Bash(netstat *)",
-      "Bash(findstr *)"
+      "Bash(findstr *)",
+      "Bash(move *)",
+      "Bash(ren *)"
     ]
   },
   "$version": 4

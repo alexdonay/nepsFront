@@ -3,7 +3,9 @@
     "allow": [
       "Agent(Explore)",
       "Bash(npm run *)",
-      "Bash(netstat *)"
+      "Bash(netstat *)",
+      "Bash(findstr *)",
+      "Bash(move *)"
     ]
   },
   "$version": 4

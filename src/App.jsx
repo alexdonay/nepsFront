@@ -30,7 +30,7 @@ import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
 import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
-import InternshipsScheduleForm from "./pages/InternshipsSchedules/internshipsScheduleForm";
+import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
 import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/InternshipsScheduleAssignment";
 
 import StudentForm from "./pages/Student/StudentForm";
