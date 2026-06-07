@@ -3,39 +3,15 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FilterDrawer from "../../components/FilterDrawer";
+import InternshipsFilter from "./InternshipsFilter";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
-
-const FILTER_CONFIG = [
-  {
-    label: "Nome",
-    key: "name",
-    type: "text",
-    placeholder: "Buscar por nome...",
-  },
-  {
-    label: "Região",
-    key: "region_id",
-    type: "dropdown",
-    options: [],
-  },
-  {
-    label: "Status",
-    key: "is_active",
-    type: "dropdown",
-    options: [
-      { label: "Ativo", value: "1" },
-      { label: "Inativo", value: "0" },
-    ],
-  },
-];
 
 export default function InternshipsList() {
   const [internships, setInternships] = useState([]);
   const [regions, setRegions] = useState({});
-  const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
@@ -49,15 +25,6 @@ export default function InternshipsList() {
   useEffect(() => {
     loadInternships();
   }, [searchParams, first, rows]);
-
-  useEffect(() => {
-    const hasFilters = searchParams.toString().length > 0;
-    if (hasFilters) {
-      setFilterVisible(true);
-    }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const loadInternships = useCallback(async () => {
     try {
@@ -91,31 +58,9 @@ export default function InternshipsList() {
         regionsMap[r.id] = r.name;
       });
       setRegions(regionsMap);
-
-      FILTER_CONFIG.find((f) => f.key === "region_id").options =
-        regionsList.map((r) => ({ label: r.name, value: r.id }));
     } catch (e) {
       console.error("Erro ao carregar regiões:", e);
     }
-  };
-
-  const handleApplyFilters = (appliedFilters) => {
-    const params = new URLSearchParams();
-    Object.entries(appliedFilters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        params.append(key, value.join(","));
-      } else {
-        params.append(key, value);
-      }
-    });
-    setSearchParams(params);
-    setFirst(0);
-  };
-
-  const handleClearFilters = () => {
-    setSearchParams({});
-    setFirst(0);
-    setFilterVisible(false);
   };
 
   const handlePaginationChange = (event) => {
@@ -186,13 +131,9 @@ export default function InternshipsList() {
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <FilterDrawer
-        visible={filterVisible}
-        onHide={() => setFilterVisible(false)}
-        filters={FILTER_CONFIG}
-        onApply={handleApplyFilters}
-        onClear={handleClearFilters}
-        activeCount={activeFilterCount}
+      <InternshipsFilter 
+        filterVisible={filterVisible}
+        setFilterVisible={setFilterVisible}
       />
     </div>
   );

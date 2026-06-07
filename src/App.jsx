@@ -29,9 +29,9 @@ import Schedule from "./pages/Schedule/Schedule";
 import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
-import InternshipsListSchedulesList from "./pages/internshipsSchedules/InternshipsSchedulesList";
-import InternshipsScheduleForm from "./pages/internshipsSchedules/internshipsScheduleForm";
-import InternshipsScheduleAssignment from "./pages/internshipsSchedules/InternshipsScheduleAssignment";
+import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
+import InternshipsScheduleForm from "./pages/InternshipsSchedules/internshipsScheduleForm";
+import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/InternshipsScheduleAssignment";
 
 import StudentForm from "./pages/Student/StudentForm";
 import StudentDetails from "./pages/Student/StudentDetails";
