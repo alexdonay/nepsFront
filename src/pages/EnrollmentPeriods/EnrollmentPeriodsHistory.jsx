@@ -207,6 +207,10 @@ export default function EnrollmentPeriodsHistory() {
           body={(row) => row?.student?.cpf || "-"}
         />
         <Column
+          header="Campo de Estágio"
+          body={(row) => row?.student?.internship?.name || "-"}
+        />
+        <Column
           field="room_id"
           header="Sala"
           body={(row) => row?.room_id || "-"}

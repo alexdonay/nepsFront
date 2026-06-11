@@ -23,14 +23,18 @@ import RegionsList from "./pages/Regions/RegionsList";
 import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
 import Schedule from "./pages/Schedule/Schedule";
+
 import InternshipsForm from "./pages/Internships/InternshipsForm";
-import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
+import InternshipsLinkStudents from "./pages/Internships/InternshipsLinkStudents";
+import InternshipsList from "./pages/Internships/InternshipsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
-import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
-import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
+import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/InternshipsScheduleAssignment";
-import StudentForm from "./pages/Student/StudentForm";
+import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
+import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
+
 import StudentDetails from "./pages/Student/StudentDetails";
+import StudentForm from "./pages/Student/StudentForm";
 import StudentHistory from "./pages/Student/StudentHistory";
 import StudentsList from "./pages/Student/StudentsList";
 import UserForm from "./pages/Users/UserForm";
@@ -43,7 +47,7 @@ const ALL_PERMISSIONS = [
   PERMISSIONS.CAMPO_ESTAGIO,
 ];
 
-const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO];
+const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.CAMPO_ESTAGIO];
 
 function PrivateRoute({ children, permissions = [] }) {
   if (!isAuthenticated()) {
@@ -323,6 +327,17 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <InternshipsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/internships/link-students"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
+            <Layout>
+              <InternshipsLinkStudents />
             </Layout>
           </PrivateRoute>
         }

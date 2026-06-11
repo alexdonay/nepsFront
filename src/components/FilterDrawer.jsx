@@ -23,7 +23,6 @@ export default function FilterDrawer({
   const initialValuesKey = JSON.stringify(initialValues || {});
 
   useEffect(() => {
-    // Inicializar filtros com valores vazios + defaults recebidos do pai
     const nextValues = { ...initialValues };
     filters?.forEach((filter) => {
       if (Object.prototype.hasOwnProperty.call(nextValues, filter.key)) return;
@@ -40,12 +39,11 @@ export default function FilterDrawer({
         nextValues[filter.key] = filter.type === "boolean" ? false : null;
       }
     });
-    // Evita atualização de estado se os valores não mudaram (prevenindo loop)
+
     setFilterValues((prev) => {
       try {
         if (JSON.stringify(prev) === JSON.stringify(nextValues)) return prev;
       } catch (e) {
-        // se stringify falhar, prosseguir com a atualização
       }
       return nextValues;
     });
@@ -54,7 +52,6 @@ export default function FilterDrawer({
   const handleApply = () => {
     const appliedFilters = {};
 
-    // Map filter keys to backend query params depending on type
     filters?.forEach((filter) => {
       const { key, type, queryKey } = filter;
       const value = filterValues[key];
@@ -69,7 +66,6 @@ export default function FilterDrawer({
       )
         return;
 
-      // Determine final param key
       let paramKey = queryKey || key;
       if (type === "text") paramKey = queryKey || `${key}_like`;
       if (type === "multiselect") paramKey = queryKey || `${key}_in`;
@@ -87,7 +83,6 @@ export default function FilterDrawer({
         return;
       }
 
-      // For multiselect, keep as array so caller can decide serialization
       appliedFilters[paramKey] = value;
     });
 

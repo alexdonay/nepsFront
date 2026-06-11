@@ -1,16 +1,12 @@
 import { Button } from "primereact/button";
 import { Link, useNavigate } from "react-router-dom";
-import { PERMISSIONS } from "../constants/permissions";
+import {
+  ALL_PERMISSIONS,
+  MANAGEMENT_PERMISSIONS,
+  PERMISSIONS,
+} from "../constants/permissions";
 import { logout } from "../services/auth";
 import { hasPermission } from "../utils/auth";
-
-const ALL_PERMISSIONS = [
-  PERMISSIONS.ADMIN,
-  PERMISSIONS.INSTITUICAO_ENSINO,
-  PERMISSIONS.CAMPO_ESTAGIO,
-];
-
-const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO];
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -74,6 +70,12 @@ export default function Layout({ children }) {
           icon: "pi pi-users",
           path: "/students",
           permissions: MANAGEMENT_PERMISSIONS,
+        },
+        {
+          label: "Vincular Alunos",
+          icon: "pi pi-link",
+          path: "/internships/link-students",
+          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
         },
       ],
     },

@@ -136,8 +136,8 @@ export const repository = {
   // Estudantes
   students: {
     get: (params = {}) => getWithParams(API_ROUTES.GESTAO.STUDENTS, params),
-    getById: (id) =>
-      api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, { student_id: Number(id) }),
+    getById: (id, params = {}) =>
+      api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, { ...params, student_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
     put: (id, data) =>
       api.patch(API_ROUTES.GESTAO.STUDENTS, {
@@ -155,6 +155,16 @@ export const repository = {
       api.post(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE, {
         ...params,
         institute_id: Number(instituteId),
+      }),
+    linkToInternship: (studentId, internshipId) =>
+      api.post(API_ROUTES.GESTAO.LINK_STUDENT, {
+        student_id: Number(studentId),
+        internship_id: Number(internshipId),
+      }),
+    unlinkFromInternship: (studentId) =>
+      api.patch(API_ROUTES.GESTAO.STUDENTS, {
+        student_id: Number(studentId),
+        internship_id: null,
       }),
   },
 

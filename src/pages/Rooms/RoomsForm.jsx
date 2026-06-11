@@ -18,7 +18,7 @@ export default function RoomsForm() {
 
   const [form, setForm] = useState({
     name: "",
-    internship_id: null,
+    internships_id: null,
     room_capacity: null,
     has_gurney: false,
     is_active: true,
@@ -49,7 +49,7 @@ export default function RoomsForm() {
       const { data } = await repository.rooms.getById(id);
       setForm({
         name: data.name || "",
-        internship_id: data.internship_id || null,
+        internships_id: data.internships_id || null,
         room_capacity: data.room_capacity ?? null,
         has_gurney: data.has_gurney ?? false,
         is_active: data.is_active ?? true,
@@ -67,7 +67,7 @@ export default function RoomsForm() {
     try {
       const payload = {
         name: form.name,
-        internship_id: form.internship_id,
+        internships_id: form.internships_id,
         room_capacity: form.room_capacity,
         has_gurney: form.has_gurney,
         is_active: form.is_active,
@@ -119,11 +119,11 @@ export default function RoomsForm() {
             Campo de Estágio *
           </label>
           <Dropdown
-            value={form.internship_id}
+            value={form.internships_id}
             options={internships}
             optionLabel="label"
             optionValue="value"
-            onChange={(e) => setForm({ ...form, internship_id: e.value })}
+            onChange={(e) => setForm({ ...form, internships_id: e.value })}
             placeholder="Selecione um campo de estágio"
             className="w-full"
             required

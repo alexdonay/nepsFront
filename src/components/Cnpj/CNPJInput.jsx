@@ -4,7 +4,7 @@ import {
   formatCNPJDigits,
   normalizeCNPJ,
   validateCNPJ,
-} from "../services/utils";
+} from "../../services/utils";
 
 /**
  * Componente de input para CNPJ com máscara automática
@@ -51,11 +51,9 @@ export default function CNPJInput({
       }
     }
 
-    // Call parent's onChange with normalized digits only
     const event = { ...e, target: { ...e.target, value: d } };
     if (onChange) onChange(event);
 
-    // Validar CNPJ se tiver 14 dígitos
     if (d.length === 14) {
       if (!validateCNPJ(d)) {
         setError("CNPJ inválido. Verifique os dígitos.");
@@ -66,7 +64,6 @@ export default function CNPJInput({
       setError("");
     }
 
-    // Restore caret after DOM update
     requestAnimationFrame(() => {
       const el = inputRef.current;
       if (el && el.setSelectionRange) {
