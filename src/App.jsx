@@ -13,7 +13,6 @@ import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriods
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
-import InternshipsList from "./pages/Internships/InternshipsList"
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
