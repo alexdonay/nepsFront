@@ -36,7 +36,9 @@ export default function StudentHistory() {
 
       const page = Math.floor(first / rows) + 1;
       const [studentResponse, historyResponse] = await Promise.all([
-        repository.students.getById(id),
+        repository.students.getById(id, {
+          include: "discipline,institution,internship",
+        }),
         repository.histories.getByStudent(id, {
           page,
           per_page: rows,
@@ -64,7 +66,10 @@ export default function StudentHistory() {
     loadHistory();
   }, [loadHistory]);
 
-  const studentName = useMemo(() => student?.name || `Aluno ID: ${id}`, [id, student]);
+  const studentName = useMemo(
+    () => student?.name || `Aluno ID: ${id}`,
+    [id, student],
+  );
   const studentDiscipline = useMemo(
     () => student?.discipline?.name || student?.discipline_name || "-",
     [student],
@@ -73,23 +78,32 @@ export default function StudentHistory() {
     () => student?.institution?.name || student?.institution_name || "-",
     [student],
   );
+  const studentInternship = useMemo(
+    () => student?.internship?.name || "-",
+    [student],
+  );
 
   const handlePage = (event) => {
     setFirst(event.first);
     setRows(event.rows);
   };
 
-  const roomTemplate = (row) => row?.room_name || row?.room?.name || row?.room_id || "-";
+  const roomTemplate = (row) =>
+    row?.room_name || row?.room?.name || row?.room_id || "-";
   const dayTemplate = (row) => row?.day_of_week || row?.dayOfWeek || "-";
-  const periodTemplate = (row) => row?.period?.name || row?.period_name || row?.period || "-";
-  const statusTemplate = (row) => row?.end_date ? "Encerrado" : "Vínculo ativo";
+  const periodTemplate = (row) =>
+    row?.period?.name || row?.period_name || row?.period || "-";
+  const statusTemplate = (row) =>
+    row?.end_date ? "Encerrado" : "Vínculo ativo";
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center gap-3 mb-4">
         <div>
           <h2 className="text-xl font-bold m-0">Histórico do aluno</h2>
-          <small className="text-600">Vínculos encontrados em períodos cadastrados.</small>
+          <small className="text-600">
+            Vínculos encontrados em períodos cadastrados.
+          </small>
         </div>
 
         <div className="flex gap-2">
@@ -136,6 +150,10 @@ export default function StudentHistory() {
                 <small className="text-600 block mb-1">Instituição</small>
                 <strong>{studentInstitution}</strong>
               </div>
+              <div className="col-12 md:col-4">
+                <small className="text-600 block mb-1">Campo de Estágio</small>
+                <strong>{studentInternship}</strong>
+              </div>
             </div>
           </div>
 
@@ -151,27 +169,24 @@ export default function StudentHistory() {
             lazy
             emptyMessage="Nenhum registro de histórico encontrado para este aluno"
           >
+            <Column
+              header="Campo de Estágio"
+              body={(row) => row?.student?.internship?.name || "-"}
+            />
             <Column field="room_id" header="Sala" body={roomTemplate} />
             <Column field="day_of_week" header="Dia" body={dayTemplate} />
             <Column field="period" header="Período" body={periodTemplate} />
-            <Column field="start_date" header="Início" body={(row) => formatDate(row?.start_date)} />
-            <Column field="end_date" header="Fim" body={(row) => formatDate(row?.end_date)} />
-            <Column header="Status" body={statusTemplate} />
             <Column
-              header="Ações"
-              body={(row) => (
-                <Button
-                  label="Abrir período"
-                  icon="pi pi-external-link"
-                  className="p-button-text"
-                  onClick={() =>
-                    navigate(
-                      `/periods/${row.period_id || row.period?.id || row.id}/manage`,
-                    )
-                  }
-                />
-              )}
+              field="start_date"
+              header="Início"
+              body={(row) => formatDate(row?.start_date)}
             />
+            <Column
+              field="end_date"
+              header="Fim"
+              body={(row) => formatDate(row?.end_date)}
+            />
+            <Column header="Status" body={statusTemplate} />
           </DataTable>
         </>
       )}

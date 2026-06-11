@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { formatPhoneDigits, normalizePhone } from "../services/utils";
+import { formatPhoneDigits, normalizePhone } from "../../services/utils";
 
 export default function PhoneInput({
   value = "",
@@ -19,14 +19,10 @@ export default function PhoneInput({
     const input = e.target;
     const raw = input.value;
     const caret = input.selectionStart;
-
-    // Count digits before caret
     const digitsBefore = (raw.slice(0, caret).match(/\d/g) || []).length;
 
     const d = normalizePhone(raw);
     const formatted = formatByDigits(d);
-
-    // Compute new caret position based on digitsBefore
     let pos = formatted.length;
     let digitsCount = 0;
     for (let i = 0; i < formatted.length; i++) {
@@ -37,11 +33,9 @@ export default function PhoneInput({
       }
     }
 
-    // Call parent's onChange with normalized digits only
     const event = { ...e, target: { ...e.target, value: d } };
     if (onChange) onChange(event);
 
-    // Restore caret after DOM update
     requestAnimationFrame(() => {
       const el = inputRef.current;
       if (el && el.setSelectionRange) {

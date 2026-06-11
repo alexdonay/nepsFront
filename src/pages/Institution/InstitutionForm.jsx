@@ -7,12 +7,12 @@ import { MultiSelect } from "primereact/multiselect";
 import { TabPanel, TabView } from "primereact/tabview";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CNPJInput from "../../components/CNPJInput";
+import CNPJInput from "../../components/Cnpj/CNPJInput";
 import EmailInput from "../../components/Email/EmailInput";
-import PhoneInput from "../../components/PhoneInput";
+import PhoneInput from "../../components/Phone/PhoneInput";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function InstitutionForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.institution, {});
@@ -53,7 +53,7 @@ export default function InstitutionForm() {
       console.log("Carregando instituição com ID:", id, "Tipo:", typeof id);
       const { data } = await repository.institutions.getById(id);
       console.log("Resposta da API:", data);
-      
+
       const normalized = {
         name: data?.name ?? "",
         cnpj: data?.cnpj ?? "",

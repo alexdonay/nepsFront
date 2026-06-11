@@ -1,23 +1,22 @@
 import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import CpfInput from "../../components/CpfInput";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
-import PhoneInput from "../../components/PhoneInput";
+import PaginatedDropdown from "../../components/PaginatedDropdown";
+import PhoneInput from "../../components/Phone/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
 import {
-  fileToBase64,
   uploadPdfToCloudinary,
   validatePdfFile,
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function StudentForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.student, {});
@@ -29,46 +28,56 @@ export default function StudentForm() {
     cpf: "",
     email: "",
     phone: "",
+    course_id: null,
     discipline_id: null,
     semester: null,
     institution_id: null,
     document_url: "",
     internship_start_date: "",
     internship_expected_end_date: "",
+    professor_name: "",
+    preceptor_name: "",
   });
   const [documentFile, setDocumentFile] = useState(null);
   const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
-  const [disciplines, setDisciplines] = useState([]);
-  const [institutions, setInstitutions] = useState([]);
+  const [directorSignedPdfUrl, setDirectorSignedPdfUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const fetchCourses = useCallback(
+    params => api.get(API_ROUTES.COURSES.LIST, { params }),
+    [],
+  );
+
+  const fetchDisciplines = useCallback(
+    params => api.get(API_ROUTES.CADASTROS.DISCIPLINES_LIST, { params }),
+    [],
+  );
+
+  const fetchInstitutions = useCallback(
+    params => api.get(API_ROUTES.CADASTROS.INSTITUTIONS_LIST, { params }),
+    [],
+  );
+
+  const fetchCourseById = useCallback(
+    id => api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
+    [],
+  );
+
+  const fetchDisciplineById = useCallback(
+    id => api.post(API_ROUTES.COURSES.DETAIL, { discipline_id: Number(id) }),
+    [],
+  );
+
+  const fetchInstitutionById = useCallback(
+    id => api.post(API_ROUTES.CADASTROS.INSTITUTIONS_DETAIL, { institute_id: Number(id) }),
+    [],
+  );
+
   useEffect(() => {
-    loadOptions();
     if (id) loadStudent();
   }, []);
-
-  const loadOptions = async () => {
-    try {
-      const [disciplinesRes, instRes] = await Promise.all([
-        api.get(API_ROUTES.CADASTROS.COURSES),
-        api.get(API_ROUTES.CADASTROS.INSTITUTIONS),
-      ]);
-      setDisciplines(
-        Array.isArray(disciplinesRes.data)
-          ? disciplinesRes.data
-          : disciplinesRes.data.items || [],
-      );
-      setInstitutions(
-        Array.isArray(instRes.data) ? instRes.data : instRes.data.items || [],
-      );
-    } catch (e) {
-      console.error("Erro ao carregar opções:", e);
-      setDisciplines([]);
-      setInstitutions([]);
-    }
-  };
 
   const loadStudent = async () => {
     try {
@@ -78,13 +87,17 @@ export default function StudentForm() {
         cpf: data?.cpf || "",
         email: data?.email || "",
         phone: data?.phone || "",
+        course_id: data?.course_id ?? null,
         discipline_id: data?.discipline_id ?? null,
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
         document_url: data?.document_url || "",
         internship_start_date: data?.internship_start_date || "",
         internship_expected_end_date: data?.internship_expected_end_date || "",
+        professor_name: data?.professor_name || "",
+        preceptor_name: data?.preceptor_name || "",
       });
+      setDirectorSignedPdfUrl(data?.director_signed_pdf || "");
     } catch (e) {}
   };
 
@@ -140,42 +153,38 @@ export default function StudentForm() {
         throw new Error("Envie o PDF obrigatório do aluno.");
       }
 
-      if (!id && !directorSignedPdfFile) {
-        throw new Error("Envie o PDF assinado pelo diretor.");
-      }
-
-      if (!id && !form.internship_start_date) {
-        throw new Error("Informe a data de início do estágio.");
-      }
-
-      if (!id && !form.internship_expected_end_date) {
-        throw new Error("Informe a data prevista de término do estágio.");
-      }
-
       if (documentFile) {
         documentUrl = await uploadPdfToCloudinary(documentFile);
       }
 
-      if (!id && directorSignedPdfFile) {
-        directorSignedPdf = await fileToBase64(directorSignedPdfFile);
+      if (directorSignedPdfFile) {
+        directorSignedPdf = await uploadPdfToCloudinary(directorSignedPdfFile);
+        console.log("Director PDF uploaded to Cloudinary:", directorSignedPdf);
+      } else if (id) {
+        directorSignedPdf = directorSignedPdfUrl || null;
       }
+
+      console.log("Final directorSignedPdf value:", directorSignedPdf);
 
       const payload = {
         name: form.name,
         cpf: form.cpf,
         email: form.email,
         phone: form.phone,
+        course_id: form.course_id,
         discipline_id: form.discipline_id,
         semester: form.semester,
         institution_id: form.institution_id,
         document_url: documentUrl,
+        director_signed_pdf: directorSignedPdf,
+        professor_name: form.professor_name || null,
+        preceptor_name: form.preceptor_name || null,
       };
 
       if (!id) {
-        payload.director_signed_pdf = directorSignedPdf;
-        payload.internship_start_date = form.internship_start_date;
+        payload.internship_start_date = form.internship_start_date || null;
         payload.internship_expected_end_date =
-          form.internship_expected_end_date;
+          form.internship_expected_end_date || null;
       }
 
       let studentId = id;
@@ -273,72 +282,86 @@ export default function StudentForm() {
           )}
         </div>
 
+        <div className="field mb-3">
+          <label className="block mb-2">PDF assinado pelo diretor</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            className="w-full"
+            onChange={handleDirectorSignedPdfChange}
+          />
+          <small className="text-600 block mt-1">
+            PDF opcional, máximo 5MB.
+          </small>
+          {directorSignedPdfFile && (
+            <small className="block mt-2 text-green-700">
+              Arquivo selecionado: {directorSignedPdfFile.name}
+            </small>
+          )}
+          {id && directorSignedPdfUrl && !directorSignedPdfFile && (
+            <small className="block mt-2 text-600">
+              Documento atual já salvo.
+            </small>
+          )}
+        </div>
+
         {!id && (
-          <>
-            <div className="field mb-3">
-              <label className="block mb-2">PDF assinado pelo diretor *</label>
+          <div className="grid mb-3">
+            <div className="col-12 md:col-6">
+              <label className="block mb-2">Início do estágio</label>
               <input
-                type="file"
-                accept="application/pdf"
-                className="w-full"
-                onChange={handleDirectorSignedPdfChange}
-                required
+                type="date"
+                value={form.internship_start_date}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    internship_start_date: e.target.value,
+                  })
+                }
+                className="w-full p-inputtext p-component"
               />
-              <small className="text-600 block mt-1">
-                PDF obrigatório, máximo 5MB.
-              </small>
-              {directorSignedPdfFile && (
-                <small className="block mt-2 text-green-700">
-                  Arquivo selecionado: {directorSignedPdfFile.name}
-                </small>
-              )}
             </div>
 
-            <div className="grid mb-3">
-              <div className="col-12 md:col-6">
-                <label className="block mb-2">Início do estágio *</label>
-                <input
-                  type="date"
-                  value={form.internship_start_date}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      internship_start_date: e.target.value,
-                    })
-                  }
-                  className="w-full p-inputtext p-component"
-                  required
-                />
-              </div>
-
-              <div className="col-12 md:col-6">
-                <label className="block mb-2">Fim previsto do estágio *</label>
-                <input
-                  type="date"
-                  value={form.internship_expected_end_date}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      internship_expected_end_date: e.target.value,
-                    })
-                  }
-                  className="w-full p-inputtext p-component"
-                  required
-                />
-              </div>
+            <div className="col-12 md:col-6">
+              <label className="block mb-2">Fim previsto do estágio</label>
+              <input
+                type="date"
+                value={form.internship_expected_end_date}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    internship_expected_end_date: e.target.value,
+                  })
+                }
+                className="w-full p-inputtext p-component"
+              />
             </div>
-          </>
+          </div>
         )}
 
         <div className="field mb-3">
-          <label>Disciplina *</label>
-          <Dropdown
-            value={form.discipline_id}
-            options={disciplines}
+          <label>Curso *</label>
+          <PaginatedDropdown
+            fetchFn={fetchCourses}
+            fetchById={id ? fetchCourseById : undefined}
+            value={form.course_id}
+            onChange={(e) => setForm({ ...form, course_id: e.value })}
             optionLabel="name"
             optionValue="id"
+            placeholder="Selecione um curso"
+            required
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label>Disciplina *</label>
+          <PaginatedDropdown
+            fetchFn={fetchDisciplines}
+            fetchById={id ? fetchDisciplineById : undefined}
+            value={form.discipline_id}
             onChange={(e) => setForm({ ...form, discipline_id: e.value })}
-            className="w-full"
+            optionLabel="name"
+            optionValue="id"
             placeholder="Selecione"
             required
           />
@@ -355,15 +378,33 @@ export default function StudentForm() {
 
         <div className="field mb-3">
           <label>Instituição *</label>
-          <Dropdown
+          <PaginatedDropdown
+            fetchFn={fetchInstitutions}
+            fetchById={id ? fetchInstitutionById : undefined}
             value={form.institution_id}
-            options={institutions}
+            onChange={(e) => setForm({ ...form, institution_id: e.value })}
             optionLabel="name"
             optionValue="id"
-            onChange={(e) => setForm({ ...form, institution_id: e.value })}
-            className="w-full"
             placeholder="Selecione"
             required
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label>Professor</label>
+          <InputText
+            value={form.professor_name}
+            onChange={(e) => setForm({ ...form, professor_name: e.target.value })}
+            className="w-full"
+          />
+        </div>
+
+        <div className="field mb-3">
+          <label>Preceptor</label>
+          <InputText
+            value={form.preceptor_name}
+            onChange={(e) => setForm({ ...form, preceptor_name: e.target.value })}
+            className="w-full"
           />
         </div>
 

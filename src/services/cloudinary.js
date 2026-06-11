@@ -53,7 +53,7 @@ export async function uploadPdfToCloudinary(file) {
 
   const timestamp = Math.floor(Date.now() / 1000).toString();
 
-  const paramsToSign = `timestamp=${timestamp}`;
+  const paramsToSign = `access_mode=public&resource_type=raw&timestamp=${timestamp}&type=upload`;
   const signatureBuffer = await crypto.subtle.digest(
     "SHA-1",
     new TextEncoder().encode(`${paramsToSign}${CLOUDINARY_API_SECRET}`),
@@ -67,9 +67,12 @@ export async function uploadPdfToCloudinary(file) {
   formData.append("api_key", CLOUDINARY_API_KEY);
   formData.append("timestamp", timestamp);
   formData.append("signature", signature);
+  formData.append("type", "upload");
+  formData.append("resource_type", "raw");
+  formData.append("access_mode", "public");
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,
     {
       method: "POST",
       body: formData,

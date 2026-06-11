@@ -19,14 +19,18 @@ export const API_ROUTES = {
   },
 
   COURSES: {
-    BASE: "/v1/disciplines",
-    DETAIL: "/v1/disciplines/detail",
-    BY_ID: () => "/v1/disciplines/detail",
+    BASE: "/v1/courses",
+    LIST: "/v1/courses/list",
+    DETAIL: "/v1/courses/detail",
+    BY_ID: () => "/v1/courses/detail",
   },
 
   CADASTROS: {
-    COURSES: "/v1/disciplines",
+    DISCIPLINES: "/v1/disciplines",
+    DISCIPLINES_LIST: "/v1/disciplines/list",
+    DISCIPLINES_DETAIL: "/v1/disciplines/detail",
     INSTITUTIONS: "/v1/education-institutes",
+    INSTITUTIONS_LIST: "/v1/education-institutes/list",
     INSTITUTIONS_DETAIL: "/v1/education-institutes/detail",
     INSTITUTIONS_BY_ID: () => "/v1/education-institutes/detail",
     LOCATIONS: "/v1/cadastros/locations",
@@ -39,6 +43,7 @@ export const API_ROUTES = {
     STUDENTS_BY_ID: () => "/v1/students/detail",
     STUDENTS_BY_COURSE: "/v1/students/by-discipline",
     STUDENTS_BY_INSTITUTE: "/v1/students/by-institute",
+    LINK_STUDENT: "/v1/students/link-internship",
     PERIODS: "/v1/periods",
     PERIODS_DETAIL: "/v1/periods/detail",
     PERIODS_BY_ID: () => "/v1/periods/detail",

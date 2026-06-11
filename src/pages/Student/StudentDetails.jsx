@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
@@ -13,13 +13,24 @@ const FIELD_SECTIONS = [
   },
   {
     title: "Dados acadêmicos",
-    fields: ["discipline", "semester", "institution"],
+    fields: ["course", "discipline", "semester", "institution", "internship"],
+  },
+  {
+    title: "Estágio",
+    fields: ["professor_name", "preceptor_name", "internship_start_date", "internship_expected_end_date"],
   },
   {
     title: "Documentação",
     fields: ["document_url"],
   },
 ];
+
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString();
+};
 
 const formatValue = (value) => {
   if (value === null || value === undefined || value === "") return "-";
@@ -41,7 +52,7 @@ export default function StudentDetails() {
       try {
         setLoading(true);
         setError("");
-        const { data } = await repository.students.getById(id);
+        const { data } = await repository.students.getById(id, { include: "discipline,institution,internship" });
         setStudent(data || null);
       } catch (e) {
         console.error("Erro ao carregar detalhes do aluno:", e);
@@ -62,6 +73,11 @@ export default function StudentDetails() {
 
   const institutionName = useMemo(
     () => student?.institution?.name || student?.institution_name || "-",
+    [student],
+  );
+
+  const internshipName = useMemo(
+    () => student?.internship?.name || "-",
     [student],
   );
 
@@ -109,7 +125,7 @@ export default function StudentDetails() {
       ) : (
         <div className="grid">
           <div className="col-12 md:col-6">
-            {FIELD_SECTIONS.slice(0, 2).map((section) => (
+            {FIELD_SECTIONS.map((section) => (
               <div
                 key={section.title}
                 className="surface-100 border-round p-3 mb-3"
@@ -135,6 +151,34 @@ export default function StudentDetails() {
                     if (field === "institution") {
                       label = "Instituição";
                       value = institutionName;
+                    }
+
+                    if (field === "internship") {
+                      label = "Campo de Estágio";
+                      value = internshipName;
+                    }
+
+                    if (field === "course") {
+                      label = "Curso";
+                      value = student?.course?.name || student?.course_name || "-";
+                    }
+
+                    if (field === "professor_name") {
+                      label = "Professor";
+                    }
+
+                    if (field === "preceptor_name") {
+                      label = "Preceptor";
+                    }
+
+                    if (field === "internship_start_date") {
+                      label = "Início do estágio";
+                      value = formatDate(student?.internship_start_date);
+                    }
+
+                    if (field === "internship_expected_end_date") {
+                      label = "Fim previsto";
+                      value = formatDate(student?.internship_expected_end_date);
                     }
 
                     if (field === "name") label = "Nome";
@@ -173,15 +217,6 @@ export default function StudentDetails() {
                 <small className="text-600 block mb-1">ID do aluno</small>
                 <strong>{formatValue(student?.id)}</strong>
               </div>
-            </div>
-
-            <div className="surface-100 border-round p-3">
-              <h3 className="text-lg font-semibold mt-0 mb-3">Resumo</h3>
-              <p className="m-0 line-height-3 text-700">
-                Esta tela usa o resultado de <strong>findOne</strong> para
-                exibir os campos principais do aluno em modo somente leitura.
-                Use o botão de editar se precisar alterar qualquer dado.
-              </p>
             </div>
           </div>
         </div>

@@ -2,24 +2,23 @@ import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
-import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import CpfInput from "../../components/CpfInput";
+import { useNavigate } from "react-router-dom";
+import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
-import PhoneInput from "../../components/PhoneInput";
+import PaginatedDropdown from "../../components/PaginatedDropdown";
+import PhoneInput from "../../components/Phone/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
 import {
-  fileToBase64,
   uploadPdfToCloudinary,
   validatePdfFile,
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { getCurrentInstitutionId } from "../../utils/auth";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { ROUTE_CONTEXT_KEYS, getRouteContext, setRouteContext } from "../../utils/routeContext";
 
 export default function EnrollmentManageInstitution() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
@@ -37,21 +36,22 @@ export default function EnrollmentManageInstitution() {
 
   // Estados para modal de cadastro
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [disciplines, setDisciplines] = useState([]);
   const [registering, setRegistering] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [documentFile, setDocumentFile] = useState(null);
-  const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
   const [registerForm, setRegisterForm] = useState({
     name: "",
     cpf: "",
     email: "",
     phone: "",
+    course_id: null,
     discipline_id: null,
     semester: null,
     institution_id: institutionId,
     internship_start_date: "",
     internship_expected_end_date: "",
+    professor_name: "",
+    preceptor_name: "",
   });
 
   const loadData = useCallback(async () => {
@@ -122,9 +122,18 @@ export default function EnrollmentManageInstitution() {
     }
   }, [periodId, institutionId]);
 
+  const fetchCourses = useCallback(
+    (params) => api.get(API_ROUTES.COURSES.LIST, { params }),
+    [],
+  );
+
+  const fetchDisciplines = useCallback(
+    (params) => api.get(API_ROUTES.CADASTROS.DISCIPLINES_LIST, { params }),
+    [],
+  );
+
   useEffect(() => {
     loadData();
-    loadDisciplines();
   }, [loadData]);
 
   const handleLinkStudent = async () => {
@@ -156,15 +165,18 @@ export default function EnrollmentManageInstitution() {
     }
   };
 
-  const loadDisciplines = async () => {
-    try {
-      const { data } = await api.get(API_ROUTES.CADASTROS.COURSES);
-      const disciplinesList = Array.isArray(data) ? data : data.items || [];
-      setDisciplines(disciplinesList);
-    } catch (e) {
-      console.error("Erro ao carregar disciplinas:", e);
-    }
-  };
+  const fetchCourseById = useCallback(
+    (id) => api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
+    [],
+  );
+
+  const fetchDisciplineById = useCallback(
+    (id) =>
+      api.post(API_ROUTES.CADASTROS.DISCIPLINES_DETAIL, {
+        discipline_id: Number(id),
+      }),
+    [],
+  );
 
   const handleRegisterStudent = async (e) => {
     e.preventDefault();
@@ -176,27 +188,17 @@ export default function EnrollmentManageInstitution() {
         throw new Error("Envie o PDF obrigatório do aluno.");
       }
 
-      if (!directorSignedPdfFile) {
-        throw new Error("Envie o PDF assinado pelo diretor.");
-      }
-
-      if (!registerForm.internship_start_date) {
-        throw new Error("Informe a data de início do estágio.");
-      }
-
-      if (!registerForm.internship_expected_end_date) {
-        throw new Error("Informe a data prevista de término do estágio.");
-      }
-
       setRegistering(true);
       const documentUrl = await uploadPdfToCloudinary(documentFile);
-      const directorSignedPdf = await fileToBase64(directorSignedPdfFile);
 
       // Cadastrar aluno
       const { data: newStudent } = await api.post(API_ROUTES.GESTAO.STUDENTS, {
         ...registerForm,
+        course_id: registerForm.course_id,
         document_url: documentUrl,
-        director_signed_pdf: directorSignedPdf,
+        internship_start_date: registerForm.internship_start_date || null,
+        internship_expected_end_date:
+          registerForm.internship_expected_end_date || null,
       });
       const studentId = newStudent.id;
 
@@ -209,14 +211,16 @@ export default function EnrollmentManageInstitution() {
         cpf: "",
         email: "",
         phone: "",
+        course_id: null,
         discipline_id: null,
         semester: null,
         institution_id: institutionId,
         internship_start_date: "",
         internship_expected_end_date: "",
+        professor_name: "",
+        preceptor_name: "",
       });
       setDocumentFile(null);
-      setDirectorSignedPdfFile(null);
       setShowRegisterModal(false);
 
       // Recarregar dados
@@ -281,21 +285,49 @@ export default function EnrollmentManageInstitution() {
                   <Column
                     field="discipline"
                     header="Disciplina"
-                    body={(row) => row.discipline?.name || row.discipline_name || "-"}
+                    body={(row) =>
+                      row.discipline?.name || row.discipline_name || "-"
+                    }
                   />
                   <Column
                     header="Ação"
                     body={(row) => (
-                      <Button
-                        icon="pi pi-trash"
-                        rounded
-                        text
-                        severity="danger"
-                        size="small"
-                        loading={unlinkingStudentId === row.id}
-                        onClick={() => handleRemoveStudent(row.id)}
-                        title="Desvincular aluno"
-                      />
+                      <div className="flex gap-1">
+                        <Button
+                          icon="pi pi-eye"
+                          rounded
+                          text
+                          severity="info"
+                          size="small"
+                          onClick={() => {
+                            setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: row.id });
+                            navigate("/students/details");
+                          }}
+                          title="Visualizar aluno"
+                        />
+                        <Button
+                          icon="pi pi-pencil"
+                          rounded
+                          text
+                          severity="warning"
+                          size="small"
+                          onClick={() => {
+                            setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: row.id });
+                            navigate(`/students/${row.id}`);
+                          }}
+                          title="Editar aluno"
+                        />
+                        <Button
+                          icon="pi pi-trash"
+                          rounded
+                          text
+                          severity="danger"
+                          size="small"
+                          loading={unlinkingStudentId === row.id}
+                          onClick={() => handleRemoveStudent(row.id)}
+                          title="Desvincular aluno"
+                        />
+                      </div>
                     )}
                   />
                 </DataTable>
@@ -307,43 +339,7 @@ export default function EnrollmentManageInstitution() {
           <div className="col-12 lg:col-6">
             <div className="surface-50 p-4 border-round h-full">
               <h3 className="text-lg font-bold mb-3">Vincular Novo Aluno</h3>
-
-              <div className="mb-4">
-                <label className="block mb-2 font-medium">
-                  Selecione um aluno cadastrado
-                </label>
-                <Dropdown
-                  value={selectedStudentId}
-                  options={availableStudents.map((student) => ({
-                    label: `${student.name} • ${student.cpf || ""}`,
-                    value: student.id,
-                  }))}
-                  onChange={(e) => setSelectedStudentId(e.value)}
-                  placeholder={
-                    availableStudents.length === 0
-                      ? "Nenhum aluno disponível"
-                      : "Escolha um aluno"
-                  }
-                  className="w-full"
-                  filter
-                  showClear
-                  disabled={availableStudents.length === 0}
-                />
-              </div>
-
-              <Button
-                label="Vincular Aluno"
-                icon="pi pi-link"
-                className="w-full mb-3"
-                disabled={!selectedStudentId}
-                loading={linkingStudent}
-                onClick={handleLinkStudent}
-              />
-
               <div className="border-top-1 surface-border pt-3">
-                <label className="block mb-2 font-medium">
-                  Ou cadastre um novo aluno
-                </label>
                 <Button
                   label="Cadastrar e Vincular"
                   icon="pi pi-user-plus"
@@ -371,7 +367,6 @@ export default function EnrollmentManageInstitution() {
           setShowRegisterModal(false);
           setRegisterError("");
           setDocumentFile(null);
-          setDirectorSignedPdfFile(null);
         }}
         header="Cadastrar Novo Aluno"
         modal
@@ -455,60 +450,38 @@ export default function EnrollmentManageInstitution() {
             )}
           </div>
 
-          <div className="field mb-4">
-            <label className="font-medium mb-2 block">
-              PDF assinado pelo diretor *
-            </label>
-            <input
-              type="file"
-              accept="application/pdf"
-              className="w-full"
-              required
-              onChange={(e) => {
-                const file = e.target.files?.[0] || null;
-                if (!file) {
-                  setDirectorSignedPdfFile(null);
-                  return;
-                }
-
-                const validationError = validatePdfFile(file);
-                if (validationError) {
-                  setRegisterError(validationError);
-                  setDirectorSignedPdfFile(null);
-                  e.target.value = "";
-                  return;
-                }
-
-                setRegisterError("");
-                setDirectorSignedPdfFile(file);
-              }}
-            />
-            <small className="text-600 block mt-1">
-              PDF obrigatório, máximo 5MB.
-            </small>
-            {directorSignedPdfFile && (
-              <small className="block mt-2 text-green-700">
-                Arquivo selecionado: {directorSignedPdfFile.name}
-              </small>
-            )}
-          </div>
-
           {registerError && (
             <div className="mb-3 text-red-500 text-sm">{registerError}</div>
           )}
 
           <div className="field mb-4">
+            <label className="font-medium mb-2 block">Curso *</label>
+            <PaginatedDropdown
+              fetchFn={fetchCourses}
+              fetchById={fetchCourseById}
+              value={registerForm.course_id}
+              onChange={(e) =>
+                setRegisterForm({ ...registerForm, course_id: e.value })
+              }
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Selecione um curso"
+              required
+            />
+          </div>
+
+          <div className="field mb-4">
             <label className="font-medium mb-2 block">Disciplina *</label>
-            <Dropdown
+            <PaginatedDropdown
+              fetchFn={fetchDisciplines}
+              fetchById={fetchDisciplineById}
               value={registerForm.discipline_id}
-              options={disciplines.map((discipline) => ({
-                label: discipline.name,
-                value: discipline.id,
-              }))}
               onChange={(e) =>
                 setRegisterForm({ ...registerForm, discipline_id: e.value })
               }
-              placeholder="Selecione um disciplina"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Selecione uma disciplina"
               required
             />
           </div>
@@ -529,7 +502,7 @@ export default function EnrollmentManageInstitution() {
           <div className="grid mb-4">
             <div className="col-12 md:col-6 field">
               <label className="font-medium mb-2 block">
-                Início do estágio *
+                Início do estágio
               </label>
               <input
                 type="date"
@@ -541,13 +514,12 @@ export default function EnrollmentManageInstitution() {
                     internship_start_date: e.target.value,
                   })
                 }
-                required
               />
             </div>
 
             <div className="col-12 md:col-6 field">
               <label className="font-medium mb-2 block">
-                Fim previsto do estágio *
+                Fim previsto do estágio
               </label>
               <input
                 type="date"
@@ -559,9 +531,38 @@ export default function EnrollmentManageInstitution() {
                     internship_expected_end_date: e.target.value,
                   })
                 }
-                required
               />
             </div>
+          </div>
+
+          <div className="field mb-4">
+            <label className="font-medium mb-2 block">Professor</label>
+            <InputText
+              value={registerForm.professor_name}
+              onChange={(e) =>
+                setRegisterForm({
+                  ...registerForm,
+                  professor_name: e.target.value,
+                })
+              }
+              placeholder="Nome do professor"
+              className="w-full"
+            />
+          </div>
+
+          <div className="field mb-4">
+            <label className="font-medium mb-2 block">Preceptor</label>
+            <InputText
+              value={registerForm.preceptor_name}
+              onChange={(e) =>
+                setRegisterForm({
+                  ...registerForm,
+                  preceptor_name: e.target.value,
+                })
+              }
+              placeholder="Nome do preceptor"
+              className="w-full"
+            />
           </div>
 
           <div className="flex gap-2 justify-content-end">
