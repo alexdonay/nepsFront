@@ -10,6 +10,15 @@ export function getErrorMessage(error, defaultMessage = "Erro") {
 
     // Check for 'detail' field (common in error responses)
     if (data.detail) {
+      if (Array.isArray(data.detail)) {
+        return data.detail
+          .map((e) => {
+            const field = e.loc?.join(".") || "field";
+            const message = e.msg || "Invalid value";
+            return `${field}: ${message}`;
+          })
+          .join("; ");
+      }
       return data.detail;
     }
 
