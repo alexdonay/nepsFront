@@ -146,7 +146,10 @@ export default function UsersList() {
           <Button
             label="Novo Usuário"
             icon="pi pi-plus"
-            onClick={() => navigate("/users/new")}
+            onClick={() => {
+              setRouteContext("user", {}); // Limpa o ID anterior
+              navigate("/users/new");
+            }}
           />
         </div>
       </div>
@@ -167,7 +170,10 @@ export default function UsersList() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="email" header="E-mail" />
-        <Column body={(rowData) => getRoleLabel(rowData.role)} header="Perfil" />
+        <Column
+          body={(rowData) => getRoleLabel(rowData.role)}
+          header="Perfil"
+        />
         <Column body={(rowData) => getStatusLabel(rowData)} header="Status" />
         <Column
           body={(rowData) => (

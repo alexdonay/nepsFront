@@ -5,14 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { repository } from "../../services/repository";
 import {
-  clearRouteContext,
   ROUTE_CONTEXT_KEYS,
+  clearRouteContext,
   setRouteContext,
 } from "../../utils/routeContext";
-import DisciplinesFilter from "./DisciplineFilter";
-
-export default function DisciplinesList() {
-  const [disciplines, setDisciplines] = useState([]);
+import CourseFilter from "./CourseFilter";
+export default function CoursesList() {
+  const [courses, setCourses] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,7 +27,7 @@ export default function DisciplinesList() {
     }
   }, []);
 
-  const loadDisciplines = useCallback(async () => {
+  const loadCurses = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
@@ -38,12 +37,12 @@ export default function DisciplinesList() {
         params[key] = value;
       });
 
-      const { data } = await repository.disciplines.get(params);
-      setDisciplines(data.items || data);
+      const { data } = await repository.courses.get(params);
+      setCourses(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar disciplinas:", e);
-      setDisciplines([]);
+      console.error("Erro ao carregar course:", e);
+      setCourses([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
@@ -51,8 +50,8 @@ export default function DisciplinesList() {
   }, [searchParams, first, rows]);
 
   useEffect(() => {
-    loadDisciplines();
-  }, [loadDisciplines]);
+    loadCurses();
+  }, [loadCurses]);
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -86,8 +85,8 @@ export default function DisciplinesList() {
         icon="pi pi-pencil"
         className="p-button-text"
         onClick={() => {
-          setRouteContext(ROUTE_CONTEXT_KEYS.discipline, { id: rowData.id });
-          navigate("/disciplines/edit");
+          setRouteContext("course", { id: rowData.id });
+          navigate("/courses/edit");
         }}
       />
     </div>
@@ -96,7 +95,7 @@ export default function DisciplinesList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Disciplinas</h2>
+        <h2 className="text-xl font-bold m-0">Curso</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -106,18 +105,18 @@ export default function DisciplinesList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Novo Disciplina"
+            label="Novo Curso"
             icon="pi pi-plus"
             onClick={() => {
-              clearRouteContext(ROUTE_CONTEXT_KEYS.discipline);
-              navigate("/disciplines/new");
+              clearRouteContext(ROUTE_CONTEXT_KEYS.course);
+              navigate("/courses/new");
             }}
           />
         </div>
       </div>
 
       <DataTable
-        value={disciplines}
+        value={courses}
         tableStyle={{ minWidth: "50rem" }}
         paginator
         first={first}
@@ -127,14 +126,14 @@ export default function DisciplinesList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhum disciplina encontrado"
+        emptyMessage="Nenhum Curso encontrado"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <DisciplinesFilter
+      <CourseFilter
         visible={filterVisible}
         onHide={() => setFilterVisible(false)}
         onApply={handleApplyFilters}

@@ -42,6 +42,12 @@ export default function Layout({ children }) {
           permissions: [PERMISSIONS.ADMIN],
         },
         {
+          label: "Cursos",
+          icon: "pi pi-book",
+          path: "/courses",
+          permissions: [PERMISSIONS.ADMIN],
+        },
+        {
           label: "Disciplinas",
           icon: "pi pi-book",
           path: "/disciplines",

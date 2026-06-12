@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { fileToBase64, validatePdfFile } from "../../services/cloudinary";
+import { uploadPdfToCloudinary, validatePdfFile } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentDisciplineName = (student) =>
@@ -389,10 +389,13 @@ export default function EnrollmentPeriodsManage() {
 
     try {
       setLinkSubmitting(true);
-      const base64 = await fileToBase64(linkForm.directorFile);
+
+      const directorSignedPdfUrl = linkForm.directorFile
+        ? await uploadPdfToCloudinary(linkForm.directorFile)
+        : null;
 
       const updatePayload = {
-        director_signed_pdf: base64,
+        director_signed_pdf: directorSignedPdfUrl,
         internship_start_date: linkForm.internship_start_date || null,
         internship_expected_end_date:
           linkForm.internship_expected_end_date || null,
@@ -443,9 +446,8 @@ export default function EnrollmentPeriodsManage() {
   };
 
   const resolveStudentDocumentUrl = (student) =>
-    student?.document_url ||
-    student?.documentUrl ||
     student?.institution_document_url ||
+    student?.documentUrl ||
     "";
 
   const handleDownloadInstitutionDocument = () => {

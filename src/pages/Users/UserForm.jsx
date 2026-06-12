@@ -66,7 +66,7 @@ export default function UserForm() {
       .then((r) => setUnits(r.data?.items || r.data || []))
       .catch(() => setUnits([]));
 
-    // carregar dados do usuário se em modo de edição
+    console.log(isEdit);
     if (isEdit) {
       repository.users
         .getById(id)
@@ -82,7 +82,10 @@ export default function UserForm() {
             user.education_institute?.id ??
             null;
           const unitId =
-            user.internship_id ?? user.health_unit_id ?? user.service?.id ?? null;
+            user.internship_id ??
+            user.health_unit_id ??
+            user.service?.id ??
+            null;
 
           if (institutionId) setSelectedInstitution(institutionId);
           if (unitId) setSelectedUnit(unitId);
@@ -113,11 +116,11 @@ export default function UserForm() {
         is_active: isActive,
         education_institute_id:
           profile === PERMISSIONS.INSTITUICAO_ENSINO
-            ? selectedInstitution?.id ?? selectedInstitution ?? null
+            ? (selectedInstitution?.id ?? selectedInstitution ?? null)
             : null,
         internship_id:
           profile === PERMISSIONS.CAMPO_ESTAGIO
-            ? selectedUnit?.id ?? selectedUnit ?? null
+            ? (selectedUnit?.id ?? selectedUnit ?? null)
             : null,
       };
 
@@ -174,10 +177,10 @@ export default function UserForm() {
             className="w-full"
           />
         </div>
-
         <div>
           <label className="block mb-1">E-mail</label>
           <InputText
+            type="text"
             value={email ?? ""}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -189,6 +192,8 @@ export default function UserForm() {
           <label className="block mb-1">Senha {!isEdit && "*"}</label>
           <Password
             value={password ?? ""}
+            type="text"
+            defaultValue=""
             onChange={(e) => setPassword(e.target.value)}
             required={!isEdit}
             toggleMask
@@ -209,7 +214,6 @@ export default function UserForm() {
             className="w-full"
           />
         </div>
-
         <div>
           <label className="block mb-1">Status</label>
           <Dropdown
@@ -223,7 +227,6 @@ export default function UserForm() {
             className="w-full"
           />
         </div>
-
         {profile === PERMISSIONS.INSTITUICAO_ENSINO && (
           <div>
             <label className="block mb-1">Instituição</label>
@@ -238,7 +241,6 @@ export default function UserForm() {
             />
           </div>
         )}
-
         {profile === PERMISSIONS.CAMPO_ESTAGIO && (
           <div>
             <label className="block mb-1">Campo de Estágio</label>
@@ -253,10 +255,8 @@ export default function UserForm() {
             />
           </div>
         )}
-
         {error && <Message severity="error" text={error} />}
         {success && <Message severity="success" text={success} />}
-
         <div className="flex gap-2">
           <Button
             label={isEdit ? "Atualizar" : "Criar"}

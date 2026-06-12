@@ -24,6 +24,12 @@ export const API_ROUTES = {
     DETAIL: "/v1/courses/detail",
     BY_ID: () => "/v1/courses/detail",
   },
+  DISCIPLINES: {
+    BASE: "/v1/disciplines",
+    LIST: "/v1/disciplines/list",
+    DETAIL: "/v1/disciplines/detail",
+    BY_ID: () => "/v1/disciplines/detail",
+  },
 
   CADASTROS: {
     DISCIPLINES: "/v1/disciplines",

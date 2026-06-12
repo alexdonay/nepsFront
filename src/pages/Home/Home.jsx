@@ -3,7 +3,7 @@ import { Card } from "primereact/card";
 import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, clearRouteContext } from "../../utils/routeContext";
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -156,7 +156,10 @@ export default function Home() {
                 label="Novo Aluno"
                 icon="pi pi-user-plus"
                 className="p-button-outlined"
-                onClick={() => navigate("/students/new")}
+                onClick={() => {
+                  clearRouteContext(ROUTE_CONTEXT_KEYS.student);
+                  navigate("/students/new");
+                }}
               />
               <Button
                 label="Abrir Período"

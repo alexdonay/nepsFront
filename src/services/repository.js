@@ -7,7 +7,8 @@
 import { API_ROUTES } from "./API_routes";
 import api from "./api";
 
-const getWithParams = (url, params = {}) => api.request({ method: "GET", url, params });
+const getWithParams = (url, params = {}) =>
+  api.request({ method: "GET", url, params });
 const deleteWithBody = (url, data = {}) =>
   api.request({ method: "DELETE", url, data });
 
@@ -31,8 +32,7 @@ export const repository = {
     me: () => api.get(API_ROUTES.USERS.ME),
     updateMe: (data) => api.put(API_ROUTES.USERS.ME, data),
     get: (params = {}) => getWithParams(API_ROUTES.USERS.BASE, params),
-    getById: (id) =>
-      api.post(API_ROUTES.USERS.DETAIL, { user_id: Number(id) }),
+    getById: (id) => api.post(API_ROUTES.USERS.DETAIL, { user_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.USERS.BASE, data),
     put: (id, data) =>
       api.put(API_ROUTES.USERS.BASE, { ...data, user_id: Number(id) }),
@@ -40,7 +40,6 @@ export const repository = {
       deleteWithBody(API_ROUTES.USERS.BASE, { user_id: Number(id) }),
   },
 
-  // Curso
   disciplines: {
     get: (params = {}) => getWithParams(API_ROUTES.COURSES.BASE, params),
     getById: (id) =>
@@ -50,6 +49,17 @@ export const repository = {
       api.put(API_ROUTES.COURSES.BASE, { ...data, discipline_id: Number(id) }),
     delete: (id) =>
       deleteWithBody(API_ROUTES.COURSES.BASE, { discipline_id: Number(id) }),
+  },
+
+  courses: {
+    get: (params = {}) => getWithParams(API_ROUTES.COURSES.BASE, params),
+    getById: (id) =>
+      api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
+    post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
+    put: (id, data) =>
+      api.put(API_ROUTES.COURSES.BASE, { ...data, course_id: Number(id) }),
+    delete: (id) =>
+      deleteWithBody(API_ROUTES.COURSES.BASE, { course_id: Number(id) }),
   },
 
   // Regiões
@@ -99,8 +109,7 @@ export const repository = {
   // Salas
   rooms: {
     get: (params = {}) => getWithParams(API_ROUTES.ROOMS.BASE, params),
-    getById: (id) =>
-      api.post(API_ROUTES.ROOMS.DETAIL, { room_id: Number(id) }),
+    getById: (id) => api.post(API_ROUTES.ROOMS.DETAIL, { room_id: Number(id) }),
     getAvailableSlots: (params = {}) =>
       api.post(API_ROUTES.ROOMS.AVAILABLE_SLOTS, params),
     post: (data) => api.post(API_ROUTES.ROOMS.BASE, data),
@@ -137,7 +146,10 @@ export const repository = {
   students: {
     get: (params = {}) => getWithParams(API_ROUTES.GESTAO.STUDENTS, params),
     getById: (id, params = {}) =>
-      api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, { ...params, student_id: Number(id) }),
+      api.post(API_ROUTES.GESTAO.STUDENTS_DETAIL, {
+        ...params,
+        student_id: Number(id),
+      }),
     post: (data) => api.post(API_ROUTES.GESTAO.STUDENTS, data),
     put: (id, data) =>
       api.patch(API_ROUTES.GESTAO.STUDENTS, {

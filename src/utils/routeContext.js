@@ -2,6 +2,7 @@ const STORAGE_PREFIX = "nepsFront.routeContext.";
 
 export const ROUTE_CONTEXT_KEYS = {
   discipline: "discipline",
+  course: "course",
   institution: "institution",
   period: "period",
   region: "region",
@@ -15,7 +16,10 @@ export const ROUTE_CONTEXT_KEYS = {
 
 export function setRouteContext(key, value) {
   if (typeof window === "undefined") return;
-  window.sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(value));
+  window.sessionStorage.setItem(
+    `${STORAGE_PREFIX}${key}`,
+    JSON.stringify(value),
+  );
 }
 
 export function getRouteContext(key, fallback = null) {
