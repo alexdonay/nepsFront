@@ -40,12 +40,12 @@ export default function InternshipsLinkStudents() {
         repository.students.get({
           internship_id: selectedInternshipId,
           include: "discipline,institution",
-          per_page: 500,
+          per_page: 100,
         }),
         repository.students.get({
           internship_id_null: true,
           include: "discipline,institution",
-          per_page: 500,
+          per_page: 100,
         }),
       ]);
 

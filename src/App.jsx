@@ -22,7 +22,6 @@ import RegionsForm from "./pages/Regions/RegionsForm";
 import RegionsList from "./pages/Regions/RegionsList";
 import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
-import Schedule from "./pages/Schedule/Schedule";
 
 import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsLinkStudents from "./pages/Internships/InternshipsLinkStudents";
@@ -594,18 +593,7 @@ export default function App() {
         }
       />
 
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}
-          >
-            <Layout>
-              <Schedule />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+
     </Routes>
   );
 }

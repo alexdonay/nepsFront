@@ -95,6 +95,10 @@ export const API_ROUTES = {
     BY_ROOM_DAY: "/v1/service-schedules/by-room/by-day",
   },
 
+  DASHBOARD: {
+    BASE: "/v1/dashboard",
+  },
+
   ROOMS: {
     BASE: "/v1/rooms",
     DETAIL: "/v1/rooms/detail",

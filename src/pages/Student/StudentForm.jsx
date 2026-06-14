@@ -93,7 +93,7 @@ export default function StudentForm() {
         discipline_id: data?.discipline_id ?? null,
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
-        institution_document_url: data?.institution_document_url || "",
+        institution_document_url: data?.document_url || data?.institution_document_url || "",
         internship_start_date: data?.internship_start_date || "",
         internship_expected_end_date: data?.internship_expected_end_date || "",
         professor_name: data?.professor_name || "",
@@ -198,7 +198,7 @@ export default function StudentForm() {
       };
 
       if (documentUrl) {
-        payload.institution_document_url = documentUrl;
+        payload.document_url = documentUrl;
       }
 
       if (directorSignedPdf) {

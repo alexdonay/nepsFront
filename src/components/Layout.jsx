@@ -85,12 +85,7 @@ export default function Layout({ children }) {
         },
       ],
     },
-    {
-      label: "Acompanhamento",
-      icon: "pi pi-chart-bar",
-      path: "/dashboard",
-      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
-    },
+
   ];
 
   const filterMenuItems = (items) => {

@@ -41,14 +41,14 @@ export const repository = {
   },
 
   disciplines: {
-    get: (params = {}) => getWithParams(API_ROUTES.COURSES.BASE, params),
+    get: (params = {}) => getWithParams(API_ROUTES.DISCIPLINES.BASE, params),
     getById: (id) =>
-      api.post(API_ROUTES.COURSES.DETAIL, { discipline_id: Number(id) }),
-    post: (data) => api.post(API_ROUTES.COURSES.BASE, data),
+      api.post(API_ROUTES.DISCIPLINES.DETAIL, { discipline_id: Number(id) }),
+    post: (data) => api.post(API_ROUTES.DISCIPLINES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.COURSES.BASE, { ...data, discipline_id: Number(id) }),
+      api.put(API_ROUTES.DISCIPLINES.BASE, { ...data, discipline_id: Number(id) }),
     delete: (id) =>
-      deleteWithBody(API_ROUTES.COURSES.BASE, { discipline_id: Number(id) }),
+      deleteWithBody(API_ROUTES.DISCIPLINES.BASE, { discipline_id: Number(id) }),
   },
 
   courses: {
@@ -305,6 +305,11 @@ export const repository = {
       deleteWithBody(API_ROUTES.SERVICE_SCHEDULES.BASE, {
         service_schedule_id: Number(id),
       }),
+  },
+
+  // Dashboard
+  dashboard: {
+    get: () => api.get(API_ROUTES.DASHBOARD.BASE),
   },
 
   // Acompanhamento
