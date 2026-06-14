@@ -10,14 +10,13 @@ import {
   getCurrentPermission,
   normalizePermission,
 } from "../../utils/auth";
-import { ROUTE_CONTEXT_KEYS, setRouteContext } from "../../utils/routeContext";
+import { ROUTE_CONTEXT_KEYS, clearRouteContext, setRouteContext } from "../../utils/routeContext";
 import EnrollmentPeriodsFilters from "./EnrollmentPeriodsFilters";
 
 export default function EnrollmentPeriodsList() {
   const [periods, setPeriods] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({});
   const navigate = useNavigate();
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
@@ -28,10 +27,6 @@ export default function EnrollmentPeriodsList() {
   const institutionId = getCurrentInstitutionId();
 
   const today = new Date();
-
-  useEffect(() => {
-    loadPeriods();
-  }, [filters, first, rows]);
 
   const filterPeriodsForEducationInstitute = (periodsList) => {
     if (currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO) {
@@ -107,6 +102,10 @@ export default function EnrollmentPeriodsList() {
     }
   }, [first, rows, currentPermission, institutionId, searchParams]);
 
+  useEffect(() => {
+    loadPeriods();
+  }, [loadPeriods, first, rows]);
+
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
 
@@ -143,6 +142,11 @@ export default function EnrollmentPeriodsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
+  const filterInitialValues = {
+    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
+    ...(searchParams.has("is_active") && { is_active: searchParams.get("is_active") }),
+  };
+
   const dateTemplate = (rowData) =>
     new Date(rowData.start_date).toLocaleDateString();
 
@@ -164,7 +168,10 @@ export default function EnrollmentPeriodsList() {
             <Button
               label="Novo Período"
               icon="pi pi-plus"
-              onClick={() => (window.location.href = "/periods/new")}
+              onClick={() => {
+                clearRouteContext(ROUTE_CONTEXT_KEYS.period);
+                window.location.href = "/periods/new";
+              }}
             />
           )}
         </div>
@@ -275,6 +282,7 @@ export default function EnrollmentPeriodsList() {
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}
+        initialValues={filterInitialValues}
       />
     </div>
   );

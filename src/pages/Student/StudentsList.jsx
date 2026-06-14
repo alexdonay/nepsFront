@@ -18,6 +18,7 @@ const FILTER_CONFIG = [
     label: "CPF",
     key: "cpf",
     type: "text",
+    queryKey: "cpf",
     placeholder: "Buscar por CPF...",
   },
   {
@@ -119,6 +120,15 @@ export default function StudentsList() {
   };
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
+
+  const filterInitialValues = useMemo(() => ({
+    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
+    ...(searchParams.has("cpf") && { cpf: searchParams.get("cpf") }),
+    ...(searchParams.has("email_like") && { email: searchParams.get("email_like") }),
+    ...(searchParams.has("discipline_id") && { discipline_id: Number(searchParams.get("discipline_id")) }),
+    ...(searchParams.has("institution_id") && { institution_id: Number(searchParams.get("institution_id")) }),
+    ...(searchParams.has("semester") && { semester: Number(searchParams.get("semester")) }),
+  }), [searchParams]);
 
   const filters = useMemo(() => {
     const disciplinesOptions = Array.from(
@@ -263,6 +273,7 @@ export default function StudentsList() {
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}
+        initialValues={filterInitialValues}
       />
     </div>
   );

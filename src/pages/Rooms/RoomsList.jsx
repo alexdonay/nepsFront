@@ -1,35 +1,11 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
-
-const FILTER_CONFIG = [
-  {
-    label: "Nome",
-    key: "name",
-    type: "text",
-    placeholder: "Buscar por nome...",
-  },
-  {
-    label: "Campo de Estágio",
-    key: "internship_id",
-    type: "dropdown",
-    options: [],
-  },
-  {
-    label: "Possui Maca",
-    key: "has_gurney",
-    type: "dropdown",
-    options: [
-      { label: "Sim", value: "1" },
-      { label: "Não", value: "0" },
-    ],
-  },
-];
 
 export default function RoomsList() {
   const [rooms, setRooms] = useState([]);
@@ -90,13 +66,35 @@ export default function RoomsList() {
         value: service.id,
       }));
       setInternships(internshipsList);
-
-      FILTER_CONFIG.find((f) => f.key === "internship_id").options = internshipsList;
     } catch (e) {
       console.error("Erro ao carregar campos de estágio:", e);
       setInternships([]);
     }
   };
+
+  const filterConfig = useMemo(() => [
+    {
+      label: "Nome",
+      key: "name",
+      type: "text",
+      placeholder: "Buscar por nome...",
+    },
+    {
+      label: "Campo de Estágio",
+      key: "internship_id",
+      type: "dropdown",
+      options: internships,
+    },
+    {
+      label: "Possui Maca",
+      key: "has_gurney",
+      type: "dropdown",
+      options: [
+        { label: "Sim", value: "1" },
+        { label: "Não", value: "0" },
+      ],
+    },
+  ], [internships]);
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -123,6 +121,12 @@ export default function RoomsList() {
   };
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
+
+  const filterInitialValues = {
+    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
+    ...(searchParams.has("internship_id") && { internship_id: Number(searchParams.get("internship_id")) }),
+    ...(searchParams.has("has_gurney") && { has_gurney: searchParams.get("has_gurney") }),
+  };
 
   const handleManage = (rowData) => {
     setRouteContext(ROUTE_CONTEXT_KEYS.room, { id: rowData.id });
@@ -204,10 +208,11 @@ export default function RoomsList() {
       <FilterDrawer
         visible={filterVisible}
         onHide={() => setFilterVisible(false)}
-        filters={FILTER_CONFIG}
+        filters={filterConfig}
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}
+        initialValues={filterInitialValues}
       />
     </div>
   );

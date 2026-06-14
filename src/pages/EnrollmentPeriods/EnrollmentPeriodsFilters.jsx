@@ -8,6 +8,7 @@ export default function EnrollmentPeriodsFilters({
   onApply,
   onClear,
   activeCount,
+  initialValues = {},
 }) {
   const currentPermission = normalizePermission(getCurrentPermission());
   const isEducationInstitute =
@@ -53,6 +54,7 @@ export default function EnrollmentPeriodsFilters({
       onApply={onApply}
       onClear={onClear}
       activeCount={activeCount}
+      initialValues={initialValues}
     />
   );
 }

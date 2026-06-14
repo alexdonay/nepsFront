@@ -29,16 +29,23 @@ export default function EnrollmentPeriodsForm() {
     }
   }, [id]);
 
+  const parseDate = (dateStr) => {
+    if (!dateStr) return null;
+    const [datePart] = dateStr.split('T');
+    const [y, m, d] = datePart.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  };
+
   const loadPeriod = async () => {
     try {
       setLoading(true);
       const { data } = await repository.periods.getById(id);
       setForm({
         name: data.name || "",
-        priority_start_date: data.priority_start_date ? new Date(data.priority_start_date) : null,
-        priority_end_date: data.priority_end_date ? new Date(data.priority_end_date) : null,
-        start_date: data.start_date ? new Date(data.start_date) : null,
-        end_date: data.end_date ? new Date(data.end_date) : null,
+        priority_start_date: parseDate(data.priority_start_date),
+        priority_end_date: parseDate(data.priority_end_date),
+        start_date: parseDate(data.start_date),
+        end_date: parseDate(data.end_date),
       });
     } catch (err) {
       setError(getErrorMessage(err, "Erro ao carregar período"));
@@ -61,21 +68,24 @@ export default function EnrollmentPeriodsForm() {
         name: form.name,
       };
 
+      const toLocalDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+
       if (form.priority_start_date) {
-        payload.priority_start_date = form.priority_start_date
-          .toISOString()
-          .split("T")[0];
+        payload.priority_start_date = toLocalDate(form.priority_start_date);
       }
       if (form.priority_end_date) {
-        payload.priority_end_date = form.priority_end_date
-          .toISOString()
-          .split("T")[0];
+        payload.priority_end_date = toLocalDate(form.priority_end_date);
       }
       if (form.start_date) {
-        payload.start_date = form.start_date.toISOString().split("T")[0];
+        payload.start_date = toLocalDate(form.start_date);
       }
       if (form.end_date) {
-        payload.end_date = form.end_date.toISOString().split("T")[0];
+        payload.end_date = toLocalDate(form.end_date);
       }
 
       if (isEdit) {

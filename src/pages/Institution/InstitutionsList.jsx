@@ -18,6 +18,7 @@ const FILTER_CONFIG = [
     label: "CNPJ",
     key: "cnpj",
     type: "text",
+    queryKey: "cnpj",
     placeholder: "Buscar por CNPJ...",
   },
   {

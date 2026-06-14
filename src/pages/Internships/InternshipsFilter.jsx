@@ -88,6 +88,12 @@ export default function InternshipsFilter({ filterVisible, setFilterVisible, onF
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
+  const initialValues = {
+    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
+    ...(searchParams.has("region_id") && { region_id: Number(searchParams.get("region_id")) }),
+    ...(searchParams.has("is_active") && { is_active: searchParams.get("is_active") }),
+  };
+
   return (
     <FilterDrawer
       visible={filterVisible}
@@ -96,6 +102,7 @@ export default function InternshipsFilter({ filterVisible, setFilterVisible, onF
       onApply={handleApplyFilters}
       onClear={handleClearFilters}
       activeCount={activeFilterCount}
+      initialValues={initialValues}
     />
   );
 }
