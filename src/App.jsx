@@ -13,6 +13,7 @@ import EnrollmentPeriodsManage from "./pages/EnrollmentPeriods/EnrollmentPeriods
 import Home from "./pages/Home/Home";
 import InstitutionForm from "./pages/Institution/InstitutionForm";
 import InstitutionsList from "./pages/Institution/InstitutionsList";
+import InternshipsList from "./pages/Internships/InternshipsList";
 import ForgotPassword from "./pages/Login/ForgotPassword";
 import ForgotPasswordSent from "./pages/Login/ForgotPasswordSent";
 import Login from "./pages/Login/Login";
@@ -21,17 +22,17 @@ import RegionsForm from "./pages/Regions/RegionsForm";
 import RegionsList from "./pages/Regions/RegionsList";
 import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
-import Schedule from "./pages/Schedule/Schedule";
 
 import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsLinkStudents from "./pages/Internships/InternshipsLinkStudents";
-import InternshipsList from "./pages/Internships/InternshipsList";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
 import InternshipsRoomsList from "./pages/InternshipsRooms/InternshipsRoomsList";
 import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/InternshipsScheduleAssignment";
 import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
 import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
 
+import CoursesForm from "./pages/Course/CourseForm";
+import CoursesList from "./pages/Course/CourseList";
 import StudentDetails from "./pages/Student/StudentDetails";
 import StudentForm from "./pages/Student/StudentForm";
 import StudentHistory from "./pages/Student/StudentHistory";
@@ -46,7 +47,11 @@ const ALL_PERMISSIONS = [
   PERMISSIONS.CAMPO_ESTAGIO,
 ];
 
-const MANAGEMENT_PERMISSIONS = [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.CAMPO_ESTAGIO];
+const MANAGEMENT_PERMISSIONS = [
+  PERMISSIONS.ADMIN,
+  PERMISSIONS.INSTITUICAO_ENSINO,
+  PERMISSIONS.CAMPO_ESTAGIO,
+];
 
 function PrivateRoute({ children, permissions = [] }) {
   if (!isAuthenticated()) {
@@ -181,6 +186,37 @@ export default function App() {
       />
 
       <Route
+        path="/courses/"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CoursesList />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/courses/new"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CoursesForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/courses/:id"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CoursesForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/disciplines"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -210,6 +246,7 @@ export default function App() {
           </PrivateRoute>
         }
       />
+
       <Route
         path="/rooms"
         element={
@@ -334,7 +371,9 @@ export default function App() {
       <Route
         path="/internships/link-students"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute
+            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}
+          >
             <Layout>
               <InternshipsLinkStudents />
             </Layout>
@@ -554,18 +593,7 @@ export default function App() {
         }
       />
 
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute
-            permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}
-          >
-            <Layout>
-              <Schedule />
-            </Layout>
-          </PrivateRoute>
-        }
-      />
+
     </Routes>
   );
 }

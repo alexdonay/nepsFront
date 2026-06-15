@@ -28,7 +28,7 @@ export default function FilterDrawer({
       if (Object.prototype.hasOwnProperty.call(nextValues, filter.key)) return;
 
       if (filter.type === "date-range") {
-        nextValues[filter.key] = [null, null];
+        nextValues[filter.key] = null;
       } else if (filter.type === "multiselect") {
         nextValues[filter.key] = [];
       } else if (filter.type === "text") {
@@ -73,8 +73,8 @@ export default function FilterDrawer({
       if (type === "date-range" && Array.isArray(value)) {
         const [start, end] = value;
         if (start)
-          appliedFilters[`${key}_start`] = start.toISOString().split("T")[0];
-        if (end) appliedFilters[`${key}_end`] = end.toISOString().split("T")[0];
+          appliedFilters[`${key}_from`] = start.toISOString().split("T")[0];
+        if (end) appliedFilters[`${key}_to`] = end.toISOString().split("T")[0];
         return;
       }
 
@@ -97,7 +97,7 @@ export default function FilterDrawer({
         return;
 
       if (filter.type === "date-range") {
-        clearedValues[filter.key] = [null, null];
+        clearedValues[filter.key] = null;
       } else if (filter.type === "multiselect") {
         clearedValues[filter.key] = [];
       } else {
@@ -200,7 +200,7 @@ export default function FilterDrawer({
           <div key={key} className="field mb-4">
             <label className="block text-900 font-medium mb-2">{label}</label>
             <Calendar
-              value={filterValues[key] || [null, null]}
+              value={filterValues[key] ?? null}
               onChange={(e) => {
                 setFilterValues((prev) => ({
                   ...prev,
@@ -208,7 +208,6 @@ export default function FilterDrawer({
                 }));
               }}
               selectionMode="range"
-              readOnlyInput
               dateFormat="dd/mm/yy"
               showIcon
               className="w-full"

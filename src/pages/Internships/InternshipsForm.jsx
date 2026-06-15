@@ -20,12 +20,14 @@ export default function ServiceForm() {
   });
   const [regions, setRegions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     loadRegions();
     if (isEdit) {
+      setDataLoading(true);
       repository.internships
         .getById(id)
         .then((r) => {
@@ -37,7 +39,10 @@ export default function ServiceForm() {
             user_email: data.email || data.user_email || "",
           });
         })
-        .catch(() => {});
+        .catch((e) => {
+          setError(getErrorMessage(e, "Erro ao carregar campo de estágio"));
+        })
+        .finally(() => setDataLoading(false));
     }
   }, [id]);
 

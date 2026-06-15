@@ -3,46 +3,15 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
-
-const FILTER_CONFIG = [
-  {
-    label: "Nome",
-    key: "name",
-    type: "text",
-    placeholder: "Buscar por nome...",
-  },
-  {
-    label: "CNPJ",
-    key: "cnpj",
-    type: "text",
-    queryKey: "cnpj",
-    placeholder: "Buscar por CNPJ...",
-  },
-  {
-    label: "Status",
-    key: "is_active",
-    type: "dropdown",
-    options: [
-      { label: "Ativo", value: "1" },
-      { label: "Inativo", value: "0" },
-    ],
-  },
-  {
-    label: "Prioridade",
-    key: "priority",
-    type: "dropdown",
-    options: [
-      { label: "Prioritário", value: "0" },
-      { label: "Não prioritário", value: "1" },
-    ],
-  },
-];
-
-export default function InstitutionsList() {
-  const [institutions, setInstitutions] = useState([]);
+import {
+  ROUTE_CONTEXT_KEYS,
+  clearRouteContext,
+  setRouteContext,
+} from "../../utils/routeContext";
+import CourseFilter from "./CourseFilter";
+export default function CoursesList() {
+  const [courses, setCourses] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,19 +21,13 @@ export default function InstitutionsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadInstitutions();
-  }, [searchParams, first, rows]);
-
-  useEffect(() => {
     const hasFilters = searchParams.toString().length > 0;
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadInstitutions = useCallback(async () => {
+  const loadCurses = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
@@ -74,17 +37,21 @@ export default function InstitutionsList() {
         params[key] = value;
       });
 
-      const { data } = await repository.institutions.get(params);
-      setInstitutions(data.items || data);
+      const { data } = await repository.courses.get(params);
+      setCourses(data.items || data);
       setTotalRecords(data.pagination?.total || 0);
     } catch (e) {
-      console.error("Erro ao carregar instituições:", e);
-      setInstitutions([]);
+      console.error("Erro ao carregar course:", e);
+      setCourses([]);
       setTotalRecords(0);
     } finally {
       setLoading(false);
     }
   }, [searchParams, first, rows]);
+
+  useEffect(() => {
+    loadCurses();
+  }, [loadCurses]);
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -112,20 +79,14 @@ export default function InstitutionsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
-  const priorityLabel = (rowData) =>
-    Number(rowData.priority) === 0 ? "Prioritário" : "Não prioritário";
-
-  const statusLabel = (rowData) =>
-    rowData.is_active === false ? "Inativo" : "Ativo";
-
   const actionsTemplate = (rowData) => (
     <div className="flex gap-2">
       <Button
         icon="pi pi-pencil"
         className="p-button-text"
         onClick={() => {
-          setRouteContext(ROUTE_CONTEXT_KEYS.institution, { id: rowData.id });
-          navigate("/institutions/edit");
+          setRouteContext("course", { id: rowData.id });
+          navigate("/courses/edit");
         }}
       />
     </div>
@@ -134,7 +95,7 @@ export default function InstitutionsList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Instituições</h2>
+        <h2 className="text-xl font-bold m-0">Curso</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -144,18 +105,18 @@ export default function InstitutionsList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Nova Instituição"
+            label="Novo Curso"
             icon="pi pi-plus"
             onClick={() => {
-              clearRouteContext(ROUTE_CONTEXT_KEYS.institution);
-              navigate("/institutions/new");
+              clearRouteContext(ROUTE_CONTEXT_KEYS.course);
+              navigate("/courses/new");
             }}
           />
         </div>
       </div>
 
       <DataTable
-        value={institutions}
+        value={courses}
         tableStyle={{ minWidth: "50rem" }}
         paginator
         first={first}
@@ -165,22 +126,16 @@ export default function InstitutionsList() {
         onPage={handlePaginationChange}
         loading={loading}
         lazy
-        emptyMessage="Nenhuma instituição encontrada"
+        emptyMessage="Nenhum Curso encontrado"
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
-        <Column field="cnpj" header="CNPJ" />
-        <Column body={statusLabel} header="Status" />
-        <Column body={priorityLabel} header="Prioridade" />
-        <Column field="address" header="Endereço" />
-        <Column field="phone" header="Telefone" />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <FilterDrawer
+      <CourseFilter
         visible={filterVisible}
         onHide={() => setFilterVisible(false)}
-        filters={FILTER_CONFIG}
         onApply={handleApplyFilters}
         onClear={handleClearFilters}
         activeCount={activeFilterCount}

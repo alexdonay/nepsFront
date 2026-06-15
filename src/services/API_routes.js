@@ -24,6 +24,12 @@ export const API_ROUTES = {
     DETAIL: "/v1/courses/detail",
     BY_ID: () => "/v1/courses/detail",
   },
+  DISCIPLINES: {
+    BASE: "/v1/disciplines",
+    LIST: "/v1/disciplines/list",
+    DETAIL: "/v1/disciplines/detail",
+    BY_ID: () => "/v1/disciplines/detail",
+  },
 
   CADASTROS: {
     DISCIPLINES: "/v1/disciplines",
@@ -87,6 +93,10 @@ export const API_ROUTES = {
     BY_ID: () => "/v1/service-schedules/detail",
     BY_ROOM: "/v1/service-schedules/by-room",
     BY_ROOM_DAY: "/v1/service-schedules/by-room/by-day",
+  },
+
+  DASHBOARD: {
+    BASE: "/v1/dashboard",
   },
 
   ROOMS: {

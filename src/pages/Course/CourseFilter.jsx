@@ -1,6 +1,6 @@
 import FilterDrawer from "../../components/FilterDrawer";
 
-export default function DisciplinesFilter({
+export default function CourseFilter({
   visible,
   onHide,
   onApply,

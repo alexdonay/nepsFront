@@ -4,8 +4,12 @@ import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { repository } from "../../services/repository";
+import {
+  clearRouteContext,
+  ROUTE_CONTEXT_KEYS,
+  setRouteContext,
+} from "../../utils/routeContext";
 import DisciplinesFilter from "./DisciplineFilter";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
 
 export default function DisciplinesList() {
   const [disciplines, setDisciplines] = useState([]);
@@ -22,8 +26,6 @@ export default function DisciplinesList() {
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDisciplines = useCallback(async () => {

@@ -1,15 +1,17 @@
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import { ROUTE_CONTEXT_KEYS, clearRouteContext } from "../../utils/routeContext";
 
 export default function Home() {
   const [stats, setStats] = useState({
-    students: 0,
-    units: 0,
-    periods: 0,
+    total_students: 0,
+    total_internships: 0,
+    total_periods: 0,
+    total_institutions: 0,
+    total_rooms: 0,
   });
   const [currentPeriod, setCurrentPeriod] = useState(null);
   const navigate = useNavigate();
@@ -20,18 +22,27 @@ export default function Home() {
 
   const loadData = async () => {
     try {
-      const [studentsRes, unitsRes, periodsRes] =
-        await Promise.all([
-          repository.students.get(),
-          repository.healthUnits.get(),
-          repository.periods.get(),
-        ]);
-      const periods = periodsRes.data.items || periodsRes.data;
+      const { data } = await repository.dashboard.get();
+      let totalRooms = data.total_rooms || 0;
+
+      if (!totalRooms) {
+        try {
+          const roomsRes = await repository.rooms.get({ per_page: 1 });
+          const roomsData = roomsRes.data?.pagination?.total ?? roomsRes.data?.length ?? 0;
+          totalRooms = roomsData;
+        } catch (_) {}
+      }
+
       setStats({
-        students: studentsRes.data.length,
-        units: unitsRes.data.length,
-        periods: periods.length,
+        total_students: data.total_students || 0,
+        total_internships: data.total_internships || 0,
+        total_periods: data.total_periods || 0,
+        total_institutions: data.total_institutions || 0,
+        total_rooms: totalRooms,
       });
+
+      const periodsRes = await repository.periods.get();
+      const periods = periodsRes.data.items || periodsRes.data || [];
       const today = new Date();
       const current = periods.find(p => {
         const start = new Date(p.start_date);
@@ -48,43 +59,37 @@ export default function Home() {
       icon: "pi pi-users",
       color: "#3b82f6",
       path: "/students",
+      key: "total_students",
     },
-    { label: "Unidades", icon: "pi pi-home", color: "#10b981", path: "/units" },
+    {
+      label: "Campos de Estágio",
+      icon: "pi pi-home",
+      color: "#10b981",
+      path: "/internships",
+      key: "total_internships",
+    },
     {
       label: "Períodos",
       icon: "pi pi-calendar",
       color: "#f59e0b",
       path: "/periods",
+      key: "total_periods",
     },
     {
       label: "Instituições",
       icon: "pi pi-building",
       color: "#ec4899",
       path: "/institutions",
+      key: "total_institutions",
     },
     {
       label: "Salas",
       icon: "pi pi-map-marker",
       color: "#06b6d4",
       path: "/rooms",
+      key: "total_rooms",
     },
   ];
-
-  const chartData = {
-    labels: ["Alunos", "Unidades", "Períodos"],
-    datasets: [
-      {
-        data: [stats.students, stats.units, stats.periods],
-        backgroundColor: ["#3b82f6", "#10b981", "#f59e0b"],
-      },
-    ],
-  };
-
-  const chartOptions = {
-    plugins: {
-      legend: { position: "bottom" },
-    },
-  };
 
   return (
     <div>
@@ -128,11 +133,7 @@ export default function Home() {
                 <div>
                   <div className="text-500 text-sm">{item.label}</div>
                   <div className="text-900 font-medium">
-                    {item.label === "Alunos" && stats.students}
-                    {item.label === "Unidades" && stats.units}
-                    {item.label === "Períodos" && stats.periods}
-                    {item.label === "Instituições" && "-"}
-                    {item.label === "Salas" && "-"}
+                    {stats[item.key]}
                   </div>
                 </div>
               </div>
@@ -144,19 +145,16 @@ export default function Home() {
       <div className="grid">
         <div className="col-12 md:col-6">
           <Card>
-            <h3 className="text-lg font-medium mb-3">Visão Geral</h3>
-            <Chart type="doughnut" data={chartData} options={chartOptions} />
-          </Card>
-        </div>
-        <div className="col-12 md:col-6">
-          <Card>
             <h3 className="text-lg font-medium mb-3">Ações Rápidas</h3>
             <div className="flex flex-column gap-2">
               <Button
                 label="Novo Aluno"
                 icon="pi pi-user-plus"
                 className="p-button-outlined"
-                onClick={() => navigate("/students/new")}
+                onClick={() => {
+                  clearRouteContext(ROUTE_CONTEXT_KEYS.student);
+                  navigate("/students/new");
+                }}
               />
               <Button
                 label="Abrir Período"

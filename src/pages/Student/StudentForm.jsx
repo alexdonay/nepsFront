@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
@@ -32,14 +32,16 @@ export default function StudentForm() {
     discipline_id: null,
     semester: null,
     institution_id: null,
-    document_url: "",
+    institution_document_url: "",
     internship_start_date: "",
     internship_expected_end_date: "",
     professor_name: "",
     preceptor_name: "",
   });
   const [documentFile, setDocumentFile] = useState(null);
+  const documentFileRef = useRef(null);
   const [directorSignedPdfFile, setDirectorSignedPdfFile] = useState(null);
+  const directorSignedPdfFileRef = useRef(null);
   const [directorSignedPdfUrl, setDirectorSignedPdfUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -77,7 +79,7 @@ export default function StudentForm() {
 
   useEffect(() => {
     if (id) loadStudent();
-  }, []);
+  }, [id]);
 
   const loadStudent = async () => {
     try {
@@ -91,7 +93,7 @@ export default function StudentForm() {
         discipline_id: data?.discipline_id ?? null,
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
-        document_url: data?.document_url || "",
+        institution_document_url: data?.document_url || data?.institution_document_url || "",
         internship_start_date: data?.internship_start_date || "",
         internship_expected_end_date: data?.internship_expected_end_date || "",
         professor_name: data?.professor_name || "",
@@ -103,9 +105,11 @@ export default function StudentForm() {
 
   const handleDocumentChange = (e) => {
     const file = e.target.files?.[0] || null;
+    console.log("handleDocumentChange - selected file:", file);
 
     if (!file) {
       setDocumentFile(null);
+      documentFileRef.current = null;
       return;
     }
 
@@ -113,19 +117,24 @@ export default function StudentForm() {
     if (validationError) {
       setError(validationError);
       setDocumentFile(null);
+      documentFileRef.current = null;
       e.target.value = "";
       return;
     }
 
     setError("");
     setDocumentFile(file);
+    documentFileRef.current = file;
+    console.log("handleDocumentChange - set documentFile state:", file.name);
   };
 
   const handleDirectorSignedPdfChange = (e) => {
     const file = e.target.files?.[0] || null;
+    console.log("handleDirectorSignedPdfChange - selected file:", file);
 
     if (!file) {
       setDirectorSignedPdfFile(null);
+      directorSignedPdfFileRef.current = null;
       return;
     }
 
@@ -133,12 +142,15 @@ export default function StudentForm() {
     if (validationError) {
       setError(validationError);
       setDirectorSignedPdfFile(null);
+      directorSignedPdfFileRef.current = null;
       e.target.value = "";
       return;
     }
 
     setError("");
     setDirectorSignedPdfFile(file);
+    directorSignedPdfFileRef.current = file;
+    console.log("handleDirectorSignedPdfChange - set directorSignedPdfFile state:", file.name);
   };
 
   const handleSubmit = async (e) => {
@@ -146,25 +158,31 @@ export default function StudentForm() {
     setLoading(true);
     setError("");
     try {
-      let documentUrl = form.document_url || "";
-      let directorSignedPdf = null;
+      const currentDocumentFile = documentFileRef.current;
+      const currentDirectorFile = directorSignedPdfFileRef.current;
 
-      if (!id && !documentFile) {
+      if (!id && !currentDocumentFile) {
         throw new Error("Envie o PDF obrigatório do aluno.");
       }
 
-      if (documentFile) {
-        documentUrl = await uploadPdfToCloudinary(documentFile);
+      let documentUrl = form.institution_document_url;
+      let directorSignedPdf = directorSignedPdfUrl;
+
+      if (currentDocumentFile) {
+        documentUrl = await uploadPdfToCloudinary(currentDocumentFile);
+        console.log("Cloudinary document URL:", documentUrl);
+        setForm((prev) => ({ ...prev, institution_document_url: documentUrl }));
       }
 
-      if (directorSignedPdfFile) {
-        directorSignedPdf = await uploadPdfToCloudinary(directorSignedPdfFile);
+      if (currentDirectorFile) {
+        directorSignedPdf = await uploadPdfToCloudinary(
+          currentDirectorFile,
+        );
         console.log("Director PDF uploaded to Cloudinary:", directorSignedPdf);
-      } else if (id) {
-        directorSignedPdf = directorSignedPdfUrl || null;
+        setDirectorSignedPdfUrl(directorSignedPdf);
+      } else if (!id) {
+        directorSignedPdf = null;
       }
-
-      console.log("Final directorSignedPdf value:", directorSignedPdf);
 
       const payload = {
         name: form.name,
@@ -175,11 +193,17 @@ export default function StudentForm() {
         discipline_id: form.discipline_id,
         semester: form.semester,
         institution_id: form.institution_id,
-        document_url: documentUrl,
-        director_signed_pdf: directorSignedPdf,
         professor_name: form.professor_name || null,
         preceptor_name: form.preceptor_name || null,
       };
+
+      if (documentUrl) {
+        payload.document_url = documentUrl;
+      }
+
+      if (directorSignedPdf) {
+        payload.director_signed_pdf = directorSignedPdf;
+      }
 
       if (!id) {
         payload.internship_start_date = form.internship_start_date || null;
@@ -187,7 +211,10 @@ export default function StudentForm() {
           form.internship_expected_end_date || null;
       }
 
+      console.log("StudentForm Payload:", payload);
+
       let studentId = id;
+
       if (id) {
         await repository.students.put(id, payload);
       } else {
@@ -275,7 +302,7 @@ export default function StudentForm() {
               Arquivo selecionado: {documentFile.name}
             </small>
           )}
-          {id && form.document_url && !documentFile && (
+          {id && form.institution_document_url && !documentFile && (
             <small className="block mt-2 text-600">
               Documento atual já salvo no sistema.
             </small>

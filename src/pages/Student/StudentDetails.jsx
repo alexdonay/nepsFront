@@ -21,7 +21,7 @@ const FIELD_SECTIONS = [
   },
   {
     title: "Documentação",
-    fields: ["document_url"],
+    fields: ["institution_document_url"],
   },
 ];
 
@@ -81,7 +81,7 @@ export default function StudentDetails() {
     [student],
   );
 
-  const documentUrl = student?.document_url || "";
+  const documentUrl = student?.institution_document_url || "";
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
