@@ -2,11 +2,7 @@ import axios from "axios";
 
 const defaultProtocol =
   typeof window !== "undefined" ? window.location.protocol : "http:";
-const defaultApiBaseUrl =
-  typeof window !== "undefined"
-    ? process.env.NEXT_PUBLIC_API_BASE_URL ||
-      `${window.location.protocol}//${window.location.hostname}/api`
-    : "";
+const defaultApiBaseUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || defaultApiBaseUrl,
