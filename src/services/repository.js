@@ -319,6 +319,8 @@ export const repository = {
     occupiedByRegion: () => api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_REGION),
     studentsByInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_INSTITUTION),
     studentsByRegionInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_REGION_INSTITUTION),
+    occupiedByInternship: () => api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_INTERNSHIP),
+    capacityByInternship: () => api.get(API_ROUTES.DASHBOARD.CAPACITY_BY_INTERNSHIP),
   },
 
   // Acompanhamento

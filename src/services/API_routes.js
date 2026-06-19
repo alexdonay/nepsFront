@@ -101,6 +101,8 @@ export const API_ROUTES = {
     OCCUPIED_BY_REGION: "/v1/dashboard/occupied-by-region",
     STUDENTS_BY_INSTITUTION: "/v1/dashboard/students-by-institution",
     STUDENTS_BY_REGION_INSTITUTION: "/v1/dashboard/students-by-region-institution",
+    OCCUPIED_BY_INTERNSHIP: "/v1/dashboard/occupied-by-internship",
+    CAPACITY_BY_INTERNSHIP: "/v1/dashboard/capacity-by-internship",
   },
 
   ROOMS: {

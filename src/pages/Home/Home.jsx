@@ -84,6 +84,8 @@ export default function Home() {
   const [occupiedChartData, setOccupiedChartData] = useState(null);
   const [institutionChartData, setInstitutionChartData] = useState(null);
   const [regionInstitutionChartData, setRegionInstitutionChartData] = useState(null);
+  const [occupiedByInternshipChartData, setOccupiedByInternshipChartData] = useState(null);
+  const [capacityByInternshipChartData, setCapacityByInternshipChartData] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -208,6 +210,50 @@ export default function Home() {
 
       setRegionInstitutionChartData({ labels: regions, datasets });
     } catch (_) {}
+
+    // Gráfico: alunos alocados por campo de estágio
+    try {
+      const { data } = await repository.dashboard.occupiedByInternship();
+      const items = (data?.items || data || []).filter((i) => (i.occupied ?? 0) > 0);
+      if (items.length > 0) {
+        setOccupiedByInternshipChartData({
+          labels: items.map((i) => i.internship_name || i.name),
+          datasets: [{
+            label: "Alunos alocados",
+            backgroundColor: items.map((_, idx) => CHART_COLORS[idx % CHART_COLORS.length]),
+            data: items.map((i) => i.occupied ?? 0),
+            borderRadius: 6,
+          }],
+        });
+      }
+    } catch (_) {}
+
+    // Gráfico: capacidade vs ocupação por campo de estágio (barras empilhadas)
+    try {
+      const { data } = await repository.dashboard.capacityByInternship();
+      const items = (data?.items || data || []).filter((i) => (i.total ?? 0) > 0);
+      if (items.length > 0) {
+        setCapacityByInternshipChartData({
+          labels: items.map((i) => i.internship_name),
+          datasets: [
+            {
+              label: "Ocupadas",
+              data: items.map((i) => i.occupied ?? 0),
+              backgroundColor: "#6366f1",
+              borderRadius: 4,
+              stack: "capacity",
+            },
+            {
+              label: "Livres",
+              data: items.map((i) => i.free ?? 0),
+              backgroundColor: "#e2e8f0",
+              borderRadius: 4,
+              stack: "capacity",
+            },
+          ],
+        });
+      }
+    } catch (_) {}
   };
 
   const quickAccess = [
@@ -318,6 +364,83 @@ export default function Home() {
               <Chart type="bar" data={regionInstitutionChartData} options={BAR_OPTIONS} />
             ) : (
               <div className="text-500 text-sm p-3 text-center">Nenhum dado disponível.</div>
+            )}
+          </Card>
+        </div>
+
+        <div className="col-12 mt-2">
+          <Card>
+            <h3 className="text-base font-semibold text-700 mb-3">Capacidade por Campo de Estágio</h3>
+            <div className="flex gap-3 mb-3">
+              <span className="flex align-items-center gap-2 text-sm text-600">
+                <span style={{ width: 12, height: 12, borderRadius: 2, background: "#6366f1", display: "inline-block" }} />
+                Ocupadas
+              </span>
+              <span className="flex align-items-center gap-2 text-sm text-600">
+                <span style={{ width: 12, height: 12, borderRadius: 2, background: "#e2e8f0", border: "1px solid #cbd5e1", display: "inline-block" }} />
+                Livres
+              </span>
+            </div>
+            {capacityByInternshipChartData ? (
+              <Chart
+                type="bar"
+                data={capacityByInternshipChartData}
+                options={{
+                  ...BAR_OPTIONS,
+                  aspectRatio: 3.5,
+                  plugins: {
+                    ...BAR_OPTIONS.plugins,
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
+                        afterBody: (items) => {
+                          const total = items.reduce((s, i) => s + i.parsed.y, 0);
+                          return `Total: ${total}`;
+                        },
+                      },
+                    },
+                  },
+                  scales: {
+                    x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 30, font: { size: 11 } } },
+                    y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: "#f1f5f9" } },
+                  },
+                }}
+              />
+            ) : (
+              <div className="text-500 text-sm p-3 text-center">Nenhum campo com salas cadastradas.</div>
+            )}
+          </Card>
+        </div>
+
+        <div className="col-12 mt-2">
+          <Card>
+            <h3 className="text-base font-semibold text-700 mb-3">Alunos Alocados por Campo de Estágio</h3>
+            {occupiedByInternshipChartData ? (
+              <Chart
+                type="bar"
+                data={occupiedByInternshipChartData}
+                options={{
+                  ...BAR_OPTIONS,
+                  aspectRatio: 3.5,
+                  plugins: {
+                    ...BAR_OPTIONS.plugins,
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: (ctx) => ` ${ctx.parsed.y} aluno${ctx.parsed.y !== 1 ? "s" : ""}`,
+                      },
+                    },
+                  },
+                  scales: {
+                    ...BAR_OPTIONS.scales,
+                    x: { ...BAR_OPTIONS.scales.x, ticks: { maxRotation: 30, font: { size: 11 } } },
+                    y: { ...BAR_OPTIONS.scales.y, ticks: { stepSize: 1 } },
+                  },
+                }}
+              />
+            ) : (
+              <div className="text-500 text-sm p-3 text-center">Nenhum aluno alocado.</div>
             )}
           </Card>
         </div>
