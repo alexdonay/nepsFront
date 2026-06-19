@@ -1,7 +1,7 @@
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET;
-const CLOUDINARY_UPLOAD_PRESET = "mediaflows_4b15c572-61b6-4211-8279-93ec16a23484";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const MAX_PDF_SIZE = 5 * 1024 * 1024;
 
 export function validatePdfFile(file) {
@@ -46,7 +46,12 @@ export async function uploadPdfToCloudinary(file) {
     throw new Error(validationError);
   }
 
-  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET || !CLOUDINARY_UPLOAD_PRESET) {
+  if (
+    !CLOUDINARY_CLOUD_NAME ||
+    !CLOUDINARY_API_KEY ||
+    !CLOUDINARY_API_SECRET ||
+    !CLOUDINARY_UPLOAD_PRESET
+  ) {
     throw new Error(
       "Configuração do Cloudinary ausente no ambiente. Verifique as variáveis VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_API_KEY, VITE_CLOUDINARY_API_SECRET e VITE_CLOUDINARY_UPLOAD_PRESET.",
     );
