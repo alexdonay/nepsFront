@@ -446,6 +446,7 @@ export default function EnrollmentPeriodsManage() {
   };
 
   const resolveStudentDocumentUrl = (student) =>
+    student?.document_url ||
     student?.institution_document_url ||
     student?.documentUrl ||
     "";

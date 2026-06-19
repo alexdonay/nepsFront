@@ -81,7 +81,8 @@ export default function StudentDetails() {
     [student],
   );
 
-  const documentUrl = student?.institution_document_url || "";
+  const documentUrl = student?.document_url || student?.institution_document_url || "";
+  const directorSignedPdfUrl = student?.director_signed_pdf || "";
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
@@ -207,6 +208,17 @@ export default function StudentDetails() {
                 {documentUrl ? (
                   <a href={documentUrl} target="_blank" rel="noreferrer">
                     Abrir documento
+                  </a>
+                ) : (
+                  <strong>-</strong>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
+                {directorSignedPdfUrl ? (
+                  <a href={directorSignedPdfUrl} target="_blank" rel="noreferrer">
+                    Abrir PDF assinado
                   </a>
                 ) : (
                   <strong>-</strong>
