@@ -1,8 +1,35 @@
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET;
-const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const MAX_PDF_SIZE = 5 * 1024 * 1024;
+
+function sha1(str) {
+  const rotate = (n, s) => (n << s) | (n >>> (32 - s));
+  const msg = unescape(encodeURIComponent(str));
+  const H = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0];
+  const words = [];
+  for (let i = 0; i < msg.length; i++)
+    words[i >> 2] |= msg.charCodeAt(i) << (24 - (i % 4) * 8);
+  words[msg.length >> 2] |= 0x80 << (24 - (msg.length % 4) * 8);
+  words[((msg.length + 8 >> 6) + 1) * 16 - 1] = msg.length * 8;
+  for (let i = 0; i < words.length; i += 16) {
+    const W = Array(80);
+    let [a, b, c, d, e] = H;
+    for (let j = 0; j < 80; j++) {
+      W[j] = j < 16 ? (words[i + j] | 0) : rotate(W[j-3] ^ W[j-8] ^ W[j-14] ^ W[j-16], 1);
+      const T = (rotate(a, 5) + e + W[j] + (
+        j < 20 ? ((b & c) | (~b & d)) + 0x5A827999 :
+        j < 40 ? (b ^ c ^ d)          + 0x6ED9EBA1 :
+        j < 60 ? ((b & c) | (b & d) | (c & d)) + 0x8F1BBCDC :
+                 (b ^ c ^ d)          + 0xCA62C1D6
+      )) >>> 0;
+      [e, d, c, b, a] = [d, c, rotate(b, 30), a, T];
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0;
+    H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0; H[4] = (H[4] + e) >>> 0;
+  }
+  return H.map(n => n.toString(16).padStart(8, "0")).join("");
+}
 
 export function validatePdfFile(file) {
   if (!file) {
@@ -46,27 +73,15 @@ export async function uploadPdfToCloudinary(file) {
     throw new Error(validationError);
   }
 
-  if (
-    !CLOUDINARY_CLOUD_NAME ||
-    !CLOUDINARY_API_KEY ||
-    !CLOUDINARY_API_SECRET ||
-    !CLOUDINARY_UPLOAD_PRESET
-  ) {
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
     throw new Error(
-      "Configuração do Cloudinary ausente no ambiente. Verifique as variáveis VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_API_KEY, VITE_CLOUDINARY_API_SECRET e VITE_CLOUDINARY_UPLOAD_PRESET.",
+      "Configuração do Cloudinary ausente no ambiente. Verifique as variáveis VITE_CLOUDINARY_CLOUD_NAME, VITE_CLOUDINARY_API_KEY e VITE_CLOUDINARY_API_SECRET.",
     );
   }
 
   const timestamp = Math.floor(Date.now() / 1000).toString();
-
   const paramsToSign = `timestamp=${timestamp}&type=upload`;
-  const signatureBuffer = await crypto.subtle.digest(
-    "SHA-1",
-    new TextEncoder().encode(`${paramsToSign}${CLOUDINARY_API_SECRET}`),
-  );
-  const signature = Array.from(new Uint8Array(signatureBuffer))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+  const signature = sha1(`${paramsToSign}${CLOUDINARY_API_SECRET}`);
 
   const formData = new FormData();
   formData.append("file", file);
