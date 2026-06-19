@@ -206,7 +206,7 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">URL do documento</small>
                 {documentUrl ? (
-                  <a href={documentUrl} target="_blank" rel="noreferrer">
+                  <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(documentUrl)}`} target="_blank" rel="noreferrer">
                     Abrir documento
                   </a>
                 ) : (
@@ -217,7 +217,7 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
                 {directorSignedPdfUrl ? (
-                  <a href={directorSignedPdfUrl} target="_blank" rel="noreferrer">
+                  <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(directorSignedPdfUrl)}`} target="_blank" rel="noreferrer">
                     Abrir PDF assinado
                   </a>
                 ) : (
