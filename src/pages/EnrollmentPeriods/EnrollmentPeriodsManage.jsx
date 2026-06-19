@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { uploadPdfToCloudinary, validatePdfFile } from "../../services/cloudinary";
+import { uploadPdfToCloudinary, validatePdfFile, getPdfDownloadUrl } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentDisciplineName = (student) =>
@@ -446,10 +446,12 @@ export default function EnrollmentPeriodsManage() {
   };
 
   const resolveStudentDocumentUrl = (student) =>
-    student?.document_url ||
-    student?.institution_document_url ||
-    student?.documentUrl ||
-    "";
+    getPdfDownloadUrl(
+      student?.document_url ||
+      student?.institution_document_url ||
+      student?.documentUrl ||
+      ""
+    );
 
   const handleDownloadInstitutionDocument = () => {
     const url = resolveStudentDocumentUrl(selectedStudentDetails);

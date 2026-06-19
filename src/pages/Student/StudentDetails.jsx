@@ -3,6 +3,7 @@ import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getPdfDownloadUrl } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
@@ -81,8 +82,8 @@ export default function StudentDetails() {
     [student],
   );
 
-  const documentUrl = student?.document_url || student?.institution_document_url || "";
-  const directorSignedPdfUrl = student?.director_signed_pdf || "";
+  const documentUrl = getPdfDownloadUrl(student?.document_url || student?.institution_document_url || "");
+  const directorSignedPdfUrl = getPdfDownloadUrl(student?.director_signed_pdf || "");
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
