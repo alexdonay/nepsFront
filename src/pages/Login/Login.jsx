@@ -96,30 +96,37 @@ export default function Login() {
     <div className="auth-wrapper">
       <div className="auth-card">
         <div className="auth-side">
-          <div className="auth-logo">e-NEPS</div>
-          <div className="auth-sub">
-            Gerenciamento de Estágios e Acompanhamento
+          <div className="auth-logo">
+            <span className="pi pi-chart-bar mr-2" />
+            e-NEPS
           </div>
-          <p style={{ marginTop: 12, lineHeight: 1.4 }}>
-            Painel administrativo para gestão de instituições, alunos e
-            estágios.
+          <div className="auth-sub">Sistema de Gerenciamento de Estágios</div>
+          <p style={{ marginTop: "1.25rem", lineHeight: 1.7, color: "rgba(255,255,255,0.7)", fontSize: "0.9rem" }}>
+            Plataforma para gestão de instituições, alunos, campos de estágio e períodos de alocação.
           </p>
+          <div style={{ marginTop: "auto", paddingTop: "2rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {["Gestão de períodos", "Alocação por região", "Acompanhamento em tempo real"].map((f) => (
+              <div key={f} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "rgba(255,255,255,0.75)" }}>
+                <span className="pi pi-check-circle" style={{ color: "#6ee7b7" }} />
+                {f}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="auth-form">
-          <div className="text-center mb-4">
-            <h1 className="text-900 font-medium text-2xl">Entrar</h1>
-            <span className="text-500">Acesse sua conta para continuar</span>
+          <div className="mb-5">
+            <h1 className="text-900 font-semibold text-2xl m-0">Bem-vindo de volta</h1>
+            <span className="text-500 text-sm">Acesse sua conta para continuar</span>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <EmailInput value={email} onChange={setEmail} required />
+          <form onSubmit={handleSubmit} className="flex flex-column gap-4">
+            <div className="field m-0">
+              <EmailInput value={email} onChange={setEmail} required />
+            </div>
 
-            <div className="field mb-3">
-              <label
-                htmlFor="password"
-                className="block text-900 font-medium mb-2"
-              >
+            <div className="field m-0">
+              <label htmlFor="password" className="block font-medium text-800 mb-2">
                 Senha
               </label>
               <Password
@@ -127,32 +134,35 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full"
+                inputClassName="w-full"
                 feedback={false}
                 toggleMask
+                placeholder="Digite sua senha"
               />
             </div>
+
+            {error && <Message severity="error" text={error} className="w-full" />}
 
             <Button
               type="submit"
               label="Entrar"
-              className="w-full mb-3"
+              icon="pi pi-sign-in"
+              className="w-full"
               loading={loading}
             />
 
-            <div className="flex align-items-center justify-content-center mb-3">
+            <div className="text-center">
               <Button
                 type="button"
-                label="Recuperar senha"
-                className="p-button-text"
+                label="Esqueci minha senha"
+                className="p-button-text text-sm"
                 onClick={() => navigate("/forgot-password")}
               />
             </div>
           </form>
 
-          {error && <Message severity="error" text={error} className="mt-3" />}
-
           <div className="auth-footnote">
-            Não tem conta? Contate o administrador para criação de usuário.
+            Não tem conta? Contate o administrador.
           </div>
         </div>
       </div>

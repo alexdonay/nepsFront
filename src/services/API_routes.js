@@ -97,6 +97,10 @@ export const API_ROUTES = {
 
   DASHBOARD: {
     BASE: "/v1/dashboard",
+    VACANCIES_BY_REGION: "/v1/dashboard/vacancies-by-region",
+    OCCUPIED_BY_REGION: "/v1/dashboard/occupied-by-region",
+    STUDENTS_BY_INSTITUTION: "/v1/dashboard/students-by-institution",
+    STUDENTS_BY_REGION_INSTITUTION: "/v1/dashboard/students-by-region-institution",
   },
 
   ROOMS: {

@@ -1,16 +1,21 @@
 import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { Dialog } from "primereact/dialog";
 import { Dropdown } from "primereact/dropdown";
 import { InputSwitch } from "primereact/inputswitch";
 import { Sidebar } from "primereact/sidebar";
-import { Dialog } from "primereact/dialog";
-import { Calendar } from "primereact/calendar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
+import {
+  getPdfDownloadUrl,
+  openPdf,
+  uploadPdfToCloudinary,
+  validatePdfFile,
+} from "../../services/cloudinary";
 import { repository } from "../../services/repository";
-import { uploadPdfToCloudinary, validatePdfFile, openPdf, getPdfDownloadUrl } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentDisciplineName = (student) =>
@@ -122,6 +127,20 @@ export default function EnrollmentPeriodsManage() {
   const [studentDetailsLoading, setStudentDetailsLoading] = useState(false);
   const [selectedStudentDetails, setSelectedStudentDetails] = useState(null);
   const [linkForm, setLinkForm] = useState({
+    directorFile: null,
+    internship_start_date: "",
+    internship_expected_end_date: "",
+  });
+  const [internshipLinkDialogVisible, setInternshipLinkDialogVisible] =
+    useState(false);
+  const [internshipLinkStudent, setInternshipLinkStudent] = useState(null);
+  const [internshipOptions, setInternshipOptions] = useState([]);
+  const [internshipOptionsLoading, setInternshipOptionsLoading] =
+    useState(false);
+  const [selectedInternshipId, setSelectedInternshipId] = useState(null);
+  const [internshipLinkSubmitting, setInternshipLinkSubmitting] =
+    useState(false);
+  const [internshipLinkForm, setInternshipLinkForm] = useState({
     directorFile: null,
     internship_start_date: "",
     internship_expected_end_date: "",
@@ -364,13 +383,21 @@ export default function EnrollmentPeriodsManage() {
 
   const openLinkDialog = (slot) => {
     setSelectedSlotForLink(slot);
-    setLinkForm({ directorFile: null, internship_start_date: "", internship_expected_end_date: "" });
+    setLinkForm({
+      directorFile: null,
+      internship_start_date: "",
+      internship_expected_end_date: "",
+    });
     setLinkDialogVisible(true);
   };
 
   const closeLinkDialog = () => {
     setSelectedSlotForLink(null);
-    setLinkForm({ directorFile: null, internship_start_date: "", internship_expected_end_date: "" });
+    setLinkForm({
+      directorFile: null,
+      internship_start_date: "",
+      internship_expected_end_date: "",
+    });
     setLinkDialogVisible(false);
     setLinkSubmitting(false);
   };
@@ -445,12 +472,108 @@ export default function EnrollmentPeriodsManage() {
     setStudentDetailsLoading(false);
   };
 
+  const openInternshipLinkDialog = async (student) => {
+    setInternshipLinkStudent(student);
+    setSelectedInternshipId(student?.internship_id || null);
+    setInternshipLinkDialogVisible(true);
+    setInternshipOptionsLoading(true);
+    try {
+      const institutionId = student?.institution_id || student?.institution?.id;
+      let regionId = student?.institution?.region_id || student?.region_id;
+
+      if (!regionId && institutionId) {
+        const { data } = await repository.institutions.getById(institutionId);
+        regionId = data?.region_id || data?.region?.id;
+      }
+
+      if (regionId) {
+        const { data } = await repository.internships.byRegion(regionId);
+        const items = data?.items || data || [];
+        setInternshipOptions(
+          items.map((i) => ({ label: i.name, value: i.id })),
+        );
+      } else {
+        const { data } = await repository.internships.get();
+        const items = data?.items || data || [];
+        setInternshipOptions(
+          items.map((i) => ({ label: i.name, value: i.id })),
+        );
+      }
+    } catch (e) {
+      console.error("Erro ao carregar campos de estágio:", e);
+      setInternshipOptions([]);
+    } finally {
+      setInternshipOptionsLoading(false);
+    }
+  };
+
+  const closeInternshipLinkDialog = () => {
+    setInternshipLinkDialogVisible(false);
+    setInternshipLinkStudent(null);
+    setInternshipOptions([]);
+    setSelectedInternshipId(null);
+    setInternshipLinkSubmitting(false);
+    setInternshipLinkForm({
+      directorFile: null,
+      internship_start_date: "",
+      internship_expected_end_date: "",
+    });
+  };
+
+  const handleInternshipLinkFormChange = (patch) => {
+    setInternshipLinkForm((p) => ({ ...p, ...patch }));
+  };
+
+  const handleInternshipLinkSubmit = async () => {
+    if (!internshipLinkStudent || !selectedInternshipId) return;
+
+    const pdfValidation = validatePdfFile(internshipLinkForm.directorFile);
+    if (pdfValidation) {
+      alert(pdfValidation);
+      return;
+    }
+
+    try {
+      setInternshipLinkSubmitting(true);
+
+      const directorSignedPdfUrl = internshipLinkForm.directorFile
+        ? await uploadPdfToCloudinary(internshipLinkForm.directorFile)
+        : null;
+
+      await repository.students.linkToInternship(
+        internshipLinkStudent.id,
+        selectedInternshipId,
+      );
+
+      const updatePayload = {};
+      if (directorSignedPdfUrl)
+        updatePayload.director_signed_pdf = directorSignedPdfUrl;
+      if (internshipLinkForm.internship_start_date)
+        updatePayload.internship_start_date =
+          internshipLinkForm.internship_start_date;
+      if (internshipLinkForm.internship_expected_end_date)
+        updatePayload.internship_expected_end_date =
+          internshipLinkForm.internship_expected_end_date;
+
+      if (Object.keys(updatePayload).length > 0) {
+        await repository.students.put(internshipLinkStudent.id, updatePayload);
+      }
+
+      await loadPeriodStudents();
+      closeInternshipLinkDialog();
+    } catch (e) {
+      console.error("Erro ao vincular aluno ao campo de estágio:", e);
+      alert("Erro ao vincular. Verifique o console.");
+      setInternshipLinkSubmitting(false);
+    }
+  };
+
   const resolveStudentDocumentUrl = (student) =>
     getPdfDownloadUrl(
       student?.document_url ||
-      student?.institution_document_url ||
-      student?.documentUrl ||
-      ""
+        student?.institution_document_url ||
+        student?.documentUrl ||
+        "",
     );
 
   const handleDownloadInstitutionDocument = async () => {
@@ -714,11 +837,17 @@ export default function EnrollmentPeriodsManage() {
                 tooltipOptions={{ position: "top" }}
               />
               <Button
-                icon="pi pi-calendar-plus"
-                onClick={() => openManageForStudent(rowData)}
-                severity="secondary"
+                icon={
+                  rowData.internship_id ? "pi pi-building" : "pi pi-plus-circle"
+                }
+                onClick={() => openInternshipLinkDialog(rowData)}
+                severity={rowData.internship_id ? "success" : "warning"}
                 className="p-button-text"
-                tooltip="Gerir horário"
+                tooltip={
+                  rowData.internship_id
+                    ? "Campo de estágio vinculado — clique para alterar"
+                    : "Vincular a campo de estágio"
+                }
                 tooltipOptions={{ position: "top" }}
               />
             </div>
@@ -894,24 +1023,35 @@ export default function EnrollmentPeriodsManage() {
           >
             <div className="p-fluid">
               <div className="surface-100 p-3 border-round mb-3">
-                <label className="font-medium">Arquivo assinado pelo diretor (PDF)</label>
+                <label className="font-medium">
+                  Arquivo assinado pelo diretor (PDF)
+                </label>
                 <div
                   className="p-d-flex p-ai-center p-jc-center border-dashed p-p-3 mt-2"
-                  style={{ minHeight: 120, cursor: "pointer", background: "var(--surface-b)" }}
+                  style={{
+                    minHeight: 120,
+                    cursor: "pointer",
+                    background: "var(--surface-b)",
+                  }}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
                     const f = e.dataTransfer?.files?.[0];
                     if (f) handleLinkFormChange({ directorFile: f });
                   }}
-                  onClick={() => document.getElementById("director-file-input")?.click()}
+                  onClick={() =>
+                    document.getElementById("director-file-input")?.click()
+                  }
                 >
                   <div className="text-center">
                     <i className="pi pi-file-pdf" style={{ fontSize: 36 }} />
-                    <div className="mt-2">Arraste o PDF aqui ou clique para selecionar</div>
+                    <div className="mt-2">
+                      Arraste o PDF aqui ou clique para selecionar
+                    </div>
                     {linkForm.directorFile && (
                       <div className="mt-2 text-sm">
-                        <strong>{linkForm.directorFile.name}</strong> • {(linkForm.directorFile.size / 1024).toFixed(0)} KB
+                        <strong>{linkForm.directorFile.name}</strong> •{" "}
+                        {(linkForm.directorFile.size / 1024).toFixed(0)} KB
                         <Button
                           icon="pi pi-times"
                           className="p-button-text p-button-danger ml-2"
@@ -929,39 +1069,63 @@ export default function EnrollmentPeriodsManage() {
                   type="file"
                   accept="application/pdf"
                   style={{ display: "none" }}
-                  onChange={(e) => handleLinkFormChange({ directorFile: e.target.files[0] })}
+                  onChange={(e) =>
+                    handleLinkFormChange({ directorFile: e.target.files[0] })
+                  }
                 />
-                <small className="text-600">Tamanho máximo: 5MB. Formato: PDF.</small>
+                <small className="text-600">
+                  Tamanho máximo: 5MB. Formato: PDF.
+                </small>
               </div>
 
               <div className="grid">
                 <div className="col-12 md:col-6">
-                  <label className="font-medium">Data de início do estágio</label>
+                  <label className="font-medium">
+                    Data de início do estágio
+                  </label>
                   <Calendar
                     className="w-full"
-                    value={linkForm.internship_start_date ? new Date(linkForm.internship_start_date) : null}
+                    value={
+                      linkForm.internship_start_date
+                        ? new Date(linkForm.internship_start_date)
+                        : null
+                    }
                     onChange={(e) => {
                       const d = e.value ? new Date(e.value) : null;
-                      handleLinkFormChange({ internship_start_date: d ? d.toISOString().slice(0, 10) : "" });
+                      handleLinkFormChange({
+                        internship_start_date: d
+                          ? d.toISOString().slice(0, 10)
+                          : "",
+                      });
                     }}
-                    dateFormat="yy-mm-dd"
+                    dateFormat="dd/mm/yy"
                     showIcon
-                    placeholder="AAAA-MM-DD"
+                    placeholder="DD/MM/AAAA"
                   />
                 </div>
 
                 <div className="col-12 md:col-6">
-                  <label className="font-medium">Data prevista de fim do estágio</label>
+                  <label className="font-medium">
+                    Data prevista de fim do estágio
+                  </label>
                   <Calendar
                     className="w-full"
-                    value={linkForm.internship_expected_end_date ? new Date(linkForm.internship_expected_end_date) : null}
+                    value={
+                      linkForm.internship_expected_end_date
+                        ? new Date(linkForm.internship_expected_end_date)
+                        : null
+                    }
                     onChange={(e) => {
                       const d = e.value ? new Date(e.value) : null;
-                      handleLinkFormChange({ internship_expected_end_date: d ? d.toISOString().slice(0, 10) : "" });
+                      handleLinkFormChange({
+                        internship_expected_end_date: d
+                          ? d.toISOString().slice(0, 10)
+                          : "",
+                      });
                     }}
-                    dateFormat="yy-mm-dd"
+                    dateFormat="dd/mm/yy"
                     showIcon
-                    placeholder="AAAA-MM-DD"
+                    placeholder="DD/MM/AAAA"
                   />
                 </div>
               </div>
@@ -1002,11 +1166,17 @@ export default function EnrollmentPeriodsManage() {
                 </div>
                 <div className="col-12 md:col-6">
                   <small className="text-600 block mb-1">Instituição</small>
-                  <strong>{getStudentInstitutionName(selectedStudentDetails)}</strong>
+                  <strong>
+                    {getStudentInstitutionName(selectedStudentDetails)}
+                  </strong>
                 </div>
                 <div className="col-12 md:col-6">
-                  <small className="text-600 block mb-1">Curso/Disciplina</small>
-                  <strong>{getStudentDisciplineName(selectedStudentDetails)}</strong>
+                  <small className="text-600 block mb-1">
+                    Curso/Disciplina
+                  </small>
+                  <strong>
+                    {getStudentDisciplineName(selectedStudentDetails)}
+                  </strong>
                 </div>
                 <div className="col-12 md:col-6">
                   <small className="text-600 block mb-1">Semestre</small>
@@ -1019,9 +1189,13 @@ export default function EnrollmentPeriodsManage() {
               <h4 className="m-0 mb-3">Dados de estágio</h4>
               <div className="grid">
                 <div className="col-12 md:col-6">
-                  <small className="text-600 block mb-1">Início do estágio</small>
+                  <small className="text-600 block mb-1">
+                    Início do estágio
+                  </small>
                   <strong>
-                    {formatDateValue(selectedStudentDetails?.internship_start_date)}
+                    {formatDateValue(
+                      selectedStudentDetails?.internship_start_date,
+                    )}
                   </strong>
                 </div>
                 <div className="col-12 md:col-6">
@@ -1042,7 +1216,9 @@ export default function EnrollmentPeriodsManage() {
                   <Button
                     label="Abrir documento"
                     icon="pi pi-external-link"
-                    onClick={() => openPdf(resolveStudentDocumentUrl(selectedStudentDetails))}
+                    onClick={() =>
+                      openPdf(resolveStudentDocumentUrl(selectedStudentDetails))
+                    }
                     outlined
                   />
                   <Button
@@ -1058,6 +1234,168 @@ export default function EnrollmentPeriodsManage() {
             </div>
           </div>
         )}
+      </Dialog>
+
+      <Dialog
+        header={`Vincular a campo de estágio — ${internshipLinkStudent?.name || ""}`}
+        visible={internshipLinkDialogVisible}
+        style={{ width: "48rem", maxWidth: "96vw" }}
+        onHide={closeInternshipLinkDialog}
+        blockScroll
+        footer={
+          <div>
+            <Button
+              label="Cancelar"
+              onClick={closeInternshipLinkDialog}
+              className="p-button-text"
+            />
+            <Button
+              label="Confirmar vínculo"
+              icon="pi pi-check"
+              onClick={handleInternshipLinkSubmit}
+              disabled={!selectedInternshipId || internshipLinkSubmitting}
+              loading={internshipLinkSubmitting}
+            />
+          </div>
+        }
+      >
+        <div className="p-fluid">
+          {internshipLinkStudent?.internship_id && (
+            <div className="surface-100 p-3 border-round mb-3 flex align-items-center gap-2">
+              <i className="pi pi-info-circle text-green-500" />
+              <span>
+                Este aluno já está vinculado a um campo de estágio. Selecionar
+                outro irá substituir o vínculo atual.
+              </span>
+            </div>
+          )}
+
+          <div className="mb-4">
+            <label className="font-medium block mb-2">Campo de estágio</label>
+            {internshipOptionsLoading ? (
+              <div className="text-600">Carregando campos de estágio...</div>
+            ) : (
+              <Dropdown
+                value={selectedInternshipId}
+                options={internshipOptions}
+                onChange={(e) => setSelectedInternshipId(e.value)}
+                placeholder="Selecione o campo de estágio"
+                filter
+                filterPlaceholder="Buscar..."
+                emptyMessage="Nenhum campo disponível para esta região"
+                className="w-full"
+              />
+            )}
+          </div>
+
+          <div className="surface-100 p-3 border-round mb-3">
+            <label className="font-medium">
+              Arquivo assinado pelo diretor (PDF)
+            </label>
+            <div
+              className="p-d-flex p-ai-center p-jc-center border-dashed p-p-3 mt-2"
+              style={{
+                minHeight: 100,
+                cursor: "pointer",
+                background: "var(--surface-b)",
+              }}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const f = e.dataTransfer?.files?.[0];
+                if (f) handleInternshipLinkFormChange({ directorFile: f });
+              }}
+              onClick={() =>
+                document
+                  .getElementById("internship-director-file-input")
+                  ?.click()
+              }
+            >
+              <div className="text-center">
+                <i className="pi pi-file-pdf" style={{ fontSize: 32 }} />
+                <div className="mt-2 text-sm">
+                  Arraste o PDF aqui ou clique para selecionar
+                </div>
+                {internshipLinkForm.directorFile && (
+                  <div className="mt-2 text-sm">
+                    <strong>{internshipLinkForm.directorFile.name}</strong> •{" "}
+                    {(internshipLinkForm.directorFile.size / 1024).toFixed(0)}{" "}
+                    KB
+                    <Button
+                      icon="pi pi-times"
+                      className="p-button-text p-button-danger ml-2"
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        handleInternshipLinkFormChange({ directorFile: null });
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            <input
+              id="internship-director-file-input"
+              type="file"
+              accept="application/pdf"
+              style={{ display: "none" }}
+              onChange={(e) =>
+                handleInternshipLinkFormChange({
+                  directorFile: e.target.files[0],
+                })
+              }
+            />
+            <small className="text-600">
+              Tamanho máximo: 5MB. Formato: PDF.
+            </small>
+          </div>
+
+          <div className="grid">
+            <div className="col-12 md:col-6">
+              <label className="font-medium">Data de início do estágio</label>
+              <Calendar
+                className="w-full mt-1"
+                value={
+                  internshipLinkForm.internship_start_date
+                    ? new Date(internshipLinkForm.internship_start_date)
+                    : null
+                }
+                onChange={(e) => {
+                  const d = e.value ? new Date(e.value) : null;
+                  handleInternshipLinkFormChange({
+                    internship_start_date: d
+                      ? d.toISOString().slice(0, 10)
+                      : "",
+                  });
+                }}
+                dateFormat="dd/mm/yy"
+                showIcon
+                placeholder="DD/MM/AAAA"
+              />
+            </div>
+            <div className="col-12 md:col-6">
+              <label className="font-medium">Data prevista de fim</label>
+              <Calendar
+                className="w-full mt-1"
+                value={
+                  internshipLinkForm.internship_expected_end_date
+                    ? new Date(internshipLinkForm.internship_expected_end_date)
+                    : null
+                }
+                onChange={(e) => {
+                  const d = e.value ? new Date(e.value) : null;
+                  handleInternshipLinkFormChange({
+                    internship_expected_end_date: d
+                      ? d.toISOString().slice(0, 10)
+                      : "",
+                  });
+                }}
+                dateFormat="dd/mm/yy"
+                showIcon
+                placeholder="DD/MM/AAAA"
+              />
+            </div>
+          </div>
+        </div>
       </Dialog>
 
       <FilterDrawer

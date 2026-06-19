@@ -247,6 +247,11 @@ export const repository = {
     get: (params = {}) => getWithParams(API_ROUTES.SERVICES.BASE, params),
     getById: (id) =>
       api.post(API_ROUTES.SERVICES.DETAIL, { internship_id: Number(id) }),
+    byRegion: (regionId, params = {}) =>
+      api.post(API_ROUTES.SERVICES.BY_REGION, {
+        ...params,
+        region_id: Number(regionId),
+      }),
     post: (data) => api.post(API_ROUTES.SERVICES.BASE, data),
     put: (id, data) =>
       api.put(API_ROUTES.SERVICES.BASE, { ...data, internship_id: Number(id) }),
@@ -310,6 +315,10 @@ export const repository = {
   // Dashboard
   dashboard: {
     get: () => api.get(API_ROUTES.DASHBOARD.BASE),
+    vacanciesByRegion: () => api.get(API_ROUTES.DASHBOARD.VACANCIES_BY_REGION),
+    occupiedByRegion: () => api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_REGION),
+    studentsByInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_INSTITUTION),
+    studentsByRegionInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_REGION_INSTITUTION),
   },
 
   // Acompanhamento

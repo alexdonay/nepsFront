@@ -77,12 +77,6 @@ export default function Layout({ children }) {
           path: "/students",
           permissions: MANAGEMENT_PERMISSIONS,
         },
-        {
-          label: "Vincular Alunos",
-          icon: "pi pi-link",
-          path: "/internships/link-students",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
-        },
       ],
     },
 
@@ -107,54 +101,51 @@ export default function Layout({ children }) {
   const visibleMenuItems = filterMenuItems(menuItems);
   return (
     <div className="layout-wrapper">
-      <aside className="layout-sidebar p-3">
-        <h2 className="text-xl font-bold mb-3">e-NEPS</h2>
-        <nav className="flex flex-column gap-2">
+      <aside className="layout-sidebar">
+        <div className="sidebar-header">
+          <span className="pi pi-chart-bar mr-2" />
+          e-NEPS
+        </div>
+
+        <nav className="sidebar-nav">
           {visibleMenuItems.map((item, i) =>
             item.items ? (
-              <div key={i} className="dropdown">
-                <span className={`pi ${item.icon} mr-2`}></span> {item.label}
-                <div className="submenu ml-3 mt-2">
+              <div key={i} className="sidebar-group">
+                <div className="sidebar-group-label">
+                  <span className={`pi ${item.icon} mr-2`} />
+                  {item.label}
+                </div>
+                <div className="sidebar-group-items">
                   {item.items.map((sub, j) => (
-                    <Link
-                      key={j}
-                      to={sub.path}
-                      className="block py-2 text-white"
-                    >
+                    <Link key={j} to={sub.path} className="sidebar-link">
+                      <span className={`pi ${sub.icon} mr-2`} />
                       {sub.label}
                     </Link>
                   ))}
                 </div>
               </div>
             ) : (
-              <Link key={i} to={item.path} className="py-2 text-white">
-                <span className={`pi ${item.icon} mr-2`}></span> {item.label}
+              <Link key={i} to={item.path} className="sidebar-link sidebar-link--top">
+                <span className={`pi ${item.icon} mr-2`} />
+                {item.label}
               </Link>
             ),
           )}
         </nav>
-      </aside>
 
-      <main className="layout-main flex-1">
-        <div className="flex justify-content-end mb-3 gap-2">
-          <Button
-            icon="pi pi-user"
-            text
-            className="text-white"
-            onClick={() => navigate("/profile")}
-          />
+        <div className="sidebar-footer">
           <Button
             icon="pi pi-sign-out"
             label="Sair"
-            className="p-button-plain text-white"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
+            text
+            className="sidebar-logout"
+            onClick={() => { logout(); navigate("/login"); }}
           />
         </div>
+      </aside>
 
-        <div className="p-3">{children}</div>
+      <main className="layout-main">
+        <div className="p-4">{children}</div>
       </main>
     </div>
   );
