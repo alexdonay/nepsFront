@@ -59,7 +59,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Componente PrimeReact | Uso                                          | Casos                                 |
 | --------------------- | -------------------------------------------- | ------------------------------------- |
 | `InputText`           | Filtro textual (busca por nome, email, etc.) | nome, email, código                   |
-| `Dropdown`            | Seleção única de valor pré-definido          | status, perfil, região, disciplina         |
+| `Dropdown`            | Seleção única de valor pré-definido          | status, perfil, região, disciplina    |
 | `MultiSelect`         | Seleção múltipla                             | múltiplos status, múltiplas regiões   |
 | `Calendar`            | Data única ou intervalo de datas             | período de inscrição, data de criação |
 | `Checkbox`            | Booleano                                     | possui maca, prioritário              |
@@ -74,7 +74,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Nome        | `InputText` (contains) | livre                            |
 | CPF         | `InputText` (exact)    | livre                            |
 | Email       | `InputText` (contains) | livre                            |
-| Disciplina       | `Dropdown` (single)    | carregado da API de disciplinas       |
+| Disciplina  | `Dropdown` (single)    | carregado da API de disciplinas  |
 | Instituição | `Dropdown` (single)    | carregado da API de instituições |
 | Semestre    | `InputNumber` (exact)  | livre                            |
 
@@ -98,11 +98,11 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 
 ### 5.4 Disciplinas (`/disciplines`)
 
-| Campo  | Tipo                   | Opções                      |
-| ------ | ---------------------- | --------------------------- |
-| Nome   | `InputText` (contains) | livre                       |
-| Código | `InputText` (contains) | livre                       |
-| Região | `Dropdown` (single)    | carregado da API de regiões |
+| Campo      | Tipo                   | Opções                      |
+| ---------- | ---------------------- | --------------------------- |
+| Nome       | `InputText` (contains) | livre                       |
+| Código     | `InputText` (contains) | livre                       |
+| Território | `Dropdown` (single)    | carregado da API de regiões |
 
 ### 5.5 Salas (`/rooms`)
 
@@ -112,7 +112,7 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 | Serviço     | `Dropdown` (single)    | carregado da API de serviços |
 | Possui Maca | `Dropdown` (single)    | Sim, Não                     |
 
-### 5.6 Regiões (`/regions`)
+### 5.6 Territórios (`/regions`)
 
 | Campo  | Tipo                   | Opções         |
 | ------ | ---------------------- | -------------- |
@@ -121,11 +121,11 @@ Todas as telas de listagem do sistema devem implementar um **drawer lateral dire
 
 ### 5.7 Serviços (`/internships`)
 
-| Campo  | Tipo                   | Opções                      |
-| ------ | ---------------------- | --------------------------- |
-| Nome   | `InputText` (contains) | livre                       |
-| Região | `Dropdown` (single)    | carregado da API de regiões |
-| Status | `Dropdown` (single)    | Ativo, Inativo              |
+| Campo      | Tipo                   | Opções                      |
+| ---------- | ---------------------- | --------------------------- |
+| Nome       | `InputText` (contains) | livre                       |
+| Território | `Dropdown` (single)    | carregado da API de regiões |
+| Status     | `Dropdown` (single)    | Ativo, Inativo              |
 
 ### 5.8 Períodos de Inscrição (`/periods`)
 
@@ -284,8 +284,8 @@ A listagem é limpa e um toast/mensagem de erro é exibida.
 | `src/components/FilterDrawer.jsx` | Novo       | Componente reutilizável do drawer de filtros |
 | `src/components/FilterDrawer.css` | Novo       | Estilos do drawer (se necessário)            |
 | `src/pages/**/*List.jsx`          | Modificado | Todas as listagens recebem o FilterDrawer    |
-| `src/internships/repository.js`      | Modificado | Métodos `get` aceitam parâmetros de filtro   |
-| `src/internships/API_routes.js`      | Modificado | Rotas podem receber query string             |
+| `src/internships/repository.js`   | Modificado | Métodos `get` aceitam parâmetros de filtro   |
+| `src/internships/API_routes.js`   | Modificado | Rotas podem receber query string             |
 
 ### Dependências
 

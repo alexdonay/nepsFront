@@ -3,9 +3,13 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import InternshipsFilter from "./InternshipsFilter";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
+import {
+  clearRouteContext,
+  ROUTE_CONTEXT_KEYS,
+  setRouteContext,
+} from "../../utils/routeContext";
+import InternshipsFilter from "./InternshipsFilter";
 
 export default function InternshipsList() {
   const [internships, setInternships] = useState([]);
@@ -89,7 +93,7 @@ export default function InternshipsList() {
         className="p-button-text"
         onClick={() => {
           setRouteContext(ROUTE_CONTEXT_KEYS.service, { id: rowData.id });
-          navigate("/internships/edit");
+          navigate("/internships/detail");
         }}
       />
     </div>
@@ -133,12 +137,12 @@ export default function InternshipsList() {
       >
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable body={nameTemplate} />
-        <Column header="Região" sortable body={regionTemplate} />
+        <Column header="Território" sortable body={regionTemplate} />
         <Column field="is_active" header="Status" body={activeTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
 
-      <InternshipsFilter 
+      <InternshipsFilter
         filterVisible={filterVisible}
         setFilterVisible={setFilterVisible}
       />

@@ -45,6 +45,7 @@ GET /v1/periods
 | `is_active` | bool | Filtrar por ativo/inativo |
 
 **Response `200`:**
+
 ```json
 {
   "items": [
@@ -73,6 +74,7 @@ POST /v1/periods/detail
 ```
 
 **Body:**
+
 ```json
 {
   "period_id": 1,
@@ -81,6 +83,7 @@ POST /v1/periods/detail
 ```
 
 **Response `200`:**
+
 ```json
 {
   "id": 1,
@@ -131,6 +134,7 @@ POST /v1/education-institutes/detail
 ```
 
 **Body:**
+
 ```json
 {
   "institute_id": 7
@@ -138,6 +142,7 @@ POST /v1/education-institutes/detail
 ```
 
 **Response `200`:**
+
 ```json
 {
   "id": 7,
@@ -145,7 +150,7 @@ POST /v1/education-institutes/detail
   "region_id": 3,
   "region": {
     "id": 3,
-    "name": "Região Norte"
+    "name": "Território Norte"
   }
 }
 ```
@@ -161,6 +166,7 @@ POST /v1/internships/by-region
 ```
 
 **Body:**
+
 ```json
 {
   "region_id": 3
@@ -168,6 +174,7 @@ POST /v1/internships/by-region
 ```
 
 **Response `200`:**
+
 ```json
 {
   "items": [
@@ -188,6 +195,7 @@ POST /v1/internships/by-region
 ```
 
 > **Regras:**
+>
 > - Retornar apenas campos com `is_active = true`
 > - Filtrar exatamente pela `region_id` enviada
 > - Se não houver campos na região, retornar `items: []` com status `200`
@@ -202,6 +210,7 @@ POST /v1/students/link-internship
 ```
 
 **Body:**
+
 ```json
 {
   "student_id": 42,
@@ -210,6 +219,7 @@ POST /v1/students/link-internship
 ```
 
 **Response `200`:**
+
 ```json
 {
   "id": 42,
@@ -224,13 +234,14 @@ POST /v1/students/link-internship
 
 **Erros esperados:**
 
-| Status | Situação |
-|---|---|
-| `400` | `student_id` ou `internship_id` ausente ou inválido |
-| `404` | Aluno ou campo de estágio não encontrado |
-| `422` | Campo de estágio está inativo |
+| Status | Situação                                            |
+| ------ | --------------------------------------------------- |
+| `400`  | `student_id` ou `internship_id` ausente ou inválido |
+| `404`  | Aluno ou campo de estágio não encontrado            |
+| `422`  | Campo de estágio está inativo                       |
 
 > **Regras de negócio:**
+>
 > - Se o aluno já tiver `internship_id`, o novo valor **substitui** o anterior (não é erro)
 > - O campo de estágio deve estar ativo (`is_active = true`)
 > - Permissão mínima: `ADMIN`
@@ -244,6 +255,7 @@ POST /v1/rooms/available-slots
 ```
 
 **Body:**
+
 ```json
 {
   "student_id": 42
@@ -251,6 +263,7 @@ POST /v1/rooms/available-slots
 ```
 
 **Response `200`:**
+
 ```json
 {
   "items": [
@@ -281,6 +294,7 @@ POST /v1/rooms/schedule/student
 ```
 
 **Body:**
+
 ```json
 {
   "room_id": 2,
@@ -302,6 +316,7 @@ DELETE /v1/rooms/schedule/student
 ```
 
 **Body:**
+
 ```json
 {
   "room_id": 2,
@@ -323,6 +338,7 @@ PATCH /v1/students
 ```
 
 **Body:**
+
 ```json
 {
   "student_id": 42,
@@ -382,12 +398,12 @@ PATCH /v1/students
 
 ## Resumo de prioridade de implementação
 
-| # | Endpoint | Status | Prioridade |
-|---|---|---|---|
-| 1 | `POST /v1/periods/detail` com `include: students` e `institution.region_id` aninhado | Deve existir — verificar se `region_id` já vem no objeto `institution` | Alta |
-| 2 | `POST /v1/internships/by-region` | **Endpoint novo** | Alta |
-| 3 | `POST /v1/students/link-internship` | Deve existir — verificar comportamento de substituição | Alta |
-| 4 | `POST /v1/education-institutes/detail` com `region_id` | Deve existir — verificar se `region_id` está no response | Média |
-| 5 | `PATCH /v1/students` com `internship_start_date` e `director_signed_pdf` | Deve existir | Média |
-| 6 | `POST /v1/rooms/available-slots` | Deve existir | Baixa |
-| 7 | `POST /v1/rooms/schedule/student` | Deve existir | Baixa |
+| #   | Endpoint                                                                             | Status                                                                 | Prioridade |
+| --- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ---------- |
+| 1   | `POST /v1/periods/detail` com `include: students` e `institution.region_id` aninhado | Deve existir — verificar se `region_id` já vem no objeto `institution` | Alta       |
+| 2   | `POST /v1/internships/by-region`                                                     | **Endpoint novo**                                                      | Alta       |
+| 3   | `POST /v1/students/link-internship`                                                  | Deve existir — verificar comportamento de substituição                 | Alta       |
+| 4   | `POST /v1/education-institutes/detail` com `region_id`                               | Deve existir — verificar se `region_id` está no response               | Média      |
+| 5   | `PATCH /v1/students` com `internship_start_date` e `director_signed_pdf`             | Deve existir                                                           | Média      |
+| 6   | `POST /v1/rooms/available-slots`                                                     | Deve existir                                                           | Baixa      |
+| 7   | `POST /v1/rooms/schedule/student`                                                    | Deve existir                                                           | Baixa      |

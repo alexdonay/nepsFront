@@ -1,12 +1,13 @@
 import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
+import PdfUpload from "../../components/PdfUpload/PdfUpload";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
-import PaginatedDropdown from "../../components/PaginatedDropdown";
 import PhoneInput from "../../components/Phone/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
@@ -47,35 +48,45 @@ export default function StudentForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const fetchCourses = useCallback(
-    params => api.get(API_ROUTES.COURSES.LIST, { params }),
-    [],
-  );
+  // listas em cascata
+  const [institutions, setInstitutions] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
 
-  const fetchDisciplines = useCallback(
-    params => api.get(API_ROUTES.CADASTROS.DISCIPLINES_LIST, { params }),
-    [],
-  );
+  useEffect(() => {
+    repository.institutions.get({ per_page: 200 })
+      .then(({ data }) => {
+        const items = data?.items || data || [];
+        setInstitutions(items.map((i) => ({ label: i.name, value: i.id })));
+      })
+      .catch(() => setInstitutions([]));
+  }, []);
 
-  const fetchInstitutions = useCallback(
-    params => api.get(API_ROUTES.CADASTROS.INSTITUTIONS_LIST, { params }),
-    [],
-  );
+  const loadCourses = async (institutionId) => {
+    setCourses([]);
+    setDisciplines([]);
+    if (!institutionId) return;
+    try {
+      const { data } = await repository.institutions.getById(institutionId);
+      const items = data?.courses || [];
+      setCourses(items.map((c) => ({ label: c.name, value: c.id })));
+    } catch { setCourses([]); }
+  };
 
-  const fetchCourseById = useCallback(
-    id => api.post(API_ROUTES.COURSES.DETAIL, { course_id: Number(id) }),
-    [],
-  );
-
-  const fetchDisciplineById = useCallback(
-    id => api.post(API_ROUTES.COURSES.DETAIL, { discipline_id: Number(id) }),
-    [],
-  );
-
-  const fetchInstitutionById = useCallback(
-    id => api.post(API_ROUTES.CADASTROS.INSTITUTIONS_DETAIL, { institute_id: Number(id) }),
-    [],
-  );
+  const loadDisciplines = async (courseId) => {
+    setDisciplines([]);
+    if (!courseId) return;
+    try {
+      const { data } = await repository.courses.getById(courseId);
+      console.log("[loadDisciplines] courseId:", courseId, "response data:", data);
+      const items = data?.disciplines || [];
+      console.log("[loadDisciplines] disciplines found:", JSON.stringify(items));
+      setDisciplines(items.map((d) => ({ label: d.name, value: d.id })));
+    } catch (e) {
+      console.error("[loadDisciplines] erro:", e);
+      setDisciplines([]);
+    }
+  };
 
   useEffect(() => {
     if (id) loadStudent();
@@ -100,6 +111,9 @@ export default function StudentForm() {
         preceptor_name: data?.preceptor_name || "",
       });
       setDirectorSignedPdfUrl(data?.director_signed_pdf || "");
+      // pré-carrega cascata
+      if (data?.institution_id) await loadCourses(data.institution_id);
+      if (data?.course_id) await loadDisciplines(data.course_id);
     } catch (e) {}
   };
 
@@ -285,52 +299,21 @@ export default function StudentForm() {
           />
         </div>
 
-        <div className="field mb-3">
-          <label className="block mb-2">PDF do documento {id ? "" : "*"}</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            className="w-full"
-            onChange={handleDocumentChange}
-            required={!id}
-          />
-          <small className="text-600 block mt-1">
-            PDF obrigatório, máximo 5MB.
-          </small>
-          {documentFile && (
-            <small className="block mt-2 text-green-700">
-              Arquivo selecionado: {documentFile.name}
-            </small>
-          )}
-          {id && form.institution_document_url && !documentFile && (
-            <small className="block mt-2 text-600">
-              Documento atual já salvo no sistema.
-            </small>
-          )}
-        </div>
+        <PdfUpload
+          label={`PDF do documento${id ? "" : " *"}`}
+          required={!id}
+          value={documentFile}
+          onChange={(file) => { setDocumentFile(file); documentFileRef.current = file; }}
+          existingUrl={id ? form.institution_document_url : null}
+        />
 
-        <div className="field mb-3">
-          <label className="block mb-2">PDF assinado pelo diretor</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            className="w-full"
-            onChange={handleDirectorSignedPdfChange}
-          />
-          <small className="text-600 block mt-1">
-            PDF opcional, máximo 5MB.
-          </small>
-          {directorSignedPdfFile && (
-            <small className="block mt-2 text-green-700">
-              Arquivo selecionado: {directorSignedPdfFile.name}
-            </small>
-          )}
-          {id && directorSignedPdfUrl && !directorSignedPdfFile && (
-            <small className="block mt-2 text-600">
-              Documento atual já salvo.
-            </small>
-          )}
-        </div>
+        <PdfUpload
+          label="PDF assinado pelo diretor"
+          value={directorSignedPdfFile}
+          onChange={(file) => { setDirectorSignedPdfFile(file); directorSignedPdfFileRef.current = file; }}
+          existingUrl={id ? directorSignedPdfUrl : null}
+          hint="PDF opcional, máximo 5MB"
+        />
 
         {!id && (
           <div className="grid mb-3">
@@ -367,29 +350,48 @@ export default function StudentForm() {
         )}
 
         <div className="field mb-3">
+          <label>Instituição *</label>
+          <Dropdown
+            value={form.institution_id}
+            options={institutions}
+            onChange={(e) => {
+              setForm({ ...form, institution_id: e.value, course_id: null, discipline_id: null });
+              loadCourses(e.value);
+            }}
+            placeholder="Selecione uma instituição"
+            className="w-full"
+            filter
+            required
+          />
+        </div>
+
+        <div className="field mb-3">
           <label>Curso *</label>
-          <PaginatedDropdown
-            fetchFn={fetchCourses}
-            fetchById={id ? fetchCourseById : undefined}
+          <Dropdown
             value={form.course_id}
-            onChange={(e) => setForm({ ...form, course_id: e.value })}
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Selecione um curso"
+            options={courses}
+            onChange={(e) => {
+              setForm({ ...form, course_id: e.value, discipline_id: null });
+              loadDisciplines(e.value);
+            }}
+            placeholder={form.institution_id ? "Selecione um curso" : "Selecione uma instituição primeiro"}
+            className="w-full"
+            filter
+            disabled={!form.institution_id}
             required
           />
         </div>
 
         <div className="field mb-3">
           <label>Disciplina *</label>
-          <PaginatedDropdown
-            fetchFn={fetchDisciplines}
-            fetchById={id ? fetchDisciplineById : undefined}
+          <Dropdown
             value={form.discipline_id}
+            options={disciplines}
             onChange={(e) => setForm({ ...form, discipline_id: e.value })}
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Selecione"
+            placeholder={form.course_id ? "Selecione uma disciplina" : "Selecione um curso primeiro"}
+            className="w-full"
+            filter
+            disabled={!form.course_id}
             required
           />
         </div>
@@ -400,20 +402,6 @@ export default function StudentForm() {
             value={form.semester}
             onChange={(e) => setForm({ ...form, semester: e.value })}
             className="w-full"
-          />
-        </div>
-
-        <div className="field mb-3">
-          <label>Instituição *</label>
-          <PaginatedDropdown
-            fetchFn={fetchInstitutions}
-            fetchById={id ? fetchInstitutionById : undefined}
-            value={form.institution_id}
-            onChange={(e) => setForm({ ...form, institution_id: e.value })}
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Selecione"
-            required
           />
         </div>
 

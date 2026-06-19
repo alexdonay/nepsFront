@@ -27,14 +27,17 @@ export default function InstitutionForm() {
     is_active: true,
     priority: 1,
     region_ids: [],
+    course_ids: [],
   });
   const [regions, setRegions] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadRegions();
+    loadCourses();
     if (id) loadInstitution();
   }, [id]);
 
@@ -45,6 +48,16 @@ export default function InstitutionForm() {
       setRegions(Array.isArray(items) ? items : []);
     } catch (e) {
       setRegions([]);
+    }
+  };
+
+  const loadCourses = async () => {
+    try {
+      const { data } = await repository.courses.get({ per_page: 200 });
+      const items = data?.items || data || [];
+      setCourses(Array.isArray(items) ? items : []);
+    } catch {
+      setCourses([]);
     }
   };
 
@@ -63,6 +76,7 @@ export default function InstitutionForm() {
         is_active: data?.is_active ?? true,
         priority: data?.priority ?? 1,
         region_ids: (data?.regions || []).map((region) => region.id),
+        course_ids: (data?.courses || []).map((c) => c.id),
       };
 
       setForm(normalized);
@@ -166,9 +180,9 @@ export default function InstitutionForm() {
             </div>
           </TabPanel>
 
-          <TabPanel header="Regiões">
+          <TabPanel header="Territórios">
             <div className="field mb-3">
-              <label>Regiões vinculadas</label>
+              <label>Territórios vinculadas</label>
               <MultiSelect
                 value={form.region_ids}
                 options={regions}
@@ -181,6 +195,26 @@ export default function InstitutionForm() {
                 className="w-full"
                 display="chip"
                 filter
+              />
+            </div>
+          </TabPanel>
+
+          <TabPanel header="Cursos">
+            <div className="field mb-3">
+              <label>Cursos vinculados</label>
+              <MultiSelect
+                value={form.course_ids}
+                options={courses}
+                optionLabel="name"
+                optionValue="id"
+                onChange={(e) =>
+                  setForm({ ...form, course_ids: e.value || [] })
+                }
+                placeholder="Selecione um ou mais cursos"
+                className="w-full"
+                display="chip"
+                filter
+                emptyMessage="Nenhum curso cadastrado"
               />
             </div>
           </TabPanel>

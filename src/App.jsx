@@ -23,6 +23,7 @@ import RegionsList from "./pages/Regions/RegionsList";
 import RoomsForm from "./pages/Rooms/RoomsForm";
 import RoomsList from "./pages/Rooms/RoomsList";
 
+import InternshipsDetail from "./pages/Internships/InternshipsDetail";
 import InternshipsForm from "./pages/Internships/InternshipsForm";
 import InternshipsLinkStudents from "./pages/Internships/InternshipsLinkStudents";
 import InternshipsRoomForm from "./pages/InternshipsRooms/InternshipsRoomForm";
@@ -31,6 +32,7 @@ import InternshipsScheduleAssignment from "./pages/InternshipsSchedules/Internsh
 import InternshipsScheduleForm from "./pages/InternshipsSchedules/InternshipsScheduleForm";
 import InternshipsListSchedulesList from "./pages/InternshipsSchedules/InternshipsSchedulesList";
 
+import CourseDetail from "./pages/Course/CourseDetail";
 import CoursesForm from "./pages/Course/CourseForm";
 import CoursesList from "./pages/Course/CourseList";
 import StudentDetails from "./pages/Student/StudentDetails";
@@ -196,6 +198,16 @@ export default function App() {
         }
       />
       <Route
+        path="/courses/detail"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+            <Layout>
+              <CourseDetail />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/courses/new"
         element={
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
@@ -352,6 +364,17 @@ export default function App() {
           <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <InternshipsForm />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/internships/detail"
+        element={
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
+            <Layout>
+              <InternshipsDetail />
             </Layout>
           </PrivateRoute>
         }

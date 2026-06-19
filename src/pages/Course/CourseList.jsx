@@ -85,8 +85,8 @@ export default function CoursesList() {
         icon="pi pi-pencil"
         className="p-button-text"
         onClick={() => {
-          setRouteContext("course", { id: rowData.id });
-          navigate("/courses/edit");
+          setRouteContext(ROUTE_CONTEXT_KEYS.course, { id: rowData.id });
+          navigate("/courses/detail");
         }}
       />
     </div>

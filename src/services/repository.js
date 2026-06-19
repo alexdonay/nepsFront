@@ -46,9 +46,14 @@ export const repository = {
       api.post(API_ROUTES.DISCIPLINES.DETAIL, { discipline_id: Number(id) }),
     post: (data) => api.post(API_ROUTES.DISCIPLINES.BASE, data),
     put: (id, data) =>
-      api.put(API_ROUTES.DISCIPLINES.BASE, { ...data, discipline_id: Number(id) }),
+      api.put(API_ROUTES.DISCIPLINES.BASE, {
+        ...data,
+        discipline_id: Number(id),
+      }),
     delete: (id) =>
-      deleteWithBody(API_ROUTES.DISCIPLINES.BASE, { discipline_id: Number(id) }),
+      deleteWithBody(API_ROUTES.DISCIPLINES.BASE, {
+        discipline_id: Number(id),
+      }),
   },
 
   courses: {
@@ -60,9 +65,19 @@ export const repository = {
       api.put(API_ROUTES.COURSES.BASE, { ...data, course_id: Number(id) }),
     delete: (id) =>
       deleteWithBody(API_ROUTES.COURSES.BASE, { course_id: Number(id) }),
+    linkDiscipline: (courseId, disciplineId) =>
+      api.post(API_ROUTES.COURSES.DISCIPLINES_LINK, {
+        course_id: Number(courseId),
+        discipline_id: Number(disciplineId),
+      }),
+    unlinkDiscipline: (courseId, disciplineId) =>
+      deleteWithBody(API_ROUTES.COURSES.DISCIPLINES_UNLINK, {
+        course_id: Number(courseId),
+        discipline_id: Number(disciplineId),
+      }),
   },
 
-  // Regiões
+  // Territórios
   regions: {
     get: (params = {}) => getWithParams(API_ROUTES.REGIONS.BASE, params),
     getById: (id) =>
@@ -317,10 +332,14 @@ export const repository = {
     get: () => api.get(API_ROUTES.DASHBOARD.BASE),
     vacanciesByRegion: () => api.get(API_ROUTES.DASHBOARD.VACANCIES_BY_REGION),
     occupiedByRegion: () => api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_REGION),
-    studentsByInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_INSTITUTION),
-    studentsByRegionInstitution: () => api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_REGION_INSTITUTION),
-    occupiedByInternship: () => api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_INTERNSHIP),
-    capacityByInternship: () => api.get(API_ROUTES.DASHBOARD.CAPACITY_BY_INTERNSHIP),
+    studentsByInstitution: () =>
+      api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_INSTITUTION),
+    studentsByRegionInstitution: () =>
+      api.get(API_ROUTES.DASHBOARD.STUDENTS_BY_REGION_INSTITUTION),
+    occupiedByInternship: () =>
+      api.get(API_ROUTES.DASHBOARD.OCCUPIED_BY_INTERNSHIP),
+    capacityByInternship: () =>
+      api.get(API_ROUTES.DASHBOARD.CAPACITY_BY_INTERNSHIP),
   },
 
   // Acompanhamento

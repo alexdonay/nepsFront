@@ -7,6 +7,7 @@ Todas as rotas de listagem (`GET`) devem aceitar **query parameters** para filtr
 ## 2. Contrato Geral
 
 ### 2.1 Método
+
 `GET`
 
 ### 2.2 Formato dos Parâmetros
@@ -19,41 +20,41 @@ GET /v1/students?name=joao&discipline_id=5&status=active
 
 ### 2.3 Operadores de Filtro
 
-| Tipo de Filtro | Operador | Exemplo | Comportamento Esperado |
-|---|---|---|---|
-| Texto (contains) | `_like` | `?name_like=joao` | `LIKE '%joao%'` (case-insensitive) |
-| Texto (exact) | valor direto | `?cpf=12345678900` | `= '12345678900'` |
-| Número (exact) | valor direto | `?semester=3` | `= 3` |
-| Número (range) | `_min` / `_max` | `?capacity_min=10&capacity_max=50` | `BETWEEN 10 AND 50` |
-| Data (exact) | valor direto | `?start_date=2025-01-01` | `= '2025-01-01'` |
-| Data (range) | `_from` / `_to` | `?start_date_from=2025-01-01&start_date_to=2025-12-31` | `BETWEEN` |
-| Booleano | valor direto | `?has_gurney=true` | `= true` |
-| Enum (single) | valor direto | `?status=active` | `= 'active'` |
-| Enum (multiple) | `_in` com valores separados por `,` | `?role_in=admin,manager` | `IN ('admin', 'manager')` |
+| Tipo de Filtro   | Operador                            | Exemplo                                                | Comportamento Esperado             |
+| ---------------- | ----------------------------------- | ------------------------------------------------------ | ---------------------------------- |
+| Texto (contains) | `_like`                             | `?name_like=joao`                                      | `LIKE '%joao%'` (case-insensitive) |
+| Texto (exact)    | valor direto                        | `?cpf=12345678900`                                     | `= '12345678900'`                  |
+| Número (exact)   | valor direto                        | `?semester=3`                                          | `= 3`                              |
+| Número (range)   | `_min` / `_max`                     | `?capacity_min=10&capacity_max=50`                     | `BETWEEN 10 AND 50`                |
+| Data (exact)     | valor direto                        | `?start_date=2025-01-01`                               | `= '2025-01-01'`                   |
+| Data (range)     | `_from` / `_to`                     | `?start_date_from=2025-01-01&start_date_to=2025-12-31` | `BETWEEN`                          |
+| Booleano         | valor direto                        | `?has_gurney=true`                                     | `= true`                           |
+| Enum (single)    | valor direto                        | `?status=active`                                       | `= 'active'`                       |
+| Enum (multiple)  | `_in` com valores separados por `,` | `?role_in=admin,manager`                               | `IN ('admin', 'manager')`          |
 
 ### 2.4 Convenção de Nomenclatura
 
-| Convenção | Exemplo |
-|---|---|
-| `snake_case` | `discipline_id`, `start_date`, `is_active` |
-| Operador `_like` para contains | `name_like`, `email_like` |
-| Operador `_in` para múltiplos valores | `role_in`, `status_in` |
-| Operador `_from`/`_to` para range de data | `start_date_from`, `start_date_to` |
-| Operador `_min`/`_max` para range numérico | `capacity_min`, `capacity_max` |
+| Convenção                                  | Exemplo                                    |
+| ------------------------------------------ | ------------------------------------------ |
+| `snake_case`                               | `discipline_id`, `start_date`, `is_active` |
+| Operador `_like` para contains             | `name_like`, `email_like`                  |
+| Operador `_in` para múltiplos valores      | `role_in`, `status_in`                     |
+| Operador `_from`/`_to` para range de data  | `start_date_from`, `start_date_to`         |
+| Operador `_min`/`_max` para range numérico | `capacity_min`, `capacity_max`             |
 
 ### 2.5 Paginação
 
-| Parâmetro | Tipo | Padrão | Descrição |
-|---|---|---|---|
-| `page` | integer | `1` | Número da página |
-| `per_page` | integer | `10` | Itens por página (máx: 100) |
+| Parâmetro  | Tipo    | Padrão | Descrição                   |
+| ---------- | ------- | ------ | --------------------------- |
+| `page`     | integer | `1`    | Número da página            |
+| `per_page` | integer | `10`   | Itens por página (máx: 100) |
 
 ### 2.6 Ordenação
 
-| Parâmetro | Tipo | Exemplo | Descrição |
-|---|---|---|---|
-| `sort` | string | `?sort=name` | Campo para ordenar |
-| `order` | string | `?order=asc` | `asc` ou `desc` (padrão: `asc`) |
+| Parâmetro | Tipo   | Exemplo      | Descrição                       |
+| --------- | ------ | ------------ | ------------------------------- |
+| `sort`    | string | `?sort=name` | Campo para ordenar              |
+| `order`   | string | `?order=asc` | `asc` ou `desc` (padrão: `asc`) |
 
 ### 2.7 Response Padrão
 
@@ -81,77 +82,77 @@ GET /v1/students?name=joao&discipline_id=5&status=active
 
 ### 3.1 Estudantes — `GET /v1/students`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=joao` |
-| `cpf` | texto | exact | `?cpf=12345678900` |
-| `email_like` | texto | contains | `?email_like=gmail` |
-| `discipline_id` | integer | exact | `?discipline_id=5` |
-| `institution_id` | integer | exact | `?institution_id=2` |
-| `semester` | integer | exact | `?semester=3` |
+| Parâmetro        | Tipo    | Operador | Exemplo             |
+| ---------------- | ------- | -------- | ------------------- |
+| `name_like`      | texto   | contains | `?name_like=joao`   |
+| `cpf`            | texto   | exact    | `?cpf=12345678900`  |
+| `email_like`     | texto   | contains | `?email_like=gmail` |
+| `discipline_id`  | integer | exact    | `?discipline_id=5`  |
+| `institution_id` | integer | exact    | `?institution_id=2` |
+| `semester`       | integer | exact    | `?semester=3`       |
 
 ### 3.2 Usuários — `GET /v1/users`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=maria` |
-| `email_like` | texto | contains | `?email_like=@email.com` |
-| `role` | enum | exact | `?role=ADMIN` |
-| `role_in` | enum[] | multiple | `?role_in=ADMIN,INSTITUICAO_ENSINO` |
-| `is_active` | boolean | exact | `?is_active=true` |
+| Parâmetro    | Tipo    | Operador | Exemplo                             |
+| ------------ | ------- | -------- | ----------------------------------- |
+| `name_like`  | texto   | contains | `?name_like=maria`                  |
+| `email_like` | texto   | contains | `?email_like=@email.com`            |
+| `role`       | enum    | exact    | `?role=ADMIN`                       |
+| `role_in`    | enum[]  | multiple | `?role_in=ADMIN,INSTITUICAO_ENSINO` |
+| `is_active`  | boolean | exact    | `?is_active=true`                   |
 
 ### 3.3 Instituições — `GET /v1/cadastros/institutions`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=escola` |
-| `cnpj` | texto | exact | `?cnpj=11222333000181` |
-| `is_active` | boolean | exact | `?is_active=true` |
-| `priority` | integer | exact | `?priority=0` |
+| Parâmetro   | Tipo    | Operador | Exemplo                |
+| ----------- | ------- | -------- | ---------------------- |
+| `name_like` | texto   | contains | `?name_like=escola`    |
+| `cnpj`      | texto   | exact    | `?cnpj=11222333000181` |
+| `is_active` | boolean | exact    | `?is_active=true`      |
+| `priority`  | integer | exact    | `?priority=0`          |
 
 ### 3.4 Disciplinas — `GET /v1/disciplines`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=enfermagem` |
-| `code_like` | texto | contains | `?code_like=ENF` |
-| `region_id` | integer | exact | `?region_id=3` |
+| Parâmetro   | Tipo    | Operador | Exemplo                 |
+| ----------- | ------- | -------- | ----------------------- |
+| `name_like` | texto   | contains | `?name_like=enfermagem` |
+| `code_like` | texto   | contains | `?code_like=ENF`        |
+| `region_id` | integer | exact    | `?region_id=3`          |
 
 ### 3.5 Salas — `GET /v1/rooms`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=sala` |
-| `internship_id` | integer | exact | `?internship_id=5` |
-| `has_gurney` | boolean | exact | `?has_gurney=true` |
-| `capacity_min` | integer | range | `?capacity_min=10` |
-| `capacity_max` | integer | range | `?capacity_max=50` |
+| Parâmetro       | Tipo    | Operador | Exemplo            |
+| --------------- | ------- | -------- | ------------------ |
+| `name_like`     | texto   | contains | `?name_like=sala`  |
+| `internship_id` | integer | exact    | `?internship_id=5` |
+| `has_gurney`    | boolean | exact    | `?has_gurney=true` |
+| `capacity_min`  | integer | range    | `?capacity_min=10` |
+| `capacity_max`  | integer | range    | `?capacity_max=50` |
 
-### 3.6 Regiões — `GET /v1/regions`
+### 3.6 Territórios — `GET /v1/regions`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=norte` |
-| `is_active` | boolean | exact | `?is_active=true` |
+| Parâmetro   | Tipo    | Operador | Exemplo            |
+| ----------- | ------- | -------- | ------------------ |
+| `name_like` | texto   | contains | `?name_like=norte` |
+| `is_active` | boolean | exact    | `?is_active=true`  |
 
 ### 3.7 Serviços — `GET /v1/internships`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=clinico` |
-| `region_id` | integer | exact | `?region_id=2` |
-| `is_active` | boolean | exact | `?is_active=true` |
+| Parâmetro   | Tipo    | Operador | Exemplo              |
+| ----------- | ------- | -------- | -------------------- |
+| `name_like` | texto   | contains | `?name_like=clinico` |
+| `region_id` | integer | exact    | `?region_id=2`       |
+| `is_active` | boolean | exact    | `?is_active=true`    |
 
 ### 3.8 Períodos de Inscrição — `GET /v1/periods`
 
-| Parâmetro | Tipo | Operador | Exemplo |
-|---|---|---|---|
-| `name_like` | texto | contains | `?name_like=2025` |
-| `is_active` | boolean | exact | `?is_active=true` |
-| `start_date_from` | date | range | `?start_date_from=2025-01-01` |
-| `start_date_to` | date | range | `?start_date_to=2025-12-31` |
-| `end_date_from` | date | range | `?end_date_from=2025-06-01` |
-| `end_date_to` | date | range | `?end_date_to=2025-12-31` |
+| Parâmetro         | Tipo    | Operador | Exemplo                       |
+| ----------------- | ------- | -------- | ----------------------------- |
+| `name_like`       | texto   | contains | `?name_like=2025`             |
+| `is_active`       | boolean | exact    | `?is_active=true`             |
+| `start_date_from` | date    | range    | `?start_date_from=2025-01-01` |
+| `start_date_to`   | date    | range    | `?start_date_to=2025-12-31`   |
+| `end_date_from`   | date    | range    | `?end_date_from=2025-06-01`   |
+| `end_date_to`     | date    | range    | `?end_date_to=2025-12-31`     |
 
 ## 4. Exemplos Completos
 
@@ -199,7 +200,13 @@ GET /v1/periods?
   },
   "filters": {
     "applied": ["name_like", "discipline_id"],
-    "available": ["name", "email", "discipline_id", "institution_id", "semester"]
+    "available": [
+      "name",
+      "email",
+      "discipline_id",
+      "institution_id",
+      "semester"
+    ]
   }
 }
 ```
@@ -212,7 +219,14 @@ GET /v1/periods?
 {
   "error": "invalid_filter",
   "message": "O campo 'nome_errado' não é um filtro válido para este recurso",
-  "valid_filters": ["name_like", "email", "discipline_id", "institution_id", "semester", "is_active"]
+  "valid_filters": [
+    "name_like",
+    "email",
+    "discipline_id",
+    "institution_id",
+    "semester",
+    "is_active"
+  ]
 }
 ```
 
@@ -258,13 +272,13 @@ GET /v1/periods?
 
 Para popular os `Dropdown` dos filtros, o frontend precisa de endpoints que retornem as opções disponíveis. Estes endpoints já existem na maioria dos casos:
 
-| Rota | Uso no Filtro | Já Existe |
-|---|---|---|
-| `GET /v1/disciplines` | Filtro de disciplina (Alunos) | Sim |
-| `GET /v1/regions` | Filtro de região (Disciplinas, Serviços) | Sim |
-| `GET /v1/internships` | Filtro de serviço (Salas) | Sim |
-| `GET /v1/cadastros/institutions` | Filtro de instituição (Alunos) | Sim |
-| `GET /v1/users/roles` | Filtro de perfil (Usuários) | **Não** — criar |
+| Rota                             | Uso no Filtro                            | Já Existe       |
+| -------------------------------- | ---------------------------------------- | --------------- |
+| `GET /v1/disciplines`            | Filtro de disciplina (Alunos)            | Sim             |
+| `GET /v1/regions`                | Filtro de região (Disciplinas, Serviços) | Sim             |
+| `GET /v1/internships`            | Filtro de serviço (Salas)                | Sim             |
+| `GET /v1/cadastros/institutions` | Filtro de instituição (Alunos)           | Sim             |
+| `GET /v1/users/roles`            | Filtro de perfil (Usuários)              | **Não** — criar |
 
 ### 7.1 Novo endpoint sugerido: `GET /v1/users/roles`
 

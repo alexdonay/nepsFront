@@ -9,6 +9,7 @@ import { Sidebar } from "primereact/sidebar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
+import PdfUpload from "../../components/PdfUpload/PdfUpload";
 import {
   getPdfDownloadUrl,
   openPdf,
@@ -790,26 +791,6 @@ export default function EnrollmentPeriodsManage() {
         </div>
       )}
 
-      <div className="surface-100 p-3 border-round mb-3">
-        <strong>Alunos exibidos:</strong> {filteredStudents.length} de{" "}
-        {students.length}
-      </div>
-
-      <div className="surface-100 p-3 border-round mb-3">
-        <strong>Salas carregadas:</strong> {rooms.length}
-        <div className="mt-2 flex flex-wrap gap-2">
-          {rooms.length > 0 ? (
-            rooms.map((room) => (
-              <span key={room.id} className="surface-0 border-round px-3 py-2">
-                {room.name} • {room.room_capacity} vagas
-              </span>
-            ))
-          ) : (
-            <span className="text-600">Nenhuma sala retornada pela API.</span>
-          )}
-        </div>
-      </div>
-
       <DataTable
         value={filteredStudents}
         loading={loading}
@@ -1022,61 +1003,13 @@ export default function EnrollmentPeriodsManage() {
             }
           >
             <div className="p-fluid">
-              <div className="surface-100 p-3 border-round mb-3">
-                <label className="font-medium">
-                  Arquivo assinado pelo diretor (PDF)
-                </label>
-                <div
-                  className="p-d-flex p-ai-center p-jc-center border-dashed p-p-3 mt-2"
-                  style={{
-                    minHeight: 120,
-                    cursor: "pointer",
-                    background: "var(--surface-b)",
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    const f = e.dataTransfer?.files?.[0];
-                    if (f) handleLinkFormChange({ directorFile: f });
-                  }}
-                  onClick={() =>
-                    document.getElementById("director-file-input")?.click()
-                  }
-                >
-                  <div className="text-center">
-                    <i className="pi pi-file-pdf" style={{ fontSize: 36 }} />
-                    <div className="mt-2">
-                      Arraste o PDF aqui ou clique para selecionar
-                    </div>
-                    {linkForm.directorFile && (
-                      <div className="mt-2 text-sm">
-                        <strong>{linkForm.directorFile.name}</strong> •{" "}
-                        {(linkForm.directorFile.size / 1024).toFixed(0)} KB
-                        <Button
-                          icon="pi pi-times"
-                          className="p-button-text p-button-danger ml-2"
-                          onClick={(ev) => {
-                            ev.stopPropagation();
-                            handleLinkFormChange({ directorFile: null });
-                          }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <input
-                  id="director-file-input"
-                  type="file"
-                  accept="application/pdf"
-                  style={{ display: "none" }}
-                  onChange={(e) =>
-                    handleLinkFormChange({ directorFile: e.target.files[0] })
-                  }
-                />
-                <small className="text-600">
-                  Tamanho máximo: 5MB. Formato: PDF.
-                </small>
-              </div>
+              <PdfUpload
+                label="Arquivo assinado pelo diretor (PDF)"
+                value={linkForm.directorFile}
+                onChange={(file) =>
+                  handleLinkFormChange({ directorFile: file })
+                }
+              />
 
               <div className="grid">
                 <div className="col-12 md:col-6">
@@ -1288,66 +1221,13 @@ export default function EnrollmentPeriodsManage() {
             )}
           </div>
 
-          <div className="surface-100 p-3 border-round mb-3">
-            <label className="font-medium">
-              Arquivo assinado pelo diretor (PDF)
-            </label>
-            <div
-              className="p-d-flex p-ai-center p-jc-center border-dashed p-p-3 mt-2"
-              style={{
-                minHeight: 100,
-                cursor: "pointer",
-                background: "var(--surface-b)",
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const f = e.dataTransfer?.files?.[0];
-                if (f) handleInternshipLinkFormChange({ directorFile: f });
-              }}
-              onClick={() =>
-                document
-                  .getElementById("internship-director-file-input")
-                  ?.click()
-              }
-            >
-              <div className="text-center">
-                <i className="pi pi-file-pdf" style={{ fontSize: 32 }} />
-                <div className="mt-2 text-sm">
-                  Arraste o PDF aqui ou clique para selecionar
-                </div>
-                {internshipLinkForm.directorFile && (
-                  <div className="mt-2 text-sm">
-                    <strong>{internshipLinkForm.directorFile.name}</strong> •{" "}
-                    {(internshipLinkForm.directorFile.size / 1024).toFixed(0)}{" "}
-                    KB
-                    <Button
-                      icon="pi pi-times"
-                      className="p-button-text p-button-danger ml-2"
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        handleInternshipLinkFormChange({ directorFile: null });
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <input
-              id="internship-director-file-input"
-              type="file"
-              accept="application/pdf"
-              style={{ display: "none" }}
-              onChange={(e) =>
-                handleInternshipLinkFormChange({
-                  directorFile: e.target.files[0],
-                })
-              }
-            />
-            <small className="text-600">
-              Tamanho máximo: 5MB. Formato: PDF.
-            </small>
-          </div>
+          <PdfUpload
+            label="Arquivo assinado pelo diretor (PDF)"
+            value={internshipLinkForm.directorFile}
+            onChange={(file) =>
+              handleInternshipLinkFormChange({ directorFile: file })
+            }
+          />
 
           <div className="grid">
             <div className="col-12 md:col-6">

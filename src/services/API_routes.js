@@ -23,6 +23,8 @@ export const API_ROUTES = {
     LIST: "/v1/courses/list",
     DETAIL: "/v1/courses/detail",
     BY_ID: () => "/v1/courses/detail",
+    DISCIPLINES_LINK: "/v1/courses/disciplines/link",
+    DISCIPLINES_UNLINK: "/v1/courses/disciplines",
   },
   DISCIPLINES: {
     BASE: "/v1/disciplines",

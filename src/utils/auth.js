@@ -54,6 +54,11 @@ export function getCurrentInstitutionId() {
   return user?.education_institute_id || user?.institution_id || null;
 }
 
+export function getCurrentInternshipId() {
+  const user = getCurrentUser();
+  return user?.internship_id || user?.health_unit_id || user?.service?.id || null;
+}
+
 export function hasPermission(permissions = []) {
   if (!permissions || permissions.length === 0) return true;
   const current = getCurrentPermission();

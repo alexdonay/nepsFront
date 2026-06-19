@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
 import PaginatedDropdown from "../../components/PaginatedDropdown";
+import PdfUpload from "../../components/PdfUpload/PdfUpload";
 import PhoneInput from "../../components/Phone/PhoneInput";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
@@ -414,41 +415,19 @@ export default function EnrollmentManageInstitution() {
             />
           </div>
 
-          <div className="field mb-4">
-            <label className="font-medium mb-2 block">PDF do documento *</label>
-            <input
-              type="file"
-              accept="application/pdf"
-              className="w-full"
-              required
-              onChange={(e) => {
-                const file = e.target.files?.[0] || null;
-                if (!file) {
-                  setDocumentFile(null);
-                  return;
-                }
-
+          <PdfUpload
+            label="PDF do documento *"
+            required
+            value={documentFile}
+            onChange={(file) => {
+              if (file) {
                 const validationError = validatePdfFile(file);
-                if (validationError) {
-                  setRegisterError(validationError);
-                  setDocumentFile(null);
-                  e.target.value = "";
-                  return;
-                }
-
+                if (validationError) { setRegisterError(validationError); return; }
                 setRegisterError("");
-                setDocumentFile(file);
-              }}
-            />
-            <small className="text-600 block mt-1">
-              PDF obrigatório, máximo 5MB.
-            </small>
-            {documentFile && (
-              <small className="block mt-2 text-green-700">
-                Arquivo selecionado: {documentFile.name}
-              </small>
-            )}
-          </div>
+              }
+              setDocumentFile(file);
+            }}
+          />
 
           {registerError && (
             <div className="mb-3 text-red-500 text-sm">{registerError}</div>

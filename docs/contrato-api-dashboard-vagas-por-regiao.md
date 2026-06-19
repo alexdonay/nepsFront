@@ -1,4 +1,4 @@
-# Contrato de API — Dashboard: Vagas por Região
+# Contrato de API — Dashboard: Vagas por Território
 
 **Responsável frontend:** nepsFront  
 **Data:** 2026-06-19  
@@ -18,22 +18,23 @@ Retorna a soma da capacidade total de salas agrupada por região.
 **Sem parâmetros.**
 
 **Response `200`:**
+
 ```json
 {
   "items": [
     {
       "region_id": 1,
-      "region_name": "Região Norte",
+      "region_name": "Território Norte",
       "vacancies": 45
     },
     {
       "region_id": 2,
-      "region_name": "Região Sul",
+      "region_name": "Território Sul",
       "vacancies": 30
     },
     {
       "region_id": 3,
-      "region_name": "Região Centro",
+      "region_name": "Território Centro",
       "vacancies": 12
     }
   ]
@@ -42,11 +43,11 @@ Retorna a soma da capacidade total de salas agrupada por região.
 
 **Campos do item:**
 
-| Campo | Tipo | Descrição |
-|---|---|---|
-| `region_id` | int | ID da região |
-| `region_name` | string | Nome da região (usado como label no gráfico) |
-| `vacancies` | int | Soma da capacidade (`room_capacity`) de todas as salas ativas vinculadas a campos de estágio desta região |
+| Campo         | Tipo   | Descrição                                                                                                 |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| `region_id`   | int    | ID da região                                                                                              |
+| `region_name` | string | Nome da região (usado como label no gráfico)                                                              |
+| `vacancies`   | int    | Soma da capacidade (`room_capacity`) de todas as salas ativas vinculadas a campos de estágio desta região |
 
 **Regras de cálculo:**
 
@@ -58,15 +59,15 @@ vagas_por_região = SUM(room.room_capacity)
 
 - Só incluir salas com `is_active = true`
 - Só incluir campos de estágio com `is_active = true`
-- Regiões sem nenhuma sala ativa podem ser omitidas do resultado (o frontend ignora itens com `vacancies = 0`)
+- Territórios sem nenhuma sala ativa podem ser omitidas do resultado (o frontend ignora itens com `vacancies = 0`)
 - Ordenar por `vacancies DESC` (opcional, facilita leitura)
 
 **Erros esperados:**
 
-| Status | Situação |
-|---|---|
-| `401` | Token ausente ou inválido |
-| `500` | Erro interno — o frontend cai para o fallback automaticamente |
+| Status | Situação                                                      |
+| ------ | ------------------------------------------------------------- |
+| `401`  | Token ausente ou inválido                                     |
+| `500`  | Erro interno — o frontend cai para o fallback automaticamente |
 
 ---
 
@@ -81,6 +82,7 @@ GET  /v1/rooms?per_page=500         → lista salas (tem internships_id e room_c
 ```
 
 Lógica de cruzamento no frontend:
+
 ```
 internship_region_map = { internship.id → internship.region_id }
 
@@ -100,6 +102,7 @@ O endpoint dedicado elimina essas 3 chamadas e o processamento no cliente — **
 ## Modelo de dados relacionado
 
 **Room (sala):**
+
 ```json
 {
   "id": 5,
@@ -111,6 +114,7 @@ O endpoint dedicado elimina essas 3 chamadas e o processamento no cliente — **
 ```
 
 **Internship (campo de estágio):**
+
 ```json
 {
   "id": 10,
@@ -121,14 +125,16 @@ O endpoint dedicado elimina essas 3 chamadas e o processamento no cliente — **
 ```
 
 **Region:**
+
 ```json
 {
   "id": 2,
-  "name": "Região Sul"
+  "name": "Território Sul"
 }
 ```
 
 **Relação:**
+
 ```
 Region (1) ←── (N) Internship (1) ←── (N) Room
 ```
@@ -139,17 +145,19 @@ Region (1) ←── (N) Internship (1) ←── (N) Room
 
 O frontend aceita os seguintes nomes de campo (qualquer um serve):
 
-| Campo no response | Alternativas aceitas |
-|---|---|
-| `region_name` | `name` |
-| `vacancies` | `total_vacancies`, `capacity` |
+| Campo no response | Alternativas aceitas          |
+| ----------------- | ----------------------------- |
+| `region_name`     | `name`                        |
+| `vacancies`       | `total_vacancies`, `capacity` |
 
 Exemplo mínimo válido:
+
 ```json
 { "items": [{ "name": "Norte", "vacancies": 45 }] }
 ```
 
 Exemplo completo recomendado:
+
 ```json
 { "items": [{ "region_id": 1, "region_name": "Norte", "vacancies": 45 }] }
 ```

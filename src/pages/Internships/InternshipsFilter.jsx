@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
@@ -11,7 +11,7 @@ const FILTER_CONFIG = [
     placeholder: "Buscar por nome...",
   },
   {
-    label: "Região",
+    label: "Território",
     key: "region_id",
     type: "dropdown",
     options: [],
@@ -27,7 +27,11 @@ const FILTER_CONFIG = [
   },
 ];
 
-export default function InternshipsFilter({ filterVisible, setFilterVisible, onFilterChange }) {
+export default function InternshipsFilter({
+  filterVisible,
+  setFilterVisible,
+  onFilterChange,
+}) {
   const [regions, setRegions] = useState({});
   const [filterConfig, setFilterConfig] = useState(FILTER_CONFIG);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -89,9 +93,15 @@ export default function InternshipsFilter({ filterVisible, setFilterVisible, onF
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
   const initialValues = {
-    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
-    ...(searchParams.has("region_id") && { region_id: Number(searchParams.get("region_id")) }),
-    ...(searchParams.has("is_active") && { is_active: searchParams.get("is_active") }),
+    ...(searchParams.has("name_like") && {
+      name: searchParams.get("name_like"),
+    }),
+    ...(searchParams.has("region_id") && {
+      region_id: Number(searchParams.get("region_id")),
+    }),
+    ...(searchParams.has("is_active") && {
+      is_active: searchParams.get("is_active"),
+    }),
   };
 
   return (

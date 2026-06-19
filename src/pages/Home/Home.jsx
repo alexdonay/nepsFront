@@ -6,8 +6,16 @@ import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 
 const CHART_COLORS = [
-  "#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#ec4899",
-  "#8b5cf6", "#14b8a6", "#f97316", "#3b82f6", "#84cc16",
+  "#6366f1",
+  "#06b6d4",
+  "#10b981",
+  "#f59e0b",
+  "#ec4899",
+  "#8b5cf6",
+  "#14b8a6",
+  "#f97316",
+  "#3b82f6",
+  "#84cc16",
 ];
 
 const PIE_OPTIONS = (tooltipLabel) => ({
@@ -58,14 +66,20 @@ const BAR_OPTIONS = {
 
 const buildChartData = (items) => {
   const labels = items.map((r) => r.region_name || r.name);
-  const values = items.map((r) => r.vacancies ?? r.total_vacancies ?? r.capacity ?? 0);
+  const values = items.map(
+    (r) => r.vacancies ?? r.total_vacancies ?? r.capacity ?? 0,
+  );
   return {
     labels,
     datasets: [
       {
         data: values,
-        backgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]),
-        hoverBackgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length] + "cc"),
+        backgroundColor: labels.map(
+          (_, i) => CHART_COLORS[i % CHART_COLORS.length],
+        ),
+        hoverBackgroundColor: labels.map(
+          (_, i) => CHART_COLORS[i % CHART_COLORS.length] + "cc",
+        ),
       },
     ],
   };
@@ -83,9 +97,12 @@ export default function Home() {
   const [vacanciesChartData, setVacanciesChartData] = useState(null);
   const [occupiedChartData, setOccupiedChartData] = useState(null);
   const [institutionChartData, setInstitutionChartData] = useState(null);
-  const [regionInstitutionChartData, setRegionInstitutionChartData] = useState(null);
-  const [occupiedByInternshipChartData, setOccupiedByInternshipChartData] = useState(null);
-  const [capacityByInternshipChartData, setCapacityByInternshipChartData] = useState(null);
+  const [regionInstitutionChartData, setRegionInstitutionChartData] =
+    useState(null);
+  const [occupiedByInternshipChartData, setOccupiedByInternshipChartData] =
+    useState(null);
+  const [capacityByInternshipChartData, setCapacityByInternshipChartData] =
+    useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,7 +130,9 @@ export default function Home() {
       const internshipId = room.internships_id ?? room.internship_id;
       const regionId = internshipRegionMap[internshipId];
       if (!regionId) continue;
-      regionCapacity[regionId] = (regionCapacity[regionId] || 0) + (room.room_capacity ?? room.capacity ?? 0);
+      regionCapacity[regionId] =
+        (regionCapacity[regionId] || 0) +
+        (room.room_capacity ?? room.capacity ?? 0);
     }
 
     return regions
@@ -129,7 +148,8 @@ export default function Home() {
       if (!totalRooms) {
         try {
           const roomsRes = await repository.rooms.get({ per_page: 1 });
-          totalRooms = roomsRes.data?.pagination?.total ?? roomsRes.data?.length ?? 0;
+          totalRooms =
+            roomsRes.data?.pagination?.total ?? roomsRes.data?.length ?? 0;
         } catch (_) {}
       }
 
@@ -192,8 +212,8 @@ export default function Home() {
       const institutionNames = [
         ...new Set(
           items.flatMap((r) =>
-            (r.institutions || []).map((i) => i.institution_name || i.name)
-          )
+            (r.institutions || []).map((i) => i.institution_name || i.name),
+          ),
         ),
       ];
 
@@ -202,9 +222,11 @@ export default function Home() {
         backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
         data: items.map((region) => {
           const inst = (region.institutions || []).find(
-            (i) => (i.institution_name || i.name) === instName
+            (i) => (i.institution_name || i.name) === instName,
           );
-          return inst ? (inst.student_count ?? inst.total ?? inst.count ?? 0) : 0;
+          return inst
+            ? (inst.student_count ?? inst.total ?? inst.count ?? 0)
+            : 0;
         }),
       }));
 
@@ -214,16 +236,22 @@ export default function Home() {
     // Gráfico: alunos alocados por campo de estágio
     try {
       const { data } = await repository.dashboard.occupiedByInternship();
-      const items = (data?.items || data || []).filter((i) => (i.occupied ?? 0) > 0);
+      const items = (data?.items || data || []).filter(
+        (i) => (i.occupied ?? 0) > 0,
+      );
       if (items.length > 0) {
         setOccupiedByInternshipChartData({
           labels: items.map((i) => i.internship_name || i.name),
-          datasets: [{
-            label: "Alunos alocados",
-            backgroundColor: items.map((_, idx) => CHART_COLORS[idx % CHART_COLORS.length]),
-            data: items.map((i) => i.occupied ?? 0),
-            borderRadius: 6,
-          }],
+          datasets: [
+            {
+              label: "Alunos alocados",
+              backgroundColor: items.map(
+                (_, idx) => CHART_COLORS[idx % CHART_COLORS.length],
+              ),
+              data: items.map((i) => i.occupied ?? 0),
+              borderRadius: 6,
+            },
+          ],
         });
       }
     } catch (_) {}
@@ -231,7 +259,9 @@ export default function Home() {
     // Gráfico: capacidade vs ocupação por campo de estágio (barras empilhadas)
     try {
       const { data } = await repository.dashboard.capacityByInternship();
-      const items = (data?.items || data || []).filter((i) => (i.total ?? 0) > 0);
+      const items = (data?.items || data || []).filter(
+        (i) => (i.total ?? 0) > 0,
+      );
       if (items.length > 0) {
         setCapacityByInternshipChartData({
           labels: items.map((i) => i.internship_name),
@@ -257,11 +287,41 @@ export default function Home() {
   };
 
   const quickAccess = [
-    { label: "Alunos", icon: "pi pi-users", color: "#3b82f6", path: "/students", key: "total_students" },
-    { label: "Campos de Estágio", icon: "pi pi-home", color: "#10b981", path: "/internships", key: "total_internships" },
-    { label: "Períodos", icon: "pi pi-calendar", color: "#f59e0b", path: "/periods", key: "total_periods" },
-    { label: "Instituições", icon: "pi pi-building", color: "#ec4899", path: "/institutions", key: "total_institutions" },
-    { label: "Salas", icon: "pi pi-map-marker", color: "#06b6d4", path: "/rooms", key: "total_rooms" },
+    {
+      label: "Alunos",
+      icon: "pi pi-users",
+      color: "#3b82f6",
+      path: "/students",
+      key: "total_students",
+    },
+    {
+      label: "Campos de Estágio",
+      icon: "pi pi-home",
+      color: "#10b981",
+      path: "/internships",
+      key: "total_internships",
+    },
+    {
+      label: "Períodos",
+      icon: "pi pi-calendar",
+      color: "#f59e0b",
+      path: "/periods",
+      key: "total_periods",
+    },
+    {
+      label: "Instituições",
+      icon: "pi pi-building",
+      color: "#ec4899",
+      path: "/institutions",
+      key: "total_institutions",
+    },
+    {
+      label: "Salas",
+      icon: "pi pi-map-marker",
+      color: "#06b6d4",
+      path: "/rooms",
+      key: "total_rooms",
+    },
   ];
 
   return (
@@ -309,7 +369,12 @@ export default function Home() {
               <div className="flex align-items-center gap-3">
                 <div
                   className="border-circle flex align-items-center justify-content-center"
-                  style={{ width: "50px", height: "50px", backgroundColor: item.color + "20", color: item.color }}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    backgroundColor: item.color + "20",
+                    color: item.color,
+                  }}
                 >
                   <i className={`pi ${item.icon} text-xl`}></i>
                 </div>
@@ -326,58 +391,109 @@ export default function Home() {
       <div className="grid">
         <div className="col-12 md:col-4">
           <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">Vagas por Região</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Vagas por Território
+            </h3>
             {vacanciesChartData ? (
-              <Chart type="pie" data={vacanciesChartData} options={PIE_OPTIONS("vagas")} />
+              <Chart
+                type="pie"
+                data={vacanciesChartData}
+                options={PIE_OPTIONS("vagas")}
+              />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhuma vaga cadastrada.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhuma vaga cadastrada.
+              </div>
             )}
           </Card>
         </div>
 
         <div className="col-12 md:col-4">
           <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">Alunos Alocados por Região</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Alunos Alocados por Território
+            </h3>
             {occupiedChartData ? (
-              <Chart type="pie" data={occupiedChartData} options={PIE_OPTIONS("alunos")} />
+              <Chart
+                type="pie"
+                data={occupiedChartData}
+                options={PIE_OPTIONS("alunos")}
+              />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhum aluno alocado.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhum aluno alocado.
+              </div>
             )}
           </Card>
         </div>
 
         <div className="col-12 md:col-4">
           <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">Alunos Vinculados por Instituição</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Alunos Vinculados por Instituição
+            </h3>
             {institutionChartData ? (
-              <Chart type="pie" data={institutionChartData} options={PIE_OPTIONS("alunos")} />
+              <Chart
+                type="pie"
+                data={institutionChartData}
+                options={PIE_OPTIONS("alunos")}
+              />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhum aluno vinculado.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhum aluno vinculado.
+              </div>
             )}
           </Card>
         </div>
 
         <div className="col-12 mt-2">
           <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">Alunos por Região — por Instituição</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Alunos por Território — por Instituição
+            </h3>
             {regionInstitutionChartData ? (
-              <Chart type="bar" data={regionInstitutionChartData} options={BAR_OPTIONS} />
+              <Chart
+                type="bar"
+                data={regionInstitutionChartData}
+                options={BAR_OPTIONS}
+              />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhum dado disponível.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhum dado disponível.
+              </div>
             )}
           </Card>
         </div>
 
         <div className="col-12 mt-2">
           <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">Capacidade por Campo de Estágio</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Capacidade por Campo de Estágio
+            </h3>
             <div className="flex gap-3 mb-3">
               <span className="flex align-items-center gap-2 text-sm text-600">
-                <span style={{ width: 12, height: 12, borderRadius: 2, background: "#6366f1", display: "inline-block" }} />
+                <span
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 2,
+                    background: "#6366f1",
+                    display: "inline-block",
+                  }}
+                />
                 Ocupadas
               </span>
               <span className="flex align-items-center gap-2 text-sm text-600">
-                <span style={{ width: 12, height: 12, borderRadius: 2, background: "#e2e8f0", border: "1px solid #cbd5e1", display: "inline-block" }} />
+                <span
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 2,
+                    background: "#e2e8f0",
+                    border: "1px solid #cbd5e1",
+                    display: "inline-block",
+                  }}
+                />
                 Livres
               </span>
             </div>
@@ -393,29 +509,46 @@ export default function Home() {
                     legend: { display: false },
                     tooltip: {
                       callbacks: {
-                        label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
+                        label: (ctx) =>
+                          ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
                         afterBody: (items) => {
-                          const total = items.reduce((s, i) => s + i.parsed.y, 0);
+                          const total = items.reduce(
+                            (s, i) => s + i.parsed.y,
+                            0,
+                          );
                           return `Total: ${total}`;
                         },
                       },
                     },
                   },
                   scales: {
-                    x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 30, font: { size: 11 } } },
-                    y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: "#f1f5f9" } },
+                    x: {
+                      stacked: true,
+                      grid: { display: false },
+                      ticks: { maxRotation: 30, font: { size: 11 } },
+                    },
+                    y: {
+                      stacked: true,
+                      beginAtZero: true,
+                      ticks: { stepSize: 1 },
+                      grid: { color: "#f1f5f9" },
+                    },
                   },
                 }}
               />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhum campo com salas cadastradas.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhum campo com salas cadastradas.
+              </div>
             )}
           </Card>
         </div>
 
         <div className="col-12 mt-2">
           <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">Alunos Alocados por Campo de Estágio</h3>
+            <h3 className="text-base font-semibold text-700 mb-3">
+              Alunos Alocados por Campo de Estágio
+            </h3>
             {occupiedByInternshipChartData ? (
               <Chart
                 type="bar"
@@ -428,19 +561,25 @@ export default function Home() {
                     legend: { display: false },
                     tooltip: {
                       callbacks: {
-                        label: (ctx) => ` ${ctx.parsed.y} aluno${ctx.parsed.y !== 1 ? "s" : ""}`,
+                        label: (ctx) =>
+                          ` ${ctx.parsed.y} aluno${ctx.parsed.y !== 1 ? "s" : ""}`,
                       },
                     },
                   },
                   scales: {
                     ...BAR_OPTIONS.scales,
-                    x: { ...BAR_OPTIONS.scales.x, ticks: { maxRotation: 30, font: { size: 11 } } },
+                    x: {
+                      ...BAR_OPTIONS.scales.x,
+                      ticks: { maxRotation: 30, font: { size: 11 } },
+                    },
                     y: { ...BAR_OPTIONS.scales.y, ticks: { stepSize: 1 } },
                   },
                 }}
               />
             ) : (
-              <div className="text-500 text-sm p-3 text-center">Nenhum aluno alocado.</div>
+              <div className="text-500 text-sm p-3 text-center">
+                Nenhum aluno alocado.
+              </div>
             )}
           </Card>
         </div>

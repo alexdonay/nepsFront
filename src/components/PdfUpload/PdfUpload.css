@@ -1,0 +1,114 @@
+.pdf-upload-zone {
+  border: 2px dashed var(--surface-border);
+  border-radius: 10px;
+  background: var(--surface-50);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pdf-upload-zone:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-100);
+}
+
+/* ── Estado vazio ──────────────────────────────────────────────────────────── */
+.pdf-upload-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.75rem 1rem;
+  text-align: center;
+}
+
+.pdf-upload-cta {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.pdf-upload-hint {
+  font-size: 0.78rem;
+  color: var(--text-color-secondary);
+}
+
+/* ── Arquivo selecionado ────────────────────────────────────────────────────── */
+.pdf-upload-selected,
+.pdf-upload-existing {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+}
+
+.pdf-upload-selected {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.pdf-upload-existing {
+  background: #eff6ff;
+}
+
+.pdf-upload-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pdf-upload-filename {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pdf-upload-size {
+  font-size: 0.75rem;
+  color: var(--text-color-secondary);
+}
+
+.pdf-upload-clear {
+  flex-shrink: 0;
+}
+
+/* ── Ícones ─────────────────────────────────────────────────────────────────── */
+.pdf-upload-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.pdf-upload-icon--empty {
+  color: var(--primary-300, #93c5fd);
+}
+
+.pdf-upload-icon--ready {
+  color: #16a34a;
+}
+
+.pdf-upload-icon--saved {
+  color: #2563eb;
+}
+
+/* ── Link "ver" ─────────────────────────────────────────────────────────────── */
+.pdf-upload-view {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #2563eb;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pdf-upload-view:hover {
+  text-decoration: underline;
+}

@@ -1,10 +1,6 @@
 import { Button } from "primereact/button";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  ALL_PERMISSIONS,
-  MANAGEMENT_PERMISSIONS,
-  PERMISSIONS,
-} from "../constants/permissions";
+import { PERMISSIONS } from "../constants/permissions";
 import { logout } from "../services/auth";
 import { hasPermission } from "../utils/auth";
 
@@ -12,7 +8,37 @@ export default function Layout({ children }) {
   const navigate = useNavigate();
 
   const menuItems = [
-    { label: "Início", icon: "pi pi-home", path: "/", permissions: [] },
+    // ADMIN
+    {
+      label: "Início",
+      icon: "pi pi-home",
+      path: "/",
+      permissions: [PERMISSIONS.ADMIN],
+    },
+
+    // CAMPO_ESTAGIO
+    {
+      label: "Minhas Salas",
+      icon: "pi pi-th-large",
+      path: "/internships/detail",
+      permissions: [PERMISSIONS.CAMPO_ESTAGIO],
+    },
+
+    // INSTITUICAO_ENSINO
+    {
+      label: "Períodos",
+      icon: "pi pi-calendar",
+      path: "/periods",
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+    },
+    {
+      label: "Cursos",
+      icon: "pi pi-book",
+      path: "/courses/",
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+    },
+
+    // ADMIN — Cadastros
     {
       label: "Cadastros",
       icon: "pi pi-building",
@@ -36,7 +62,7 @@ export default function Layout({ children }) {
           permissions: [PERMISSIONS.ADMIN],
         },
         {
-          label: "Regiões",
+          label: "Territórios",
           icon: "pi pi-map",
           path: "/regions",
           permissions: [PERMISSIONS.ADMIN],
@@ -44,13 +70,7 @@ export default function Layout({ children }) {
         {
           label: "Cursos",
           icon: "pi pi-book",
-          path: "/courses",
-          permissions: [PERMISSIONS.ADMIN],
-        },
-        {
-          label: "Disciplinas",
-          icon: "pi pi-book",
-          path: "/disciplines",
+          path: "/courses/",
           permissions: [PERMISSIONS.ADMIN],
         },
         {
@@ -61,6 +81,8 @@ export default function Layout({ children }) {
         },
       ],
     },
+
+    // ADMIN — Gestão
     {
       label: "Gestão",
       icon: "pi pi-calendar",
@@ -69,17 +91,16 @@ export default function Layout({ children }) {
           label: "Períodos",
           icon: "pi pi-calendar",
           path: "/periods",
-          permissions: ALL_PERMISSIONS,
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Alunos",
           icon: "pi pi-users",
           path: "/students",
-          permissions: MANAGEMENT_PERMISSIONS,
+          permissions: [PERMISSIONS.ADMIN],
         },
       ],
     },
-
   ];
 
   const filterMenuItems = (items) => {
@@ -125,7 +146,11 @@ export default function Layout({ children }) {
                 </div>
               </div>
             ) : (
-              <Link key={i} to={item.path} className="sidebar-link sidebar-link--top">
+              <Link
+                key={i}
+                to={item.path}
+                className="sidebar-link sidebar-link--top"
+              >
                 <span className={`pi ${item.icon} mr-2`} />
                 {item.label}
               </Link>
@@ -139,7 +164,10 @@ export default function Layout({ children }) {
             label="Sair"
             text
             className="sidebar-logout"
-            onClick={() => { logout(); navigate("/login"); }}
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
           />
         </div>
       </aside>

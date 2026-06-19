@@ -5,8 +5,8 @@ import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function ServiceForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.service, {});
@@ -109,7 +109,7 @@ export default function ServiceForm() {
         </div>
 
         <div className="field mb-3">
-          <label className="block text-900 font-medium mb-2">Região</label>
+          <label className="block text-900 font-medium mb-2">Território</label>
           <Dropdown
             value={form.region_id}
             options={regions}

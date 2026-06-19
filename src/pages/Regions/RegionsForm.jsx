@@ -1,11 +1,10 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function RegionsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.region, {});
@@ -64,7 +63,7 @@ export default function RegionsForm() {
   return (
     <div className="surface-card p-4 shadow-2 border-round max-w-2xl">
       <h2 className="text-2xl font-bold mb-4">
-        {isEdit ? "Editar Região" : "Nova Região"}
+        {isEdit ? "Editar Território" : "Novo Território"}
       </h2>
 
       {error && (

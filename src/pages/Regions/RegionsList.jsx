@@ -5,7 +5,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
+import {
+  clearRouteContext,
+  ROUTE_CONTEXT_KEYS,
+  setRouteContext,
+} from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -118,7 +122,7 @@ export default function RegionsList() {
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
-        <h2 className="text-xl font-bold m-0">Regiões</h2>
+        <h2 className="text-xl font-bold m-0">Territórios</h2>
         <div className="flex gap-2">
           <Button
             label="Filtros"
@@ -128,7 +132,7 @@ export default function RegionsList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Nova Região"
+            label="Nova Território"
             icon="pi pi-plus"
             onClick={() => {
               clearRouteContext(ROUTE_CONTEXT_KEYS.region);
