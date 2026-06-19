@@ -132,7 +132,7 @@ export default function RegionsList() {
             onClick={() => setFilterVisible(true)}
           />
           <Button
-            label="Nova Território"
+            label="Novo Território"
             icon="pi pi-plus"
             onClick={() => {
               clearRouteContext(ROUTE_CONTEXT_KEYS.region);
