@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { uploadPdfToCloudinary, validatePdfFile, openPdf } from "../../services/cloudinary";
+import { uploadPdfToCloudinary, validatePdfFile, openPdf, getPdfDownloadUrl } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentDisciplineName = (student) =>
