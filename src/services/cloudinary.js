@@ -114,9 +114,5 @@ export async function uploadPdfToCloudinary(file) {
 }
 
 export function getPdfDownloadUrl(url) {
-  if (!url) return "";
-  if (url.includes("/raw/upload/") && !url.includes("fl_attachment")) {
-    return url.replace("/raw/upload/", "/raw/upload/fl_attachment/");
-  }
-  return url;
+  return url || "";
 }
