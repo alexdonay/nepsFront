@@ -445,21 +445,11 @@ export default function EnrollmentPeriodsManage() {
     setStudentDetailsLoading(false);
   };
 
-  const toViewableUrl = (url) => {
-    if (!url) return "";
-    if (url.includes("/raw/upload/") && !url.includes("fl_attachment")) {
-      return url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
-    }
-    return url;
-  };
-
   const resolveStudentDocumentUrl = (student) =>
-    toViewableUrl(
-      student?.document_url ||
-      student?.institution_document_url ||
-      student?.documentUrl ||
-      ""
-    );
+    student?.document_url ||
+    student?.institution_document_url ||
+    student?.documentUrl ||
+    "";
 
   const handleDownloadInstitutionDocument = () => {
     const url = resolveStudentDocumentUrl(selectedStudentDetails);

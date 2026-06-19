@@ -81,16 +81,8 @@ export default function StudentDetails() {
     [student],
   );
 
-  const toViewableUrl = (url) => {
-    if (!url) return "";
-    if (url.includes("/raw/upload/") && !url.includes("fl_attachment")) {
-      return url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
-    }
-    return url;
-  };
-
-  const documentUrl = toViewableUrl(student?.document_url || student?.institution_document_url || "");
-  const directorSignedPdfUrl = toViewableUrl(student?.director_signed_pdf || "");
+  const documentUrl = student?.document_url || student?.institution_document_url || "";
+  const directorSignedPdfUrl = student?.director_signed_pdf || "";
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
