@@ -81,8 +81,16 @@ export default function StudentDetails() {
     [student],
   );
 
-  const documentUrl = student?.document_url || student?.institution_document_url || "";
-  const directorSignedPdfUrl = student?.director_signed_pdf || "";
+  const toViewableUrl = (url) => {
+    if (!url) return "";
+    if (url.includes("/raw/upload/") && !url.includes("fl_attachment")) {
+      return url.replace("/raw/upload/", "/raw/upload/fl_attachment:false/");
+    }
+    return url;
+  };
+
+  const documentUrl = toViewableUrl(student?.document_url || student?.institution_document_url || "");
+  const directorSignedPdfUrl = toViewableUrl(student?.director_signed_pdf || "");
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
@@ -206,7 +214,7 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">URL do documento</small>
                 {documentUrl ? (
-                  <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(documentUrl)}`} target="_blank" rel="noreferrer">
+                  <a href={documentUrl} target="_blank" rel="noreferrer">
                     Abrir documento
                   </a>
                 ) : (
@@ -217,7 +225,7 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
                 {directorSignedPdfUrl ? (
-                  <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(directorSignedPdfUrl)}`} target="_blank" rel="noreferrer">
+                  <a href={directorSignedPdfUrl} target="_blank" rel="noreferrer">
                     Abrir PDF assinado
                   </a>
                 ) : (
