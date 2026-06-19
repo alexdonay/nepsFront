@@ -116,3 +116,12 @@ export async function uploadPdfToCloudinary(file) {
 export function getPdfDownloadUrl(url) {
   return url || "";
 }
+
+export async function openPdf(url) {
+  if (!url) return;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Não foi possível carregar o arquivo PDF.");
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  window.open(blobUrl, "_blank", "noopener,noreferrer");
+}
