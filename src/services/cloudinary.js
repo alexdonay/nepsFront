@@ -91,7 +91,7 @@ export async function uploadPdfToCloudinary(file) {
   formData.append("type", "upload");
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`,
     {
       method: "POST",
       body: formData,
