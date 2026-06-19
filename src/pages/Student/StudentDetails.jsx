@@ -3,7 +3,7 @@ import { Message } from "primereact/message";
 import { Skeleton } from "primereact/skeleton";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPdfDownloadUrl } from "../../services/cloudinary";
+import { openPdf } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
@@ -82,8 +82,8 @@ export default function StudentDetails() {
     [student],
   );
 
-  const documentUrl = getPdfDownloadUrl(student?.document_url || student?.institution_document_url || "");
-  const directorSignedPdfUrl = getPdfDownloadUrl(student?.director_signed_pdf || "");
+  const documentUrl = student?.document_url || student?.institution_document_url || "";
+  const directorSignedPdfUrl = student?.director_signed_pdf || "";
 
   return (
     <div className="surface-card p-4 shadow-2 border-round">
@@ -207,9 +207,13 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">URL do documento</small>
                 {documentUrl ? (
-                  <a href={documentUrl} target="_blank" rel="noreferrer">
-                    Abrir documento
-                  </a>
+                  <Button
+                    label="Abrir documento"
+                    icon="pi pi-file-pdf"
+                    size="small"
+                    outlined
+                    onClick={() => openPdf(documentUrl)}
+                  />
                 ) : (
                   <strong>-</strong>
                 )}
@@ -218,9 +222,13 @@ export default function StudentDetails() {
               <div className="mb-3">
                 <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
                 {directorSignedPdfUrl ? (
-                  <a href={directorSignedPdfUrl} target="_blank" rel="noreferrer">
-                    Abrir PDF assinado
-                  </a>
+                  <Button
+                    label="Abrir PDF assinado"
+                    icon="pi pi-file-pdf"
+                    size="small"
+                    outlined
+                    onClick={() => openPdf(directorSignedPdfUrl)}
+                  />
                 ) : (
                   <strong>-</strong>
                 )}

@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { uploadPdfToCloudinary, validatePdfFile, getPdfDownloadUrl } from "../../services/cloudinary";
+import { uploadPdfToCloudinary, validatePdfFile, openPdf } from "../../services/cloudinary";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 const getStudentDisciplineName = (student) =>
@@ -453,16 +453,17 @@ export default function EnrollmentPeriodsManage() {
       ""
     );
 
-  const handleDownloadInstitutionDocument = () => {
+  const handleDownloadInstitutionDocument = async () => {
     const url = resolveStudentDocumentUrl(selectedStudentDetails);
     if (!url) return;
-
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
+    anchor.href = blobUrl;
     anchor.download = "documento-instituicao.pdf";
     anchor.click();
+    URL.revokeObjectURL(blobUrl);
   };
 
   const handleRemoveStudentFromSlot = async (slot) => {
@@ -1041,13 +1042,7 @@ export default function EnrollmentPeriodsManage() {
                   <Button
                     label="Abrir documento"
                     icon="pi pi-external-link"
-                    onClick={() =>
-                      window.open(
-                        resolveStudentDocumentUrl(selectedStudentDetails),
-                        "_blank",
-                        "noopener,noreferrer",
-                      )
-                    }
+                    onClick={() => openPdf(resolveStudentDocumentUrl(selectedStudentDetails))}
                     outlined
                   />
                   <Button
