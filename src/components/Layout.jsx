@@ -107,14 +107,6 @@ export default function Layout({ children }) {
           if (filteredSubItems.length === 0) return null;
           return { ...item, items: filteredSubItems };
         }
-        // Restrict internships role to only 'Minhas Salas' menu item
-        if (
-          currentPermission === PERMISSIONS.CAMPO_ESTAGIO &&
-          item.path &&
-          item.path !== "/internships/detail"
-        ) {
-          return null;
-        }
         // General permission check
         if (item.permissions && !hasPermission(item.permissions)) return null;
         return item;
