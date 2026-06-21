@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Link, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../constants/permissions";
 import { logout } from "../services/auth";
-import { hasPermission } from "../utils/auth";
+import { hasPermission, getCurrentPermission } from "../utils/auth";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -13,30 +13,21 @@ export default function Layout({ children }) {
       label: "Início",
       icon: "pi pi-home",
       path: "/",
-      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO, PERMISSIONS.INSTITUICAO_ENSINO],
     },
-
-    // CAMPO_ESTAGIO - Salas
-    {
-      label: "Minhas Salas",
-      icon: "pi pi-th-large",
-      path: "/internships/detail",
-      permissions: [PERMISSIONS.CAMPO_ESTAGIO],
-    },
-
 
     // INSTITUICAO_ENSINO
     {
       label: "Períodos",
       icon: "pi pi-calendar",
       path: "/periods",
-      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.ADMIN],
     },
     {
       label: "Cursos",
       icon: "pi pi-book",
       path: "/courses/",
-      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.ADMIN],
     },
 
     // ADMIN — Cadastros
@@ -48,25 +39,25 @@ export default function Layout({ children }) {
           label: "Usuários",
           icon: "pi pi-user-edit",
           path: "/users",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Campos de Estágio",
           icon: "pi pi-cog",
           path: "/internships",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Instituições",
           icon: "pi pi-building",
           path: "/institutions",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Territórios",
           icon: "pi pi-map",
           path: "/regions",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Cursos",
@@ -78,7 +69,7 @@ export default function Layout({ children }) {
           label: "Salas",
           icon: "pi pi-map-marker",
           path: "/rooms",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN],
         },
       ],
     },
