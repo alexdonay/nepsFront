@@ -6,8 +6,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
+import { getCurrentPermission } from "../../utils/auth";
+import PERMISSIONS from "../../constants/permissions";
 
 export default function RoomsList() {
+  // Detecta se o usuário tem a role "campo de estágio"
+  const isInternship = getCurrentPermission() === PERMISSIONS.CAMPO_ESTAGIO;
   const [rooms, setRooms] = useState([]);
   const [internships, setInternships] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
