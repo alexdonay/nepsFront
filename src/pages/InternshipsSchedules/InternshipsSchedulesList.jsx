@@ -471,7 +471,7 @@ export default function ServiceSchedulesList() {
                     )}
                   />
                   <Column header="Disciplina" body={(r) => disciplineLabel(r.discipline_id)} />
-                  <Column header="Instituição" body={(r) => institutionLabel(r.institution_id)} />
+                  {!isInternship && <Column header="Instituição" body={(r) => institutionLabel(r.institution_id)} />}
                   <Column field="semester" header="Semestre" style={{ width: "6rem" }} />
                 </DataTable>
 
