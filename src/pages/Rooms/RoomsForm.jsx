@@ -6,6 +6,7 @@ import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
+import api from "../../services/api";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { getCurrentUser } from "../../utils/auth";
@@ -53,19 +54,21 @@ export default function RoomsForm() {
     setLoading(true);
     setError("");
 
-    try {
-      const payload = {
-        name: form.name,
-        internship_id: form.internships_id,
-        room_capacity: form.room_capacity,
-        has_gurney: form.has_gurney,
-        is_active: form.is_active,
-      };
+    const payload = {
+      name: form.name,
+      internship_id: form.internships_id,
+      room_capacity: form.room_capacity,
+      has_gurney: form.has_gurney,
+      is_active: form.is_active,
+    };
 
+    try {
       if (isEdit) {
+        // Atualiza usando repository (envia JSON)
         await repository.rooms.put(id, payload);
       } else {
-        await repository.rooms.post(payload);
+        // Cria usando instância Axios para garantir JSON
+        await api.post("/v1/rooms", payload);
       }
 
       navigate("/rooms");

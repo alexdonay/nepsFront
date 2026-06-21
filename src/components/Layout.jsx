@@ -23,14 +23,7 @@ export default function Layout({ children }) {
       path: "/periods",
       permissions: [PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.ADMIN],
     },
-    {
-      label: "Cursos",
-      icon: "pi pi-book",
-      path: "/courses/",
-      permissions: [PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.ADMIN],
-    },
-
-    // ADMIN — Cadastros
+      // ADMIN — Cadastros
     {
       label: "Cadastros",
       icon: "pi pi-building",
