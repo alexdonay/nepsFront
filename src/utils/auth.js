@@ -49,10 +49,11 @@ export function getCurrentPermission() {
 }
 
 export function getCurrentUser() {
-  const userJson = localStorage.getItem("user");
-  if (!userJson) return null;
+  const token = localStorage.getItem("token");
+  if (!token) return null;
   try {
-    return JSON.parse(userJson);
+    const decoded = jwt_decode(token);
+    return decoded.user || decoded;
   } catch {
     return null;
   }
