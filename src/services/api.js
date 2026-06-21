@@ -27,9 +27,6 @@ api.interceptors.response.use(
       // Clear auth data
       try {
         localStorage.removeItem("token");
-        localStorage.removeItem("permission");
-        localStorage.removeItem("user");
-        localStorage.removeItem("currentUser");
       } catch (e) {
         console.debug("Error clearing localStorage", e);
       }

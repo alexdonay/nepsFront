@@ -7,9 +7,6 @@ export const login = (email, password) =>
     const token = r.data?.token || r.data?.accessToken || r.data?.jwt;
     if (token) {
       localStorage.setItem('token', token);
-    // Garantir que nenhum objeto user persista no localStorage
-    localStorage.removeItem('user');
-    localStorage.removeItem('currentUser');
     }
     return r;
   });

@@ -28,7 +28,7 @@ export default function Login() {
         const me = await getCurrentUser();
         const user = me.data;
         try {
-          localStorage.setItem("user", JSON.stringify(user));
+          // Removed storing user object in localStorage
         } catch {}
         const candidates = [
           user.permission,
@@ -80,8 +80,6 @@ export default function Login() {
 
         const permission =
           tokenPermission || candidates.map(normalizePermission).find(Boolean);
-        if (permission) localStorage.setItem("permission", permission);
-        else localStorage.removeItem("permission");
       }
 
       navigate("/");
