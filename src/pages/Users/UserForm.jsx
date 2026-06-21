@@ -74,7 +74,11 @@ export default function UserForm() {
           const user = r.data;
           setName(user.name || "");
           setEmail(user.email || "");
-          setProfile(normalizePermission(user.role) || null);
+          setProfile(
+        user.role === 'internships'
+          ? PERMISSIONS.CAMPO_ESTAGIO
+          : normalizePermission(user.role) || null
+      );
           setIsActive(user.is_active ?? user.active ?? true);
           const institutionId =
             user.education_institute_id ??
