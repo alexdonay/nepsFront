@@ -1,7 +1,7 @@
 export const PERMISSIONS = {
   ADMIN: "admin",
   INSTITUICAO_ENSINO: "education_institute",
-  CAMPO_ESTAGIO: "service",
+  CAMPO_ESTAGIO: "internships",
 };
 
 export const ALL_PERMISSIONS = [
