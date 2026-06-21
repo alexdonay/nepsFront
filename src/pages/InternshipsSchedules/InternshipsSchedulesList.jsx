@@ -292,7 +292,7 @@ export default function ServiceSchedulesList() {
             icon="pi pi-arrow-left"
             severity="secondary"
             outlined
-            onClick={() => navigate(isRoomContext ? "/internships/detail" : "/internships/detail")}
+            onClick={() => navigate(isRoomContext ? "/rooms" : "/rooms")}
           />
         </div>
       </div>
