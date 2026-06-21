@@ -190,7 +190,7 @@ export default function App() {
       <Route
         path="/courses/"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN, permissions.INSTITUICAO_ENSINO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <CoursesList />
             </Layout>
@@ -262,7 +262,7 @@ export default function App() {
       <Route
         path="/rooms"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsList />
             </Layout>
@@ -273,7 +273,7 @@ export default function App() {
       <Route
         path="/rooms/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsForm />
             </Layout>
@@ -284,7 +284,7 @@ export default function App() {
       <Route
         path="/rooms/:id"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsForm />
             </Layout>
@@ -295,7 +295,7 @@ export default function App() {
       <Route
         path="/rooms/schedules"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsListSchedulesList />
             </Layout>
@@ -306,7 +306,7 @@ export default function App() {
       <Route
         path="/rooms/history"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <EnrollmentPeriodsHistory />
             </Layout>
@@ -317,7 +317,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsScheduleForm />
             </Layout>
@@ -328,7 +328,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/assignment"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsScheduleAssignment />
             </Layout>
@@ -339,7 +339,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/history"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <EnrollmentPeriodsHistory />
             </Layout>
@@ -350,7 +350,7 @@ export default function App() {
       <Route
         path="/internships"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsList />
             </Layout>
@@ -361,7 +361,7 @@ export default function App() {
       <Route
         path="/internships/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsForm />
             </Layout>
