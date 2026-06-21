@@ -35,8 +35,17 @@ export function isAuthenticated() {
   return Boolean(localStorage.getItem("token"));
 }
 
+import jwt_decode from "jwt-decode";
+
 export function getCurrentPermission() {
-  return localStorage.getItem("permission");
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const decoded = jwt_decode(token);
+    return decoded.role || decoded.permissions?.[0] || null;
+  } catch {
+    return null;
+  }
 }
 
 export function getCurrentUser() {

@@ -3,11 +3,10 @@ import { API_ROUTES } from "./API_routes";
 
 export const login = (email, password) =>
   api.post(API_ROUTES.AUTH.LOGIN, { email, password }).then((r) => {
-    // O backend geralmente retorna o usuário autenticado ou token contendo a role
-    const user = r.data?.user || r.data;
-    if (user?.role) {
-      localStorage.setItem('permission', user.role);
-      localStorage.setItem('user', JSON.stringify(user));
+    // Backend returns token (JWT) containing role; store only token
+    const token = r.data?.token || r.data?.accessToken || r.data?.jwt;
+    if (token) {
+      localStorage.setItem('token', token);
     }
     return r;
   });
@@ -30,10 +29,6 @@ export const confirmReset = (hash, newPassword) =>
 export const logout = () => {
   try {
     localStorage.removeItem("token");
-    localStorage.removeItem("permission");
-    // older code used 'user' key; some parts use 'currentUser'
-    localStorage.removeItem("user");
-    localStorage.removeItem("currentUser");
   } catch (e) {
     // eslint-disable-next-line no-console
     console.debug("logout localStorage cleanup failed", e);
