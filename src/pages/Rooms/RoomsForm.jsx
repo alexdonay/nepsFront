@@ -1,6 +1,5 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
-import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
@@ -9,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { getCurrentUser } from "../../utils/auth";
 
 export default function RoomsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.room, {});
@@ -16,40 +16,29 @@ export default function RoomsForm() {
   const isEdit = !!id;
   const navigate = useNavigate();
 
+  const user = getCurrentUser();
+  const defaultInternshipId = user?.internship_id || user?.education_institute_id || null;
+
   const [form, setForm] = useState({
     name: "",
-    internships_id: null,
+    internships_id: defaultInternshipId,
     room_capacity: null,
     has_gurney: false,
     is_active: true,
   });
-  const [internships, setInternships] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadInternships();
     if (isEdit) loadRoom();
   }, [id]);
-
-  const loadInternships = async () => {
-    try {
-      const { data } = await repository.internships.get();
-      const list = data.items || data || [];
-      setInternships(
-        list.map((service) => ({ label: service.name, value: service.id })),
-      );
-    } catch (e) {
-      setInternships([]);
-    }
-  };
 
   const loadRoom = async () => {
     try {
       const { data } = await repository.rooms.getById(id);
       setForm({
         name: data.name || "",
-        internships_id: data.internships_id || null,
+        internships_id: data.internships_id || defaultInternshipId,
         room_capacity: data.room_capacity ?? null,
         has_gurney: data.has_gurney ?? false,
         is_active: data.is_active ?? true,
@@ -114,21 +103,7 @@ export default function RoomsForm() {
           />
         </div>
 
-        <div className="field col-12 md:col-6">
-          <label className="block text-900 font-medium mb-2">
-            Campo de Estágio *
-          </label>
-          <Dropdown
-            value={form.internships_id}
-            options={internships}
-            optionLabel="label"
-            optionValue="value"
-            onChange={(e) => setForm({ ...form, internships_id: e.value })}
-            placeholder="Selecione um campo de estágio"
-            className="w-full"
-            required
-          />
-        </div>
+        {/* Campo de Estágio não exibido para usuários de campo de estágio; valor preenchido automaticamente */}
 
         <div className="field col-12 md:col-6">
           <label className="block text-900 font-medium mb-2">
