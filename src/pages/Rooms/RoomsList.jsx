@@ -200,7 +200,7 @@ export default function RoomsList() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="room_capacity" header="Capacidade" />
-        <Column header="Campo de Estágio" body={serviceTemplate} />
+        { !isInternship && <Column header="Campo de Estágio" body={serviceTemplate} /> }
         <Column header="Possui Maca" body={gurneyTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>
