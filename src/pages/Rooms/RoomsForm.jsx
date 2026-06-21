@@ -56,7 +56,8 @@ export default function RoomsForm() {
 
     const payload = {
       name: form.name,
-      internship_id: form.internships_id,
+      // Use internship_id from JWT if available, otherwise from form
+      internship_id: form.internships_id ?? user?.internship_id ?? null,
       room_capacity: form.room_capacity,
       has_gurney: form.has_gurney,
       is_active: form.is_active,
