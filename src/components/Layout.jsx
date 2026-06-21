@@ -63,7 +63,7 @@ export default function Layout({ children }) {
           label: "Cursos",
           icon: "pi pi-book",
           path: "/courses/",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
         },
         {
           label: "Salas",
