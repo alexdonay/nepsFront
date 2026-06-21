@@ -2,7 +2,15 @@ import api from "./api";
 import { API_ROUTES } from "./API_routes";
 
 export const login = (email, password) =>
-  api.post(API_ROUTES.AUTH.LOGIN, { email, password });
+  api.post(API_ROUTES.AUTH.LOGIN, { email, password }).then((r) => {
+    // O backend geralmente retorna o usuário autenticado ou token contendo a role
+    const user = r.data?.user || r.data;
+    if (user?.role) {
+      localStorage.setItem('permission', user.role);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+    return r;
+  });
 
 export const register = (data) => api.post(API_ROUTES.AUTH.REGISTER, data);
 
