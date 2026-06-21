@@ -105,8 +105,10 @@ export default function Layout({ children }) {
   ];
 
   const filterMenuItems = (items) => {
+    const currentPermission = getCurrentPermission();
     return items
       .map((item) => {
+        // If item has subitems, filter them
         if (item.items) {
           const filteredSubItems = item.items.filter((sub) =>
             hasPermission(sub.permissions),
@@ -114,6 +116,15 @@ export default function Layout({ children }) {
           if (filteredSubItems.length === 0) return null;
           return { ...item, items: filteredSubItems };
         }
+        // Restrict internships role to only 'Minhas Salas' menu item
+        if (
+          currentPermission === PERMISSIONS.CAMPO_ESTAGIO &&
+          item.path &&
+          item.path !== "/internships/detail"
+        ) {
+          return null;
+        }
+        // General permission check
         if (item.permissions && !hasPermission(item.permissions)) return null;
         return item;
       })
