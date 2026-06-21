@@ -16,13 +16,14 @@ export default function Layout({ children }) {
       permissions: [PERMISSIONS.ADMIN],
     },
 
-    // CAMPO_ESTAGIO
+    // CAMPO_ESTAGIO - Salas
     {
       label: "Minhas Salas",
       icon: "pi pi-th-large",
       path: "/internships/detail",
       permissions: [PERMISSIONS.CAMPO_ESTAGIO],
     },
+
 
     // INSTITUICAO_ENSINO
     {
