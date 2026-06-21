@@ -69,7 +69,7 @@ export default function Layout({ children }) {
           label: "Salas",
           icon: "pi pi-map-marker",
           path: "/rooms",
-          permissions: [PERMISSIONS.ADMIN],
+          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
         },
       ],
     },
