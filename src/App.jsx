@@ -70,6 +70,16 @@ function PrivateRoute({ children, permissions = [] }) {
 }
 
 export default function App() {
+  // Ensure permission is loaded from stored user if not present
+  if (!localStorage.getItem('permission')) {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        if (user.role) localStorage.setItem('permission', user.role);
+      } catch {}
+    }
+  }
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
