@@ -18,17 +18,14 @@ export default function CourseDetail() {
   const navigate = useNavigate();
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.course, {});
   const courseId = routeContext?.id;
-
-  // ── Dados do curso ─────────────────────────────────────────────────────────
+  
   const [courseName, setCourseName] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
-  // ── Disciplinas ────────────────────────────────────────────────────────────
   const [disciplines, setDisciplines] = useState([]);
   const [discLoading, setDiscLoading] = useState(false);
 
-  // ── Dialog disciplina ──────────────────────────────────────────────────────
   const [discDialog, setDiscDialog] = useState(false);
   const [editingDiscId, setEditingDiscId] = useState(null);
   const [discForm, setDiscForm] = useState(EMPTY_DISC);
@@ -82,7 +79,6 @@ export default function CourseDetail() {
     }
   }, [courseId]);
 
-  // ── Dialog ─────────────────────────────────────────────────────────────────
   const openNew = () => {
     setEditingDiscId(null);
     setDiscForm(EMPTY_DISC);
@@ -136,7 +132,6 @@ export default function CourseDetail() {
       </div>
 
       <TabView>
-        {/* ── Aba: Dados ─────────────────────────────────────────────────── */}
         <TabPanel header="Dados">
           {formError && <Message severity="error" text={formError} className="mb-3 w-full" />}
           <form onSubmit={saveCourse} className="grid">

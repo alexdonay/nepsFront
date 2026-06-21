@@ -70,7 +70,6 @@ function PrivateRoute({ children, permissions = [] }) {
 }
 
 export default function App() {
-  // Permission now derived from token; no need to store separately
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -191,7 +190,7 @@ export default function App() {
       <Route
         path="/courses/"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, permissions.INSTITUICAO_ENSINO]}>
             <Layout>
               <CoursesList />
             </Layout>
@@ -201,7 +200,7 @@ export default function App() {
       <Route
         path="/courses/detail"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <CourseDetail />
             </Layout>
@@ -211,7 +210,7 @@ export default function App() {
       <Route
         path="/courses/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <CoursesForm />
             </Layout>
@@ -221,7 +220,7 @@ export default function App() {
       <Route
         path="/courses/:id"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <CoursesForm />
             </Layout>
@@ -232,7 +231,7 @@ export default function App() {
       <Route
         path="/disciplines"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <DisciplinesList />
             </Layout>
@@ -242,7 +241,7 @@ export default function App() {
       <Route
         path="/disciplines/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <DisciplinesForm />
             </Layout>
@@ -252,7 +251,7 @@ export default function App() {
       <Route
         path="/disciplines/:id"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <DisciplinesForm />
             </Layout>
@@ -263,7 +262,7 @@ export default function App() {
       <Route
         path="/rooms"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsList />
             </Layout>
@@ -274,7 +273,7 @@ export default function App() {
       <Route
         path="/rooms/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsForm />
             </Layout>
@@ -285,7 +284,7 @@ export default function App() {
       <Route
         path="/rooms/:id"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <RoomsForm />
             </Layout>
@@ -296,7 +295,7 @@ export default function App() {
       <Route
         path="/rooms/schedules"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsListSchedulesList />
             </Layout>
@@ -307,7 +306,7 @@ export default function App() {
       <Route
         path="/rooms/history"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <EnrollmentPeriodsHistory />
             </Layout>
@@ -318,7 +317,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsScheduleForm />
             </Layout>
@@ -329,7 +328,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/assignment"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsScheduleAssignment />
             </Layout>
@@ -340,7 +339,7 @@ export default function App() {
       <Route
         path="/rooms/schedules/history"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <EnrollmentPeriodsHistory />
             </Layout>
@@ -351,7 +350,7 @@ export default function App() {
       <Route
         path="/internships"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsList />
             </Layout>
@@ -362,7 +361,7 @@ export default function App() {
       <Route
         path="/internships/new"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN], [PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <InternshipsForm />
             </Layout>
@@ -507,7 +506,7 @@ export default function App() {
       <Route
         path="/periods"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <EnrollmentPeriodsList />
             </Layout>
@@ -517,7 +516,7 @@ export default function App() {
       <Route
         path="/periods/new"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <EnrollmentPeriodsForm />
             </Layout>
@@ -527,7 +526,7 @@ export default function App() {
       <Route
         path="/periods/:id"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN]}>
             <Layout>
               <EnrollmentPeriodsForm />
             </Layout>
@@ -547,7 +546,7 @@ export default function App() {
       <Route
         path="/periods/history"
         element={
-          <PrivateRoute permissions={ALL_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <EnrollmentPeriodsHistory />
             </Layout>
@@ -567,7 +566,7 @@ export default function App() {
       <Route
         path="/students"
         element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <StudentsList />
             </Layout>
@@ -577,7 +576,7 @@ export default function App() {
       <Route
         path="/students/new"
         element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <StudentForm />
             </Layout>
@@ -587,7 +586,7 @@ export default function App() {
       <Route
         path="/students/:id"
         element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <StudentForm />
             </Layout>
@@ -598,7 +597,7 @@ export default function App() {
       <Route
         path="/students/details"
         element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <StudentDetails />
             </Layout>
@@ -609,7 +608,7 @@ export default function App() {
       <Route
         path="/students/history"
         element={
-          <PrivateRoute permissions={MANAGEMENT_PERMISSIONS}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
             <Layout>
               <StudentHistory />
             </Layout>
