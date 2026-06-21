@@ -35,7 +35,7 @@ export function isAuthenticated() {
   return Boolean(localStorage.getItem("token"));
 }
 
-import jwt_decode from "jwt-decode";
+import { jwtDecode as jwt_decode } from "jwt-decode";
 
 export function getCurrentPermission() {
   const token = localStorage.getItem("token");
