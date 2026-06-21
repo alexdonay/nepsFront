@@ -74,7 +74,9 @@ export default function RoomsForm() {
 
       navigate("/rooms");
     } catch (err) {
-      setError(getErrorMessage(err, "Erro ao salvar a sala"));
+      // Exibir mensagem detalhada se disponível
+      const detail = err?.response?.data?.detail || err?.message;
+      setError(detail ? `Erro ao salvar a sala: ${detail}` : getErrorMessage(err, "Erro ao salvar a sala"));
     } finally {
       setLoading(false);
     }
