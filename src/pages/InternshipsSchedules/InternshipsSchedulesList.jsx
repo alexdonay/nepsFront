@@ -77,14 +77,12 @@ export default function ServiceSchedulesList() {
   const [unlinking, setUnlinking] = useState(false);
   const [dialogMsg, setDialogMsg] = useState("");
   const [dialogMsgSev, setDialogMsgSev] = useState("info");
-  const [disciplines, setDisciplines] = useState([]);
   const [institutions, setInstitutions] = useState([]);
 
   // filtros da tabela de alunos disponíveis
   const [filterName, setFilterName] = useState("");
   const [filterCpf, setFilterCpf] = useState("");
   const [filterInstitution, setFilterInstitution] = useState(null);
-  const [filterDiscipline, setFilterDiscipline] = useState(null);
   const searchTimer = useRef(null);
 
   // ── Carrega agenda ─────────────────────────────────────────────────────────
@@ -128,12 +126,10 @@ export default function ServiceSchedulesList() {
       if (filters.name)           studentParams.name           = filters.name;
       if (filters.cpf)            studentParams.cpf            = filters.cpf;
       if (filters.institution_id) studentParams.institution_id = filters.institution_id;
-      if (filters.discipline_id)  studentParams.discipline_id  = filters.discipline_id;
 
-      const [scheduleRes, studentsRes, discRes, instRes] = await Promise.all([
+      const [scheduleRes, studentsRes, instRes] = await Promise.all([
         repository.roomSchedules.get(roomId),
         repository.students.get(studentParams),
-        repository.disciplines.get(),
         repository.institutions.get(),
       ]);
 
@@ -152,9 +148,7 @@ export default function ServiceSchedulesList() {
         setLinkedStudents([]);
       }
 
-      const discList = Array.isArray(discRes.data) ? discRes.data : (discRes.data.items || []);
       const instList = Array.isArray(instRes.data) ? instRes.data : (instRes.data.items || []);
-      setDisciplines(discList);
       setInstitutions(instList);
 
       const allStudents = Array.isArray(studentsRes.data) ? studentsRes.data : (studentsRes.data.items || []);
@@ -176,7 +170,6 @@ export default function ServiceSchedulesList() {
     setFilterName("");
     setFilterCpf("");
     setFilterInstitution(null);
-    setFilterDiscipline(null);
     setStudentsFirst(0);
     setDialogVisible(true);
     loadDialogData(day, period, 0, {});
@@ -186,7 +179,6 @@ export default function ServiceSchedulesList() {
     name: filterName || undefined,
     cpf: filterCpf || undefined,
     institution_id: filterInstitution || undefined,
-    discipline_id: filterDiscipline || undefined,
   }), [filterName, filterCpf, filterInstitution, filterDiscipline]);
 
   const triggerSearch = (overrides = {}) => {
@@ -275,7 +267,6 @@ export default function ServiceSchedulesList() {
     });
   }, [schedule]);
 
-  const disciplineLabel = (id) => disciplines.find((d) => d.id === id)?.name || "-";
   const institutionLabel = (id) => institutions.find((i) => i.id === id)?.name || "-";
 
   return (
@@ -429,16 +420,6 @@ export default function ServiceSchedulesList() {
                       showClear
                     />
                   </div>
-                  <div className="col-12 md:col-6">
-                    <Dropdown
-                      value={filterDiscipline}
-                      options={disciplines.map((d) => ({ label: d.name, value: d.id }))}
-                      onChange={(e) => { setFilterDiscipline(e.value); triggerSearch({ discipline_id: e.value }); }}
-                      placeholder="Disciplina"
-                      className="w-full"
-                      showClear
-                    />
-                  </div>
                 </div>
 
                 <DataTable
@@ -474,7 +455,6 @@ export default function ServiceSchedulesList() {
                       </div>
                     )}
                   />
-                  <Column header="Disciplina" body={(r) => disciplineLabel(r.discipline_id)} />
                   {!isInternship && <Column header="Instituição" body={(r) => institutionLabel(r.institution_id)} />}
                   <Column field="semester" header="Semestre" style={{ width: "6rem" }} />
                 </DataTable>
