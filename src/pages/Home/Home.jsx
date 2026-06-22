@@ -170,15 +170,17 @@ export default function Home() {
         total_rooms: totalRooms,
       });
 
-      const periodsRes = await repository.periods.get();
-      const periods = periodsRes.data?.items || periodsRes.data || [];
-      const today = new Date();
-      const current = periods.find((p) => {
-        const start = new Date(p.start_date);
-        const end = new Date(p.end_date);
-        return start <= today && end >= today;
-      });
-      setCurrentPeriod(current || null);
+      if (!isInternship) {
+        const periodsRes = await repository.periods.get();
+        const periods = periodsRes.data?.items || periodsRes.data || [];
+        const today = new Date();
+        const current = periods.find((p) => {
+          const start = new Date(p.start_date);
+          const end = new Date(p.end_date);
+          return start <= today && end >= today;
+        });
+        setCurrentPeriod(current || null);
+      }
     } catch (_) {}
 
     // Gráfico: vagas por região
