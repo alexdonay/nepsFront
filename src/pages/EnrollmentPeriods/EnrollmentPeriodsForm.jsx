@@ -1,5 +1,6 @@
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,40 +14,44 @@ export default function EnrollmentPeriodsForm() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: "",
-    priority_start_date: null,
-    priority_end_date: null,
-    start_date: null,
-    end_date: null,
-  });
+  const [name, setName] = useState("");
+  const [priorityRange, setPriorityRange] = useState([null, null]);
+  const [generalRange, setGeneralRange] = useState([null, null]);
 
   const isEdit = !!id;
 
-  useEffect(() => {
-    if (isEdit) {
-      loadPeriod();
-    }
-  }, [id]);
-
   const parseDate = (dateStr) => {
     if (!dateStr) return null;
-    const [datePart] = dateStr.split('T');
-    const [y, m, d] = datePart.split('-').map(Number);
+    const [datePart] = dateStr.split("T");
+    const [y, m, d] = datePart.split("-").map(Number);
     return new Date(y, m - 1, d);
   };
+
+  const toLocalDate = (date) => {
+    if (!date) return null;
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  useEffect(() => {
+    if (isEdit) loadPeriod();
+  }, [id]);
 
   const loadPeriod = async () => {
     try {
       setLoading(true);
       const { data } = await repository.periods.getById(id);
-      setForm({
-        name: data.name || "",
-        priority_start_date: parseDate(data.priority_start_date),
-        priority_end_date: parseDate(data.priority_end_date),
-        start_date: parseDate(data.start_date),
-        end_date: parseDate(data.end_date),
-      });
+      setName(data.name || "");
+      setPriorityRange([
+        parseDate(data.priority_start_date),
+        parseDate(data.priority_end_date),
+      ]);
+      setGeneralRange([
+        parseDate(data.start_date),
+        parseDate(data.end_date),
+      ]);
     } catch (err) {
       setError(getErrorMessage(err, "Erro ao carregar período"));
     } finally {
@@ -56,7 +61,7 @@ export default function EnrollmentPeriodsForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name) {
+    if (!name.trim()) {
       setError("Nome é obrigatório");
       return;
     }
@@ -64,29 +69,13 @@ export default function EnrollmentPeriodsForm() {
     try {
       setLoading(true);
       setError("");
-      const payload = {
-        name: form.name,
-      };
 
-      const toLocalDate = (date) => {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      };
+      const payload = { name: name.trim() };
 
-      if (form.priority_start_date) {
-        payload.priority_start_date = toLocalDate(form.priority_start_date);
-      }
-      if (form.priority_end_date) {
-        payload.priority_end_date = toLocalDate(form.priority_end_date);
-      }
-      if (form.start_date) {
-        payload.start_date = toLocalDate(form.start_date);
-      }
-      if (form.end_date) {
-        payload.end_date = toLocalDate(form.end_date);
-      }
+      if (priorityRange[0]) payload.priority_start_date = toLocalDate(priorityRange[0]);
+      if (priorityRange[1]) payload.priority_end_date   = toLocalDate(priorityRange[1]);
+      if (generalRange[0])  payload.start_date          = toLocalDate(generalRange[0]);
+      if (generalRange[1])  payload.end_date             = toLocalDate(generalRange[1]);
 
       if (isEdit) {
         await repository.periods.patch(id, payload);
@@ -108,23 +97,15 @@ export default function EnrollmentPeriodsForm() {
         {isEdit ? "Editar Período de Inscrição" : "Novo Período de Inscrição"}
       </h2>
 
-      {error && (
-        <div className="p-3 mb-4 bg-red-100 text-red-700 border-round">
-          {error}
-        </div>
-      )}
+      {error && <Message severity="error" text={error} className="mb-4 w-full" />}
 
       <form onSubmit={handleSubmit}>
         <div className="field mb-4">
           <label className="block text-900 font-medium mb-2">Nome *</label>
-          <input
-            type="text"
-            value={form.name || ""}
-            onChange={(e) => {
-              setForm({ ...form, name: e.target.value });
-              setError("");
-            }}
-            className="w-full p-2 border-1 surface-border border-round"
+          <InputText
+            value={name}
+            onChange={(e) => { setName(e.target.value); setError(""); }}
+            className="w-full"
             placeholder="Digite o nome do período"
             disabled={loading}
             required
@@ -132,50 +113,40 @@ export default function EnrollmentPeriodsForm() {
         </div>
 
         <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">Data Início Entidades Prioritárias</label>
+          <label className="block text-900 font-medium mb-2">
+            Período Prioritário (início — fim)
+          </label>
           <Calendar
-            value={form.priority_start_date}
-            onChange={(e) => setForm({ ...form, priority_start_date: e.value })}
+            value={priorityRange}
+            onChange={(e) => setPriorityRange(e.value ?? [null, null])}
+            selectionMode="range"
             dateFormat="dd/mm/yy"
             className="w-full"
+            inputClassName="w-full"
             disabled={loading}
             showIcon
+            showButtonBar
+            placeholder="DD/MM/AAAA — DD/MM/AAAA"
+            numberOfMonths={2}
           />
         </div>
 
         <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">Data Fim Entidades Prioritárias</label>
+          <label className="block text-900 font-medium mb-2">
+            Período Geral (início — fim)
+          </label>
           <Calendar
-            value={form.priority_end_date}
-            onChange={(e) => setForm({ ...form, priority_end_date: e.value })}
+            value={generalRange}
+            onChange={(e) => setGeneralRange(e.value ?? [null, null])}
+            selectionMode="range"
             dateFormat="dd/mm/yy"
             className="w-full"
+            inputClassName="w-full"
             disabled={loading}
             showIcon
-          />
-        </div>
-
-        <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">Data Início Demais Entidades</label>
-          <Calendar
-            value={form.start_date}
-            onChange={(e) => setForm({ ...form, start_date: e.value })}
-            dateFormat="dd/mm/yy"
-            className="w-full"
-            disabled={loading}
-            showIcon
-          />
-        </div>
-
-        <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">Data Fim Demais Entidades</label>
-          <Calendar
-            value={form.end_date}
-            onChange={(e) => setForm({ ...form, end_date: e.value })}
-            dateFormat="dd/mm/yy"
-            className="w-full"
-            disabled={loading}
-            showIcon
+            showButtonBar
+            placeholder="DD/MM/AAAA — DD/MM/AAAA"
+            numberOfMonths={2}
           />
         </div>
 
