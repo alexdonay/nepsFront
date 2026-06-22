@@ -18,12 +18,16 @@ import {
 import { repository } from "../../services/repository";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getCurrentPermission, getCurrentInstitutionId } from "../../utils/auth";
+import { PERMISSIONS } from "../../constants/permissions";
 
 export default function StudentForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.student, {});
   const { id } = routeContext;
   const [searchParams] = useSearchParams();
   const periodId = searchParams.get("periodId");
+  const isInstitution = getCurrentPermission() === PERMISSIONS.INSTITUICAO_ENSINO;
+  const ownInstitutionId = isInstitution ? getCurrentInstitutionId() : null;
   const [form, setForm] = useState({
     name: "",
     cpf: "",
@@ -32,7 +36,7 @@ export default function StudentForm() {
     course_id: null,
     discipline_id: null,
     semester: null,
-    institution_id: null,
+    institution_id: ownInstitutionId,
     institution_document_url: "",
     internship_start_date: "",
     internship_expected_end_date: "",
@@ -54,7 +58,11 @@ export default function StudentForm() {
   const [disciplines, setDisciplines] = useState([]);
 
   useEffect(() => {
-    repository.institutions.get({ per_page: 200 })
+    if (isInstitution) {
+      if (ownInstitutionId) loadCourses(ownInstitutionId);
+      return;
+    }
+    repository.institutions.get({ per_page: 100 })
       .then(({ data }) => {
         const items = data?.items || data || [];
         setInstitutions(items.map((i) => ({ label: i.name, value: i.id })));
@@ -307,13 +315,15 @@ export default function StudentForm() {
           existingUrl={id ? form.institution_document_url : null}
         />
 
-        <PdfUpload
-          label="PDF assinado pelo diretor"
-          value={directorSignedPdfFile}
-          onChange={(file) => { setDirectorSignedPdfFile(file); directorSignedPdfFileRef.current = file; }}
-          existingUrl={id ? directorSignedPdfUrl : null}
-          hint="PDF opcional, máximo 5MB"
-        />
+        {!isInstitution && (
+          <PdfUpload
+            label="PDF assinado pelo diretor"
+            value={directorSignedPdfFile}
+            onChange={(file) => { setDirectorSignedPdfFile(file); directorSignedPdfFileRef.current = file; }}
+            existingUrl={id ? directorSignedPdfUrl : null}
+            hint="PDF opcional, máximo 5MB"
+          />
+        )}
 
         {!id && (
           <div className="grid mb-3">
@@ -349,21 +359,23 @@ export default function StudentForm() {
           </div>
         )}
 
-        <div className="field mb-3">
-          <label>Instituição *</label>
-          <Dropdown
-            value={form.institution_id}
-            options={institutions}
-            onChange={(e) => {
-              setForm({ ...form, institution_id: e.value, course_id: null, discipline_id: null });
-              loadCourses(e.value);
-            }}
-            placeholder="Selecione uma instituição"
-            className="w-full"
-            filter
-            required
-          />
-        </div>
+        {!isInstitution && (
+          <div className="field mb-3">
+            <label>Instituição *</label>
+            <Dropdown
+              value={form.institution_id}
+              options={institutions}
+              onChange={(e) => {
+                setForm({ ...form, institution_id: e.value, course_id: null, discipline_id: null });
+                loadCourses(e.value);
+              }}
+              placeholder="Selecione uma instituição"
+              className="w-full"
+              filter
+              required
+            />
+          </div>
+        )}
 
         <div className="field mb-3">
           <label>Curso *</label>

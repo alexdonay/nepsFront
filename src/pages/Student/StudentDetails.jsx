@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { openPdf } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getCurrentPermission } from "../../utils/auth";
+import { PERMISSIONS } from "../../constants/permissions";
 
 const FIELD_SECTIONS = [
   {
@@ -82,6 +84,7 @@ export default function StudentDetails() {
     [student],
   );
 
+  const isInstitution = getCurrentPermission() === PERMISSIONS.INSTITUICAO_ENSINO;
   const documentUrl = student?.document_url || student?.institution_document_url || "";
   const directorSignedPdfUrl = student?.director_signed_pdf || "";
 
@@ -219,20 +222,22 @@ export default function StudentDetails() {
                 )}
               </div>
 
-              <div className="mb-3">
-                <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
-                {directorSignedPdfUrl ? (
-                  <Button
-                    label="Abrir PDF assinado"
-                    icon="pi pi-file-pdf"
-                    size="small"
-                    outlined
-                    onClick={() => openPdf(directorSignedPdfUrl)}
-                  />
-                ) : (
-                  <strong>-</strong>
-                )}
-              </div>
+              {!isInstitution && (
+                <div className="mb-3">
+                  <small className="text-600 block mb-1">PDF assinado pelo diretor</small>
+                  {directorSignedPdfUrl ? (
+                    <Button
+                      label="Abrir PDF assinado"
+                      icon="pi pi-file-pdf"
+                      size="small"
+                      outlined
+                      onClick={() => openPdf(directorSignedPdfUrl)}
+                    />
+                  ) : (
+                    <strong>-</strong>
+                  )}
+                </div>
+              )}
 
               <div>
                 <small className="text-600 block mb-1">ID do aluno</small>
