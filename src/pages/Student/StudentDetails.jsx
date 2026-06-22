@@ -55,7 +55,7 @@ export default function StudentDetails() {
       try {
         setLoading(true);
         setError("");
-        const { data } = await repository.students.getById(id, { include: "discipline,institution,internship" });
+        const { data } = await repository.students.getById(id, { include: "course,discipline,institution,internship" });
         setStudent(data || null);
       } catch (e) {
         console.error("Erro ao carregar detalhes do aluno:", e);

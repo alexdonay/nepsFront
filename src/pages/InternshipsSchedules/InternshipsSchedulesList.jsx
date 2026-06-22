@@ -59,6 +59,7 @@ export default function ServiceSchedulesList() {
   const [room, setRoom] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activePeriodId, setActivePeriodId] = useState(null);
 
   // ── Dialog de vínculo ──────────────────────────────────────────────────────
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -84,6 +85,22 @@ export default function ServiceSchedulesList() {
   const [filterCpf, setFilterCpf] = useState("");
   const [filterInstitution, setFilterInstitution] = useState(null);
   const searchTimer = useRef(null);
+
+  // ── Carrega período ativo ──────────────────────────────────────────────────
+  useEffect(() => {
+    repository.periods.get({ is_active: "1", per_page: 10 })
+      .then(({ data }) => {
+        const items = data?.items || data || [];
+        const today = new Date();
+        const active = items.find((p) => {
+          const start = new Date(p.start_date);
+          const end = new Date(p.end_date);
+          return start <= today && end >= today;
+        });
+        setActivePeriodId(active?.id || items[0]?.id || null);
+      })
+      .catch(() => setActivePeriodId(null));
+  }, []);
 
   // ── Carrega agenda ─────────────────────────────────────────────────────────
   const loadData = useCallback(async () => {
@@ -207,8 +224,6 @@ export default function ServiceSchedulesList() {
   const roomCapacity = Number(room?.room_capacity ?? room?.capacity ?? 0);
   const linkedCount = (currentPeriodData.studentIds || []).length;
   const remaining = roomCapacity > 0 ? Math.max(roomCapacity - linkedCount, 0) : Infinity;
-  const currentPeriodId = currentPeriodData?.id || currentPeriodData?.period_id;
-
   const handleLink = async () => {
     if (!selectedStudents.length) return;
     if (selectedStudents.length > remaining) {
@@ -218,17 +233,19 @@ export default function ServiceSchedulesList() {
     }
     try {
       setSaving(true);
-      if (!currentPeriodId) throw new Error("period_id indisponível");
+      if (!activePeriodId) throw new Error("Nenhum período de inscrição ativo encontrado.");
       for (const student of selectedStudents) {
-        await repository.roomSchedules.addStudent(roomId, selectedDay, selectedPeriod, currentPeriodId, student.id);
+        await repository.roomSchedules.addStudent(roomId, selectedDay, selectedPeriod, activePeriodId, student.id);
       }
       setDialogMsgSev("success");
       setDialogMsg("Alunos vinculados com sucesso.");
       setSelectedStudents([]);
       await loadDialogData(selectedDay, selectedPeriod, studentsFirst);
-    } catch {
+    } catch (e) {
+      console.error("Erro ao vincular aluno:", e);
+      const detail = e?.response?.data?.detail || e?.message || "Não foi possível vincular os alunos.";
       setDialogMsgSev("error");
-      setDialogMsg("Não foi possível vincular os alunos.");
+      setDialogMsg(detail);
     } finally {
       setSaving(false);
     }
@@ -237,14 +254,16 @@ export default function ServiceSchedulesList() {
   const handleUnlink = async (studentId) => {
     try {
       setUnlinking(true);
-      if (!currentPeriodId) throw new Error("period_id indisponível");
-      await repository.roomSchedules.removeStudent(roomId, selectedDay, selectedPeriod, currentPeriodId, studentId);
+      if (!activePeriodId) throw new Error("Nenhum período de inscrição ativo encontrado.");
+      await repository.roomSchedules.removeStudent(roomId, selectedDay, selectedPeriod, activePeriodId, studentId);
       setDialogMsgSev("success");
       setDialogMsg("Aluno desvinculado.");
       await loadDialogData(selectedDay, selectedPeriod, studentsFirst);
-    } catch {
+    } catch (e) {
+      console.error("Erro ao desvincular aluno:", e);
+      const detail = e?.response?.data?.detail || e?.message || "Não foi possível desvincular.";
       setDialogMsgSev("error");
-      setDialogMsg("Não foi possível desvincular.");
+      setDialogMsg(detail);
     } finally {
       setUnlinking(false);
     }

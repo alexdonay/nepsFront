@@ -1,7 +1,6 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
@@ -145,44 +144,13 @@ export default function CoursesForm() {
         )}
 
         {!isEdit && (
-          <>
-            <div className="field col-12 md:col-6">
-              <label className="block text-900 font-medium mb-2">Área</label>
-              <InputText
-                value={form.area}
-                onChange={(e) => setForm({ ...form, area: e.target.value })}
-                className="w-full"
-              />
-            </div>
-
-            <div className="field col-12 md:col-6">
-              <label className="block text-900 font-medium mb-2">Carga Horária</label>
-              <InputNumber
-                value={form.workload}
-                onValueChange={(e) => setForm({ ...form, workload: e.value ?? null })}
-                className="w-full"
-                min={1}
-              />
-            </div>
-
-            <div className="field col-12 md:col-6">
-              <label className="block text-900 font-medium mb-2">Semestres</label>
-              <InputNumber
-                value={form.semester}
-                onValueChange={(e) => setForm({ ...form, semester: e.value ?? null })}
-                className="w-full"
-                min={1}
-              />
-            </div>
-
-            <div className="field col-12 md:col-6 flex align-items-center gap-2 pt-4">
-              <Checkbox
-                checked={form.is_active}
-                onChange={(e) => setForm({ ...form, is_active: !!e.checked })}
-              />
-              <label className="mb-0">Ativo</label>
-            </div>
-          </>
+          <div className="field col-12 md:col-6 flex align-items-center gap-2 pt-4">
+            <Checkbox
+              checked={form.is_active}
+              onChange={(e) => setForm({ ...form, is_active: !!e.checked })}
+            />
+            <label className="mb-0">Ativo</label>
+          </div>
         )}
 
         <div className="col-12 flex justify-content-end gap-2 mt-3">
