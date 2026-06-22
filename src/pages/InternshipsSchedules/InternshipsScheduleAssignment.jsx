@@ -12,8 +12,6 @@ import {
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
-import { getCurrentPermission } from "../../utils/auth";
-import PERMISSIONS from "../../constants/permissions";
 
 const DAY_LABELS = {
   MONDAY: "Segunda-feira",
@@ -45,7 +43,6 @@ const STUDENT_FILTERS = [
     type: "text",
     placeholder: "Buscar por email...",
   },
-  { label: "Disciplina", key: "discipline_id", type: "dropdown", options: [] },
   {
     label: "Instituição",
     key: "institution_id",
@@ -74,7 +71,6 @@ export default function ServiceScheduleAssignment() {
   const [room, setRoom] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [students, setStudents] = useState([]);
-  const [disciplines, setDisciplines] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -96,23 +92,13 @@ export default function ServiceScheduleAssignment() {
 
   const loadReferenceData = useCallback(async () => {
     try {
-      const [disciplinesRes, institutionsRes] = await Promise.all([
-        repository.disciplines.get(),
-        repository.institutions.get(),
-      ]);
-
-      const disciplinesList = Array.isArray(disciplinesRes.data)
-        ? disciplinesRes.data
-        : disciplinesRes.data.items || [];
+      const institutionsRes = await repository.institutions.get();
       const institutionsList = Array.isArray(institutionsRes.data)
         ? institutionsRes.data
         : institutionsRes.data.items || [];
 
-      setDisciplines(disciplinesList);
       setInstitutions(institutionsList);
 
-      STUDENT_FILTERS.find((filter) => filter.key === "discipline_id").options =
-        disciplinesList.map((discipline) => ({ label: discipline.name, value: discipline.id }));
       STUDENT_FILTERS.find(
         (filter) => filter.key === "institution_id",
       ).options = institutionsList.map((institution) => ({
@@ -121,7 +107,6 @@ export default function ServiceScheduleAssignment() {
       }));
     } catch (e) {
       console.error("Erro ao carregar referências:", e);
-      setDisciplines([]);
       setInstitutions([]);
     }
   }, []);
@@ -240,11 +225,6 @@ export default function ServiceScheduleAssignment() {
       <div className="slot-subtext">CPF: {rowData.cpf || "-"}</div>
     </div>
   );
-
-  const disciplineTemplate = (rowData) => {
-    const discipline = disciplines.find((item) => item.id === rowData.discipline_id);
-    return discipline ? discipline.name : "-";
-  };
 
   const institutionTemplate = (rowData) => {
     const institution = institutions.find(
@@ -421,7 +401,6 @@ export default function ServiceScheduleAssignment() {
                 sortable
               />
               <Column field="cpf" header="CPF" />
-              <Column header="Disciplina" body={disciplineTemplate} />
               <Column header="Instituição" body={institutionTemplate} />
               <Column field="semester" header="Semestre" />
             </DataTable>

@@ -566,7 +566,7 @@ export default function App() {
       <Route
         path="/students"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <StudentsList />
             </Layout>
@@ -597,7 +597,7 @@ export default function App() {
       <Route
         path="/students/details"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <StudentDetails />
             </Layout>
@@ -608,7 +608,7 @@ export default function App() {
       <Route
         path="/students/history"
         element={
-          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO]}>
+          <PrivateRoute permissions={[PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.CAMPO_ESTAGIO]}>
             <Layout>
               <StudentHistory />
             </Layout>
