@@ -1,43 +1,111 @@
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
+import { InputMask } from "primereact/inputmask";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
-import { useEffect, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+
+function parseMasked(str) {
+  if (!str || str.includes("_")) return null;
+  const [d, m, y] = str.split("/").map(Number);
+  if (!d || !m || !y || y < 1900) return null;
+  const date = new Date(y, m - 1, d);
+  if (isNaN(date.getTime())) return null;
+  return date;
+}
+
+function toDisplay(date) {
+  if (!date) return "";
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+function MaskedDateInput({ value, onChange, placeholder, disabled, minDate, maxDate }) {
+  const calRef = useRef(null);
+  const [text, setText] = useState(toDisplay(value));
+
+  useEffect(() => {
+    setText(toDisplay(value));
+  }, [value]);
+
+  const handleMaskComplete = (e) => {
+    const parsed = parseMasked(e.value);
+    if (parsed) onChange(parsed);
+  };
+
+  const handleMaskChange = (e) => {
+    setText(e.value);
+    const parsed = parseMasked(e.value);
+    if (parsed) onChange(parsed);
+    else if (!e.value || e.value.replace(/_/g, "").replace(/\//g, "").length === 0) onChange(null);
+  };
+
+  const handleCalendarChange = (e) => {
+    if (e.value) {
+      onChange(e.value);
+      setText(toDisplay(e.value));
+      calRef.current?.hide();
+    }
+  };
+
+  return (
+    <div className="p-inputgroup flex-1">
+      <InputMask
+        mask="99/99/9999"
+        value={text}
+        onChange={handleMaskChange}
+        onComplete={handleMaskComplete}
+        placeholder={placeholder || "dd/mm/aaaa"}
+        disabled={disabled}
+        className="w-full"
+        slotChar="_"
+      />
+      <Button
+        icon="pi pi-calendar"
+        type="button"
+        className="p-button-outlined"
+        disabled={disabled}
+        onClick={() => calRef.current?.show()}
+      />
+      <Calendar
+        ref={calRef}
+        value={value}
+        onChange={handleCalendarChange}
+        dateFormat="dd/mm/yy"
+        inline={false}
+        minDate={minDate}
+        maxDate={maxDate}
+        style={{ display: "none" }}
+        appendTo="self"
+      />
+    </div>
+  );
+}
 
 function DateRangeField({ label, startValue, endValue, onStartChange, onEndChange, disabled }) {
   return (
     <div className="field mb-4">
       <label className="block text-900 font-medium mb-2">{label}</label>
       <div className="flex align-items-center gap-2">
-        <Calendar
+        <MaskedDateInput
           value={startValue}
-          onChange={(e) => onStartChange(e.value)}
-          dateFormat="dd/mm/yy"
-          placeholder="Início"
-          className="flex-1"
-          inputClassName="w-full"
+          onChange={onStartChange}
+          placeholder="Início dd/mm/aaaa"
           disabled={disabled}
-          showIcon
-          showButtonBar
-          showOnFocus
           maxDate={endValue || undefined}
         />
-        <span className="text-500 font-medium">→</span>
-        <Calendar
+        <span className="text-500 font-medium px-1">→</span>
+        <MaskedDateInput
           value={endValue}
-          onChange={(e) => onEndChange(e.value)}
-          dateFormat="dd/mm/yy"
-          placeholder="Fim"
-          className="flex-1"
-          inputClassName="w-full"
+          onChange={onEndChange}
+          placeholder="Fim dd/mm/aaaa"
           disabled={disabled}
-          showIcon
-          showButtonBar
-          showOnFocus
           minDate={startValue || undefined}
         />
       </div>
@@ -106,7 +174,6 @@ export default function EnrollmentPeriodsForm() {
       setError("Nome é obrigatório");
       return;
     }
-
     try {
       setLoading(true);
       setError("");
