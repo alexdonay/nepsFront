@@ -159,7 +159,7 @@ export default function RoomsList() {
   );
 
   const serviceTemplate = (rowData) => {
-    const service = internships.find((item) => item.value === rowData.internships_id);
+    const service = internships.find((item) => item.value === rowData.internship_id);
     return service ? service.label : "-";
   };
 
