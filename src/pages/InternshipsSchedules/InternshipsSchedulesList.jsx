@@ -179,7 +179,7 @@ export default function ServiceSchedulesList() {
     name: filterName || undefined,
     cpf: filterCpf || undefined,
     institution_id: filterInstitution || undefined,
-  }), [filterName, filterCpf, filterInstitution, filterDiscipline]);
+  }), [filterName, filterCpf, filterInstitution]);
 
   const triggerSearch = (overrides = {}) => {
     clearTimeout(searchTimer.current);
