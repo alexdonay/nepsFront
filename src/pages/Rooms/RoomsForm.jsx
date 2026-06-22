@@ -1,15 +1,17 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
+import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PERMISSIONS } from "../../constants/permissions";
 import { repository } from "../../services/repository";
 import api from "../../services/api";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
-import { getCurrentUser } from "../../utils/auth";
+import { getCurrentPermission, getCurrentUser } from "../../utils/auth";
 
 export default function RoomsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.room, {});
@@ -18,6 +20,7 @@ export default function RoomsForm() {
   const navigate = useNavigate();
 
   const user = getCurrentUser();
+  const isAdmin = getCurrentPermission() === PERMISSIONS.ADMIN;
   const defaultInternshipId = user?.internship_id || user?.education_institute_id || null;
 
   const [form, setForm] = useState({
@@ -27,10 +30,17 @@ export default function RoomsForm() {
     has_gurney: false,
     is_active: true,
   });
+  const [internships, setInternships] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (isAdmin) {
+      repository.internships.get({ per_page: 500 }).then(({ data }) => {
+        const items = data?.items || data || [];
+        setInternships(items);
+      }).catch(() => {});
+    }
     if (isEdit) loadRoom();
   }, [id]);
 
@@ -109,7 +119,20 @@ export default function RoomsForm() {
           />
         </div>
 
-        {/* Campo de Estágio não exibido para usuários de campo de estágio; valor preenchido automaticamente */}
+        {isAdmin && (
+          <div className="field col-12 md:col-6">
+            <label className="block text-900 font-medium mb-2">Campo de Estágio *</label>
+            <Dropdown
+              value={form.internships_id}
+              options={internships.map((i) => ({ label: i.name, value: i.id }))}
+              onChange={(e) => setForm({ ...form, internships_id: e.value })}
+              placeholder="Selecione um campo de estágio"
+              className="w-full"
+              filter
+              required
+            />
+          </div>
+        )}
 
         <div className="field col-12 md:col-6">
           <label className="block text-900 font-medium mb-2">
