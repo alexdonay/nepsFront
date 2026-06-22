@@ -49,7 +49,7 @@ export default function RoomsForm() {
       const { data } = await repository.rooms.getById(id);
       setForm({
         name: data.name || "",
-        internships_id: data.internships_id || defaultInternshipId,
+        internships_id: data.internship_id || defaultInternshipId,
         room_capacity: data.room_capacity ?? null,
         has_gurney: data.has_gurney ?? false,
         is_active: data.is_active ?? true,
