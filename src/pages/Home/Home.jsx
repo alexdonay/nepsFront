@@ -348,7 +348,7 @@ export default function Home() {
       color: "#f59e0b",
       path: "/periods",
       key: "total_periods",
-      roles: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
+      roles: [PERMISSIONS.ADMIN],
     },
     {
       label: "Instituições",
@@ -392,7 +392,7 @@ export default function Home() {
         </div>
       )}
 
-      {(isAdmin || isInstitution) && (
+      {isAdmin && (
         <div className="flex gap-2 mb-4">
           <Button
             label="Abrir Período"
@@ -405,6 +405,16 @@ export default function Home() {
             icon="pi pi-cog"
             className="p-button-outlined"
             onClick={() => navigate("/periods/manage")}
+          />
+        </div>
+      )}
+      {isInstitution && (
+        <div className="flex gap-2 mb-4">
+          <Button
+            label="Períodos"
+            icon="pi pi-calendar"
+            className="p-button-outlined"
+            onClick={() => navigate("/periods")}
           />
         </div>
       )}

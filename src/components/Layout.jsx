@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { Link, useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../constants/permissions";
 import { logout } from "../services/auth";
-import { hasPermission, getCurrentPermission } from "../utils/auth";
+import { getCurrentPermission, hasPermission } from "../utils/auth";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -13,7 +13,11 @@ export default function Layout({ children }) {
       label: "Início",
       icon: "pi pi-home",
       path: "/",
-      permissions: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO, PERMISSIONS.INSTITUICAO_ENSINO],
+      permissions: [
+        PERMISSIONS.ADMIN,
+        PERMISSIONS.CAMPO_ESTAGIO,
+        PERMISSIONS.INSTITUICAO_ENSINO,
+      ],
     },
 
     // INSTITUICAO_ENSINO
@@ -21,9 +25,9 @@ export default function Layout({ children }) {
       label: "Períodos",
       icon: "pi pi-calendar",
       path: "/periods",
-      permissions: [PERMISSIONS.INSTITUICAO_ENSINO, PERMISSIONS.ADMIN],
+      permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
     },
-      // ADMIN — Cadastros
+    // ADMIN — Cadastros
     {
       label: "Cadastros",
       icon: "pi pi-building",
@@ -76,7 +80,7 @@ export default function Layout({ children }) {
           label: "Períodos",
           icon: "pi pi-calendar",
           path: "/periods",
-          permissions: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
+          permissions: [PERMISSIONS.ADMIN],
         },
         {
           label: "Alunos",
