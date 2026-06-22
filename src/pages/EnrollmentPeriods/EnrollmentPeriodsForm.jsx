@@ -8,15 +8,56 @@ import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 import { getErrorMessage } from "../../utils/errorHandler";
 
+function DateRangeField({ label, startValue, endValue, onStartChange, onEndChange, disabled }) {
+  return (
+    <div className="field mb-4">
+      <label className="block text-900 font-medium mb-2">{label}</label>
+      <div className="flex align-items-center gap-2">
+        <Calendar
+          value={startValue}
+          onChange={(e) => onStartChange(e.value)}
+          dateFormat="dd/mm/yy"
+          placeholder="Início"
+          className="flex-1"
+          inputClassName="w-full"
+          disabled={disabled}
+          showIcon
+          showButtonBar
+          showOnFocus
+          maxDate={endValue || undefined}
+        />
+        <span className="text-500 font-medium">→</span>
+        <Calendar
+          value={endValue}
+          onChange={(e) => onEndChange(e.value)}
+          dateFormat="dd/mm/yy"
+          placeholder="Fim"
+          className="flex-1"
+          inputClassName="w-full"
+          disabled={disabled}
+          showIcon
+          showButtonBar
+          showOnFocus
+          minDate={startValue || undefined}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function EnrollmentPeriodsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
   const { id } = routeContext;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [name, setName] = useState("");
-  const [priorityRange, setPriorityRange] = useState([null, null]);
-  const [generalRange, setGeneralRange] = useState([null, null]);
+  const [form, setForm] = useState({
+    name: "",
+    priority_start_date: null,
+    priority_end_date: null,
+    start_date: null,
+    end_date: null,
+  });
 
   const isEdit = !!id;
 
@@ -43,15 +84,13 @@ export default function EnrollmentPeriodsForm() {
     try {
       setLoading(true);
       const { data } = await repository.periods.getById(id);
-      setName(data.name || "");
-      setPriorityRange([
-        parseDate(data.priority_start_date),
-        parseDate(data.priority_end_date),
-      ]);
-      setGeneralRange([
-        parseDate(data.start_date),
-        parseDate(data.end_date),
-      ]);
+      setForm({
+        name: data.name || "",
+        priority_start_date: parseDate(data.priority_start_date),
+        priority_end_date: parseDate(data.priority_end_date),
+        start_date: parseDate(data.start_date),
+        end_date: parseDate(data.end_date),
+      });
     } catch (err) {
       setError(getErrorMessage(err, "Erro ao carregar período"));
     } finally {
@@ -59,9 +98,11 @@ export default function EnrollmentPeriodsForm() {
     }
   };
 
+  const patch = (field) => (value) => setForm((prev) => ({ ...prev, [field]: value }));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
+    if (!form.name.trim()) {
       setError("Nome é obrigatório");
       return;
     }
@@ -70,12 +111,11 @@ export default function EnrollmentPeriodsForm() {
       setLoading(true);
       setError("");
 
-      const payload = { name: name.trim() };
-
-      if (priorityRange[0]) payload.priority_start_date = toLocalDate(priorityRange[0]);
-      if (priorityRange[1]) payload.priority_end_date   = toLocalDate(priorityRange[1]);
-      if (generalRange[0])  payload.start_date          = toLocalDate(generalRange[0]);
-      if (generalRange[1])  payload.end_date             = toLocalDate(generalRange[1]);
+      const payload = { name: form.name.trim() };
+      if (form.priority_start_date) payload.priority_start_date = toLocalDate(form.priority_start_date);
+      if (form.priority_end_date)   payload.priority_end_date   = toLocalDate(form.priority_end_date);
+      if (form.start_date)          payload.start_date          = toLocalDate(form.start_date);
+      if (form.end_date)            payload.end_date             = toLocalDate(form.end_date);
 
       if (isEdit) {
         await repository.periods.patch(id, payload);
@@ -103,8 +143,8 @@ export default function EnrollmentPeriodsForm() {
         <div className="field mb-4">
           <label className="block text-900 font-medium mb-2">Nome *</label>
           <InputText
-            value={name}
-            onChange={(e) => { setName(e.target.value); setError(""); }}
+            value={form.name}
+            onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); setError(""); }}
             className="w-full"
             placeholder="Digite o nome do período"
             disabled={loading}
@@ -112,60 +152,27 @@ export default function EnrollmentPeriodsForm() {
           />
         </div>
 
-        <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">
-            Período Prioritário (início — fim)
-          </label>
-          <Calendar
-            value={priorityRange}
-            onChange={(e) => setPriorityRange(e.value ?? [null, null])}
-            selectionMode="range"
-            dateFormat="dd/mm/yy"
-            className="w-full"
-            inputClassName="w-full"
-            disabled={loading}
-            showIcon
-            showButtonBar
-            placeholder="DD/MM/AAAA — DD/MM/AAAA"
-            numberOfMonths={2}
-          />
-        </div>
+        <DateRangeField
+          label="Período Prioritário"
+          startValue={form.priority_start_date}
+          endValue={form.priority_end_date}
+          onStartChange={patch("priority_start_date")}
+          onEndChange={patch("priority_end_date")}
+          disabled={loading}
+        />
 
-        <div className="field mb-4">
-          <label className="block text-900 font-medium mb-2">
-            Período Geral (início — fim)
-          </label>
-          <Calendar
-            value={generalRange}
-            onChange={(e) => setGeneralRange(e.value ?? [null, null])}
-            selectionMode="range"
-            dateFormat="dd/mm/yy"
-            className="w-full"
-            inputClassName="w-full"
-            disabled={loading}
-            showIcon
-            showButtonBar
-            placeholder="DD/MM/AAAA — DD/MM/AAAA"
-            numberOfMonths={2}
-          />
-        </div>
+        <DateRangeField
+          label="Período Geral"
+          startValue={form.start_date}
+          endValue={form.end_date}
+          onStartChange={patch("start_date")}
+          onEndChange={patch("end_date")}
+          disabled={loading}
+        />
 
         <div className="flex gap-2">
-          <Button
-            label="Salvar"
-            icon="pi pi-check"
-            type="submit"
-            loading={loading}
-            disabled={loading}
-          />
-          <Button
-            label="Cancelar"
-            icon="pi pi-times"
-            type="button"
-            severity="secondary"
-            onClick={() => navigate("/periods")}
-            disabled={loading}
-          />
+          <Button label="Salvar" icon="pi pi-check" type="submit" loading={loading} disabled={loading} />
+          <Button label="Cancelar" icon="pi pi-times" type="button" severity="secondary" onClick={() => navigate("/periods")} disabled={loading} />
         </div>
       </form>
     </div>
