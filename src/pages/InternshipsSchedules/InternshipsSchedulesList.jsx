@@ -51,6 +51,8 @@ export default function ServiceSchedulesList() {
     {},
   );
   const roomId = roomContext.id;
+  // Detecta se o usuário tem a role "campo de estágio"
+  const isInternship = getCurrentPermission() === PERMISSIONS.CAMPO_ESTAGIO;
 
   const [room, setRoom] = useState(null);
   const [schedule, setSchedule] = useState(null);
