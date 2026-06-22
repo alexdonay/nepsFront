@@ -12,6 +12,8 @@ import {
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
+import { getCurrentPermission } from "../../utils/auth";
+import PERMISSIONS from "../../constants/permissions";
 
 const DAY_LABELS = {
   MONDAY: "Segunda-feira",
