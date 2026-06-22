@@ -4,8 +4,7 @@ import { Password } from "primereact/password";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmailInput from "../../components/Email/EmailInput";
-import { getCurrentUser, login } from "../../services/auth";
-import { normalizePermission } from "../../utils/auth";
+import { login } from "../../services/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,67 +20,6 @@ export default function Login() {
     try {
       const { data } = await login(email.trim(), password);
       localStorage.setItem("token", data.access_token);
-
-      // Primeiro tenta obter permissão detalhada do endpoint /users/me
-      try {
-        const token = localStorage.getItem("token");
-        const me = await getCurrentUser();
-        const user = me.data;
-        try {
-          // Removed storing user object in localStorage
-        } catch {}
-        const candidates = [
-          user.permission,
-          user.perfil,
-          user.role,
-          user.userType,
-          user.type,
-        ];
-
-        if (Array.isArray(user.roles)) candidates.push(...user.roles);
-
-        const permission = candidates.map(normalizePermission).find(Boolean);
-        if (permission) localStorage.setItem("permission", permission);
-        else localStorage.removeItem("permission");
-      } catch (err) {
-        console.error("/users/me error:", err.response ?? err.message ?? err);
-        // fallback para quando /users/me não estiver disponível no login
-
-        // Tentar extrair do token JWT
-        let tokenPermission = null;
-        try {
-          const tokenParts = data.access_token.split(".");
-          if (tokenParts.length === 3) {
-            const payload = JSON.parse(atob(tokenParts[1]));
-            const tokenCandidates = [
-              payload.permission,
-              payload.perfil,
-              payload.role,
-              payload.userType,
-              payload.type,
-            ];
-            if (Array.isArray(payload.roles))
-              tokenCandidates.push(...payload.roles);
-            tokenPermission = tokenCandidates
-              .map(normalizePermission)
-              .find(Boolean);
-          }
-        } catch (e) {}
-
-        const candidates = [
-          data.permission,
-          data.perfil,
-          data.role,
-          data.userType,
-          data.type,
-        ];
-
-        if (Array.isArray(data.roles)) candidates.push(...data.roles);
-
-        const permission =
-          tokenPermission || candidates.map(normalizePermission).find(Boolean);
-      }
-
       navigate("/");
     } catch (err) {
       setError("Email ou senha incorretos");
