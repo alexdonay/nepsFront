@@ -85,6 +85,23 @@ export default function ServiceSchedulesList() {
   const [filterInstitution, setFilterInstitution] = useState(null);
   const searchTimer = useRef(null);
 
+  const [activePeriodId, setActivePeriodId] = useState(null);
+
+  useEffect(() => {
+    repository.periods.get({ is_active: "1", per_page: 10 })
+      .then(({ data }) => {
+        const items = data?.items || data || [];
+        const today = new Date();
+        const active = items.find((p) => {
+          const start = new Date(p.start_date);
+          const end = new Date(p.end_date);
+          return start <= today && end >= today;
+        });
+        setActivePeriodId(active?.id || items[0]?.id || null);
+      })
+      .catch(() => setActivePeriodId(null));
+  }, []);
+
   // ── Carrega agenda ─────────────────────────────────────────────────────────
   const loadData = useCallback(async () => {
     try {
@@ -217,7 +234,7 @@ export default function ServiceSchedulesList() {
     try {
       setSaving(true);
       for (const student of selectedStudents) {
-        await repository.roomSchedules.addStudent(roomId, selectedDay, selectedPeriod, null, student.id);
+        await repository.roomSchedules.addStudent(roomId, selectedDay, selectedPeriod, activePeriodId, student.id);
       }
       setDialogMsgSev("success");
       setDialogMsg("Alunos vinculados com sucesso.");
@@ -236,7 +253,7 @@ export default function ServiceSchedulesList() {
   const handleUnlink = async (studentId) => {
     try {
       setUnlinking(true);
-      await repository.roomSchedules.removeStudent(roomId, selectedDay, selectedPeriod, null, studentId);
+      await repository.roomSchedules.removeStudent(roomId, selectedDay, selectedPeriod, activePeriodId, studentId);
       setDialogMsgSev("success");
       setDialogMsg("Aluno desvinculado.");
       await loadDialogData(selectedDay, selectedPeriod, studentsFirst);
