@@ -164,15 +164,16 @@ export default function EnrollmentPeriodsList() {
               onClick={() => setFilterVisible(true)}
             />
           )}
-          <Button
-            label="Novo Período"
-            icon="pi pi-plus"
-            disabled={currentPermission===PERMISSIONS.INSTITUICAO_ENSINO}
-            onClick={() => {
-              clearRouteContext(ROUTE_CONTEXT_KEYS.period);
-              window.location.href = "/periods/new";
-            }}
-          />
+          {canCreatePeriod && (
+            <Button
+              label="Novo Período"
+              icon="pi pi-plus"
+              onClick={() => {
+                clearRouteContext(ROUTE_CONTEXT_KEYS.period);
+                window.location.href = "/periods/new";
+              }}
+            />
+          )}
         </div>
       </div>
 
