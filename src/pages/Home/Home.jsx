@@ -3,6 +3,8 @@ import { Card } from "primereact/card";
 import { Chart } from "primereact/chart";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PERMISSIONS } from "../../constants/permissions";
+import { getCurrentInstitutionId, getCurrentInternshipId, getCurrentPermission } from "../../utils/auth";
 import { repository } from "../../services/repository";
 
 const CHART_COLORS = [
@@ -86,6 +88,13 @@ const buildChartData = (items) => {
 };
 
 export default function Home() {
+  const permission = getCurrentPermission();
+  const isAdmin = permission === PERMISSIONS.ADMIN;
+  const isInternship = permission === PERMISSIONS.CAMPO_ESTAGIO;
+  const isInstitution = permission === PERMISSIONS.INSTITUICAO_ENSINO;
+  const institutionId = getCurrentInstitutionId();
+  const internshipId = getCurrentInternshipId();
+
   const [stats, setStats] = useState({
     total_students: 0,
     total_internships: 0,
@@ -194,7 +203,13 @@ export default function Home() {
     // Gráfico: alunos vinculados por instituição (pizza)
     try {
       const { data } = await repository.dashboard.studentsByInstitution();
-      const items = (data?.items || data || []).map((i) => ({
+      let rawItems = data?.items || data || [];
+      if (isInstitution && institutionId) {
+        rawItems = rawItems.filter(
+          (i) => i.institution_id === institutionId || i.id === institutionId,
+        );
+      }
+      const items = rawItems.map((i) => ({
         region_name: i.institution_name || i.name,
         vacancies: i.student_count ?? i.total ?? i.count ?? 0,
       }));
@@ -209,13 +224,25 @@ export default function Home() {
 
       // items: [{ region_name, institutions: [{ institution_name, student_count }] }]
       const regions = items.map((r) => r.region_name || r.name);
-      const institutionNames = [
+      let institutionNames = [
         ...new Set(
           items.flatMap((r) =>
             (r.institutions || []).map((i) => i.institution_name || i.name),
           ),
         ),
       ];
+
+      if (isInstitution && institutionId) {
+        institutionNames = institutionNames.filter((name) =>
+          items.some((r) =>
+            (r.institutions || []).some(
+              (i) =>
+                (i.institution_name || i.name) === name &&
+                (i.institution_id === institutionId || i.id === institutionId),
+            ),
+          ),
+        );
+      }
 
       const datasets = institutionNames.map((instName, idx) => ({
         label: instName,
@@ -236,9 +263,14 @@ export default function Home() {
     // Gráfico: alunos alocados por campo de estágio
     try {
       const { data } = await repository.dashboard.occupiedByInternship();
-      const items = (data?.items || data || []).filter(
+      let items = (data?.items || data || []).filter(
         (i) => (i.occupied ?? 0) > 0,
       );
+      if (isInternship && internshipId) {
+        items = items.filter(
+          (i) => i.internship_id === internshipId || i.id === internshipId,
+        );
+      }
       if (items.length > 0) {
         setOccupiedByInternshipChartData({
           labels: items.map((i) => i.internship_name || i.name),
@@ -259,9 +291,14 @@ export default function Home() {
     // Gráfico: capacidade vs ocupação por campo de estágio (barras empilhadas)
     try {
       const { data } = await repository.dashboard.capacityByInternship();
-      const items = (data?.items || data || []).filter(
+      let items = (data?.items || data || []).filter(
         (i) => (i.total ?? 0) > 0,
       );
+      if (isInternship && internshipId) {
+        items = items.filter(
+          (i) => i.internship_id === internshipId || i.id === internshipId,
+        );
+      }
       if (items.length > 0) {
         setCapacityByInternshipChartData({
           labels: items.map((i) => i.internship_name),
@@ -286,13 +323,14 @@ export default function Home() {
     } catch (_) {}
   };
 
-  const quickAccess = [
+  const allQuickAccess = [
     {
       label: "Alunos",
       icon: "pi pi-users",
       color: "#3b82f6",
       path: "/students",
       key: "total_students",
+      roles: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
     },
     {
       label: "Campos de Estágio",
@@ -300,6 +338,7 @@ export default function Home() {
       color: "#10b981",
       path: "/internships",
       key: "total_internships",
+      roles: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
     },
     {
       label: "Períodos",
@@ -307,6 +346,7 @@ export default function Home() {
       color: "#f59e0b",
       path: "/periods",
       key: "total_periods",
+      roles: [PERMISSIONS.ADMIN, PERMISSIONS.INSTITUICAO_ENSINO],
     },
     {
       label: "Instituições",
@@ -314,6 +354,7 @@ export default function Home() {
       color: "#ec4899",
       path: "/institutions",
       key: "total_institutions",
+      roles: [PERMISSIONS.ADMIN],
     },
     {
       label: "Salas",
@@ -321,8 +362,13 @@ export default function Home() {
       color: "#06b6d4",
       path: "/rooms",
       key: "total_rooms",
+      roles: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
     },
   ];
+
+  const quickAccess = allQuickAccess.filter((item) =>
+    item.roles.includes(permission),
+  );
 
   return (
     <div>
@@ -344,20 +390,22 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-4">
-        <Button
-          label="Abrir Período"
-          icon="pi pi-calendar"
-          className="p-button-outlined"
-          onClick={() => navigate("/periods")}
-        />
-        <Button
-          label="Gerenciar Período"
-          icon="pi pi-cog"
-          className="p-button-outlined"
-          onClick={() => navigate("/periods/manage")}
-        />
-      </div>
+      {(isAdmin || isInstitution) && (
+        <div className="flex gap-2 mb-4">
+          <Button
+            label="Abrir Período"
+            icon="pi pi-calendar"
+            className="p-button-outlined"
+            onClick={() => navigate("/periods")}
+          />
+          <Button
+            label="Gerenciar Período"
+            icon="pi pi-cog"
+            className="p-button-outlined"
+            onClick={() => navigate("/periods/manage")}
+          />
+        </div>
+      )}
 
       <div className="grid mb-4">
         {quickAccess.map((item, i) => (
@@ -389,200 +437,212 @@ export default function Home() {
       </div>
 
       <div className="grid">
-        <div className="col-12 md:col-4">
-          <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Vagas por Território
-            </h3>
-            {vacanciesChartData ? (
-              <Chart
-                type="pie"
-                data={vacanciesChartData}
-                options={PIE_OPTIONS("vagas")}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhuma vaga cadastrada.
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-12 md:col-4">
-          <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Alunos Alocados por Território
-            </h3>
-            {occupiedChartData ? (
-              <Chart
-                type="pie"
-                data={occupiedChartData}
-                options={PIE_OPTIONS("alunos")}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhum aluno alocado.
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-12 md:col-4">
-          <Card className="h-full">
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Alunos Vinculados por Instituição
-            </h3>
-            {institutionChartData ? (
-              <Chart
-                type="pie"
-                data={institutionChartData}
-                options={PIE_OPTIONS("alunos")}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhum aluno vinculado.
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-12 mt-2">
-          <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Alunos por Território — por Instituição
-            </h3>
-            {regionInstitutionChartData ? (
-              <Chart
-                type="bar"
-                data={regionInstitutionChartData}
-                options={BAR_OPTIONS}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhum dado disponível.
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-12 mt-2">
-          <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Capacidade por Campo de Estágio
-            </h3>
-            <div className="flex gap-3 mb-3">
-              <span className="flex align-items-center gap-2 text-sm text-600">
-                <span
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: 2,
-                    background: "#6366f1",
-                    display: "inline-block",
-                  }}
+        {(isAdmin) && (
+          <div className="col-12 md:col-4">
+            <Card className="h-full">
+              <h3 className="text-base font-semibold text-700 mb-3">
+                Vagas por Território
+              </h3>
+              {vacanciesChartData ? (
+                <Chart
+                  type="pie"
+                  data={vacanciesChartData}
+                  options={PIE_OPTIONS("vagas")}
                 />
-                Ocupadas
-              </span>
-              <span className="flex align-items-center gap-2 text-sm text-600">
-                <span
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: 2,
-                    background: "#e2e8f0",
-                    border: "1px solid #cbd5e1",
-                    display: "inline-block",
-                  }}
+              ) : (
+                <div className="text-500 text-sm p-3 text-center">
+                  Nenhuma vaga cadastrada.
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {(isAdmin) && (
+          <div className="col-12 md:col-4">
+            <Card className="h-full">
+              <h3 className="text-base font-semibold text-700 mb-3">
+                Alunos Alocados por Território
+              </h3>
+              {occupiedChartData ? (
+                <Chart
+                  type="pie"
+                  data={occupiedChartData}
+                  options={PIE_OPTIONS("alunos")}
                 />
-                Livres
-              </span>
-            </div>
-            {capacityByInternshipChartData ? (
-              <Chart
-                type="bar"
-                data={capacityByInternshipChartData}
-                options={{
-                  ...BAR_OPTIONS,
-                  aspectRatio: 3.5,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    legend: { display: false },
-                    tooltip: {
-                      callbacks: {
-                        label: (ctx) =>
-                          ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
-                        afterBody: (items) => {
-                          const total = items.reduce(
-                            (s, i) => s + i.parsed.y,
-                            0,
-                          );
-                          return `Total: ${total}`;
+              ) : (
+                <div className="text-500 text-sm p-3 text-center">
+                  Nenhum aluno alocado.
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {(isAdmin || isInstitution) && (
+          <div className="col-12 md:col-4">
+            <Card className="h-full">
+              <h3 className="text-base font-semibold text-700 mb-3">
+                Alunos Vinculados por Instituição
+              </h3>
+              {institutionChartData ? (
+                <Chart
+                  type="pie"
+                  data={institutionChartData}
+                  options={PIE_OPTIONS("alunos")}
+                />
+              ) : (
+                <div className="text-500 text-sm p-3 text-center">
+                  Nenhum aluno vinculado.
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {(isAdmin || isInstitution) && (
+          <div className="col-12 mt-2">
+            <Card>
+              <h3 className="text-base font-semibold text-700 mb-3">
+                Alunos por Território — por Instituição
+              </h3>
+              {regionInstitutionChartData ? (
+                <Chart
+                  type="bar"
+                  data={regionInstitutionChartData}
+                  options={BAR_OPTIONS}
+                />
+              ) : (
+                <div className="text-500 text-sm p-3 text-center">
+                  Nenhum dado disponível.
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {(isAdmin || isInternship) && (
+          <>
+            <div className="col-12 mt-2">
+              <Card>
+                <h3 className="text-base font-semibold text-700 mb-3">
+                  Capacidade por Campo de Estágio
+                </h3>
+                <div className="flex gap-3 mb-3">
+                  <span className="flex align-items-center gap-2 text-sm text-600">
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        background: "#6366f1",
+                        display: "inline-block",
+                      }}
+                    />
+                    Ocupadas
+                  </span>
+                  <span className="flex align-items-center gap-2 text-sm text-600">
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: 2,
+                        background: "#e2e8f0",
+                        border: "1px solid #cbd5e1",
+                        display: "inline-block",
+                      }}
+                    />
+                    Livres
+                  </span>
+                </div>
+                {capacityByInternshipChartData ? (
+                  <Chart
+                    type="bar"
+                    data={capacityByInternshipChartData}
+                    options={{
+                      ...BAR_OPTIONS,
+                      aspectRatio: 3.5,
+                      plugins: {
+                        ...BAR_OPTIONS.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                          callbacks: {
+                            label: (ctx) =>
+                              ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
+                            afterBody: (items) => {
+                              const total = items.reduce(
+                                (s, i) => s + i.parsed.y,
+                                0,
+                              );
+                              return `Total: ${total}`;
+                            },
+                          },
                         },
                       },
-                    },
-                  },
-                  scales: {
-                    x: {
-                      stacked: true,
-                      grid: { display: false },
-                      ticks: { maxRotation: 30, font: { size: 11 } },
-                    },
-                    y: {
-                      stacked: true,
-                      beginAtZero: true,
-                      ticks: { stepSize: 1 },
-                      grid: { color: "#f1f5f9" },
-                    },
-                  },
-                }}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhum campo com salas cadastradas.
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-12 mt-2">
-          <Card>
-            <h3 className="text-base font-semibold text-700 mb-3">
-              Alunos Alocados por Campo de Estágio
-            </h3>
-            {occupiedByInternshipChartData ? (
-              <Chart
-                type="bar"
-                data={occupiedByInternshipChartData}
-                options={{
-                  ...BAR_OPTIONS,
-                  aspectRatio: 3.5,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    legend: { display: false },
-                    tooltip: {
-                      callbacks: {
-                        label: (ctx) =>
-                          ` ${ctx.parsed.y} aluno${ctx.parsed.y !== 1 ? "s" : ""}`,
+                      scales: {
+                        x: {
+                          stacked: true,
+                          grid: { display: false },
+                          ticks: { maxRotation: 30, font: { size: 11 } },
+                        },
+                        y: {
+                          stacked: true,
+                          beginAtZero: true,
+                          ticks: { stepSize: 1 },
+                          grid: { color: "#f1f5f9" },
+                        },
                       },
-                    },
-                  },
-                  scales: {
-                    ...BAR_OPTIONS.scales,
-                    x: {
-                      ...BAR_OPTIONS.scales.x,
-                      ticks: { maxRotation: 30, font: { size: 11 } },
-                    },
-                    y: { ...BAR_OPTIONS.scales.y, ticks: { stepSize: 1 } },
-                  },
-                }}
-              />
-            ) : (
-              <div className="text-500 text-sm p-3 text-center">
-                Nenhum aluno alocado.
-              </div>
-            )}
-          </Card>
-        </div>
+                    }}
+                  />
+                ) : (
+                  <div className="text-500 text-sm p-3 text-center">
+                    Nenhum campo com salas cadastradas.
+                  </div>
+                )}
+              </Card>
+            </div>
+
+            <div className="col-12 mt-2">
+              <Card>
+                <h3 className="text-base font-semibold text-700 mb-3">
+                  Alunos Alocados por Campo de Estágio
+                </h3>
+                {occupiedByInternshipChartData ? (
+                  <Chart
+                    type="bar"
+                    data={occupiedByInternshipChartData}
+                    options={{
+                      ...BAR_OPTIONS,
+                      aspectRatio: 3.5,
+                      plugins: {
+                        ...BAR_OPTIONS.plugins,
+                        legend: { display: false },
+                        tooltip: {
+                          callbacks: {
+                            label: (ctx) =>
+                              ` ${ctx.parsed.y} aluno${ctx.parsed.y !== 1 ? "s" : ""}`,
+                          },
+                        },
+                      },
+                      scales: {
+                        ...BAR_OPTIONS.scales,
+                        x: {
+                          ...BAR_OPTIONS.scales.x,
+                          ticks: { maxRotation: 30, font: { size: 11 } },
+                        },
+                        y: { ...BAR_OPTIONS.scales.y, ticks: { stepSize: 1 } },
+                      },
+                    }}
+                  />
+                ) : (
+                  <div className="text-500 text-sm p-3 text-center">
+                    Nenhum aluno alocado.
+                  </div>
+                )}
+              </Card>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
