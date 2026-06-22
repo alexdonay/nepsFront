@@ -9,8 +9,12 @@ import {
   clearRouteContext,
   setRouteContext,
 } from "../../utils/routeContext";
+import { getCurrentPermission, getCurrentInstitutionId } from "../../utils/auth";
+import { PERMISSIONS } from "../../constants/permissions";
 import CourseFilter from "./CourseFilter";
 export default function CoursesList() {
+  const isInstitution = getCurrentPermission() === PERMISSIONS.INSTITUICAO_ENSINO;
+  const institutionId = isInstitution ? getCurrentInstitutionId() : null;
   const [courses, setCourses] = useState([]);
   const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,6 +36,8 @@ export default function CoursesList() {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
       const params = { page, per_page: rows };
+
+      if (institutionId) params.education_institute_id = institutionId;
 
       searchParams.forEach((value, key) => {
         params[key] = value;
