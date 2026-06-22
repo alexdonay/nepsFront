@@ -338,7 +338,7 @@ export default function Home() {
       color: "#10b981",
       path: "/internships",
       key: "total_internships",
-      roles: [PERMISSIONS.ADMIN, PERMISSIONS.CAMPO_ESTAGIO],
+      roles: [PERMISSIONS.ADMIN],
     },
     {
       label: "Períodos",
