@@ -807,32 +807,37 @@ export default function EnrollmentPeriodsManage() {
         <Column field="semester" header="Semestre" />
         <Column
           header="Ações"
-          body={(rowData) => (
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                icon="pi pi-eye"
-                onClick={() => openStudentDetails(rowData)}
-                severity="info"
-                className="p-button-text"
-                tooltip="Visualizar dados do aluno"
-                tooltipOptions={{ position: "top" }}
-              />
-              <Button
-                icon={
-                  rowData.internship_id ? "pi pi-building" : "pi pi-plus-circle"
-                }
-                onClick={() => openInternshipLinkDialog(rowData)}
-                severity={rowData.internship_id ? "success" : "warning"}
-                className="p-button-text"
-                tooltip={
-                  rowData.internship_id
-                    ? "Campo de estágio vinculado — clique para alterar"
-                    : "Vincular a campo de estágio"
-                }
-                tooltipOptions={{ position: "top" }}
-              />
-            </div>
-          )}
+          body={(rowData) => {
+            const isLinked = hasStudentSlotLink(rowData);
+            return (
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  icon="pi pi-eye"
+                  onClick={() => openStudentDetails(rowData)}
+                  severity="info"
+                  className="p-button-text"
+                  tooltip="Visualizar dados do aluno"
+                  tooltipOptions={{ position: "top" }}
+                />
+                {!isLinked && (
+                  <Button
+                    icon={
+                      rowData.internship_id ? "pi pi-building" : "pi pi-plus-circle"
+                    }
+                    onClick={() => openInternshipLinkDialog(rowData)}
+                    severity={rowData.internship_id ? "success" : "warning"}
+                    className="p-button-text"
+                    tooltip={
+                      rowData.internship_id
+                        ? "Campo de estágio vinculado — clique para alterar"
+                        : "Vincular a campo de estágio"
+                    }
+                    tooltipOptions={{ position: "top" }}
+                  />
+                )}
+              </div>
+            );
+          }}
         />
       </DataTable>
 
