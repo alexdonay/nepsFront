@@ -36,7 +36,7 @@ export default function RoomsForm() {
 
   useEffect(() => {
     if (isAdmin) {
-      repository.internships.get({ per_page: 500 }).then(({ data }) => {
+      repository.internships.get({ per_page: 100 }).then(({ data }) => {
         const items = data?.items || data || [];
         setInternships(items);
       }).catch(() => {});

@@ -121,8 +121,8 @@ export default function Home() {
   const buildVacanciesFromSources = async () => {
     const [regionsRes, internshipsRes, roomsRes] = await Promise.all([
       repository.regions.get(),
-      repository.internships.get({ per_page: 500 }),
-      repository.rooms.get({ per_page: 500 }),
+      repository.internships.get({ per_page: 100 }),
+      repository.rooms.get({ per_page: 100 }),
     ]);
 
     const regions = regionsRes.data?.items || regionsRes.data || [];
