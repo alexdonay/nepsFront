@@ -92,7 +92,6 @@ export default function UsersList() {
       const page = Math.floor(first / rows) + 1;
       const params = { page, per_page: rows };
 
-      // Adicionar filtros locais aos parâmetros da API
       Object.entries(filters).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           params[key] = value.join(",");

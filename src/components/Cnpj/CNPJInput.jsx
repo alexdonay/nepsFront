@@ -6,17 +6,6 @@ import {
   validateCNPJ,
 } from "../../services/utils";
 
-/**
- * Componente de input para CNPJ com máscara automática
- * Formato: XX.XXX.XXX/XXXX-XX (14 dígitos)
- * Ex: 11.222.333/0001-81
- *
- * @param {string} value - Valor atual do CNPJ
- * @param {function} onChange - Função chamada quando o valor muda
- * @param {string} label - Label do campo
- * @param {boolean} required - Se o campo é obrigatório
- * @param {string} className - Classes CSS adicionais
- */
 export default function CNPJInput({
   value = "",
   onChange,

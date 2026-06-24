@@ -55,7 +55,6 @@ export default function UserForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // carregar options
     repository.institutions
       .get()
       .then((r) => setInstitutions(r.data?.items || r.data || []))
@@ -75,10 +74,10 @@ export default function UserForm() {
           setName(user.name || "");
           setEmail(user.email || "");
           setProfile(
-        user.role === 'internships'
-          ? PERMISSIONS.CAMPO_ESTAGIO
-          : normalizePermission(user.role) || null
-      );
+            user.role === "internships"
+              ? PERMISSIONS.CAMPO_ESTAGIO
+              : normalizePermission(user.role) || null,
+          );
           setIsActive(user.is_active ?? user.active ?? true);
           const institutionId =
             user.education_institute_id ??
@@ -129,7 +128,6 @@ export default function UserForm() {
       };
 
       if (!isEdit) {
-        // incluir senha apenas na criação
         if (!password) throw new Error("Senha é obrigatória");
         payload.password = password;
 

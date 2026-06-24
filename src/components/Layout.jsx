@@ -8,7 +8,6 @@ export default function Layout({ children }) {
   const navigate = useNavigate();
 
   const menuItems = [
-    // ADMIN
     {
       label: "Início",
       icon: "pi pi-home",
@@ -20,14 +19,12 @@ export default function Layout({ children }) {
       ],
     },
 
-    // INSTITUICAO_ENSINO
     {
       label: "Períodos",
       icon: "pi pi-calendar",
       path: "/periods",
       permissions: [PERMISSIONS.INSTITUICAO_ENSINO],
     },
-    // ADMIN — Cadastros
     {
       label: "Cadastros",
       icon: "pi pi-building",
@@ -71,7 +68,6 @@ export default function Layout({ children }) {
       ],
     },
 
-    // ADMIN — Gestão
     {
       label: "Gestão",
       icon: "pi pi-calendar",
@@ -96,7 +92,6 @@ export default function Layout({ children }) {
     const currentPermission = getCurrentPermission();
     return items
       .map((item) => {
-        // If item has subitems, filter them
         if (item.items) {
           const filteredSubItems = item.items.filter((sub) =>
             hasPermission(sub.permissions),
@@ -104,7 +99,6 @@ export default function Layout({ children }) {
           if (filteredSubItems.length === 0) return null;
           return { ...item, items: filteredSubItems };
         }
-        // General permission check
         if (item.permissions && !hasPermission(item.permissions)) return null;
         return item;
       })

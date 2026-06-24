@@ -60,8 +60,6 @@ export default function InstitutionsList() {
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadInstitutions = useCallback(async () => {

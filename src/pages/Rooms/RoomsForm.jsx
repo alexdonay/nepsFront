@@ -7,11 +7,11 @@ import { Message } from "primereact/message";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PERMISSIONS } from "../../constants/permissions";
-import { repository } from "../../services/repository";
 import api from "../../services/api";
-import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
-import { getErrorMessage } from "../../utils/errorHandler";
+import { repository } from "../../services/repository";
 import { getCurrentPermission, getCurrentUser } from "../../utils/auth";
+import { getErrorMessage } from "../../utils/errorHandler";
+import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
 
 export default function RoomsForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.room, {});
@@ -21,7 +21,8 @@ export default function RoomsForm() {
 
   const user = getCurrentUser();
   const isAdmin = getCurrentPermission() === PERMISSIONS.ADMIN;
-  const defaultInternshipId = user?.internship_id || user?.education_institute_id || null;
+  const defaultInternshipId =
+    user?.internship_id || user?.education_institute_id || null;
 
   const [form, setForm] = useState({
     name: "",
@@ -36,10 +37,13 @@ export default function RoomsForm() {
 
   useEffect(() => {
     if (isAdmin) {
-      repository.internships.get({ per_page: 100 }).then(({ data }) => {
-        const items = data?.items || data || [];
-        setInternships(items);
-      }).catch(() => {});
+      repository.internships
+        .get({ per_page: 100 })
+        .then(({ data }) => {
+          const items = data?.items || data || [];
+          setInternships(items);
+        })
+        .catch(() => {});
     }
     if (isEdit) loadRoom();
   }, [id]);
@@ -66,7 +70,6 @@ export default function RoomsForm() {
 
     const payload = {
       name: form.name,
-      // Use internship_id from JWT if available, otherwise from form
       internship_id: form.internships_id ?? user?.internship_id ?? null,
       room_capacity: form.room_capacity,
       has_gurney: form.has_gurney,
@@ -75,18 +78,19 @@ export default function RoomsForm() {
 
     try {
       if (isEdit) {
-        // Atualiza usando repository (envia JSON)
         await repository.rooms.put(id, payload);
       } else {
-        // Cria usando instância Axios para garantir JSON
         await api.post("/v1/rooms", payload);
       }
 
       navigate("/rooms");
     } catch (err) {
-      // Exibir mensagem detalhada se disponível
       const detail = err?.response?.data?.detail || err?.message;
-      setError(detail ? `Erro ao salvar a sala: ${detail}` : getErrorMessage(err, "Erro ao salvar a sala"));
+      setError(
+        detail
+          ? `Erro ao salvar a sala: ${detail}`
+          : getErrorMessage(err, "Erro ao salvar a sala"),
+      );
     } finally {
       setLoading(false);
     }
@@ -121,7 +125,9 @@ export default function RoomsForm() {
 
         {isAdmin && (
           <div className="field col-12 md:col-6">
-            <label className="block text-900 font-medium mb-2">Campo de Estágio *</label>
+            <label className="block text-900 font-medium mb-2">
+              Campo de Estágio *
+            </label>
             <Dropdown
               value={form.internships_id}
               options={internships.map((i) => ({ label: i.name, value: i.id }))}

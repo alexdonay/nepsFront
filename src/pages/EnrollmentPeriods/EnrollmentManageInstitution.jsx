@@ -19,7 +19,11 @@ import {
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
 import { getCurrentInstitutionId } from "../../utils/auth";
-import { ROUTE_CONTEXT_KEYS, getRouteContext, setRouteContext } from "../../utils/routeContext";
+import {
+  ROUTE_CONTEXT_KEYS,
+  getRouteContext,
+  setRouteContext,
+} from "../../utils/routeContext";
 
 export default function EnrollmentManageInstitution() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.period, {});
@@ -35,7 +39,6 @@ export default function EnrollmentManageInstitution() {
   const [linkingStudent, setLinkingStudent] = useState(false);
   const [unlinkingStudentId, setUnlinkingStudentId] = useState(null);
 
-  // Estados para modal de cadastro
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [registerError, setRegisterError] = useState("");
@@ -61,13 +64,11 @@ export default function EnrollmentManageInstitution() {
     try {
       setLoading(true);
 
-      // Carregar dados do período
       const periodRes = await repository.periods.getById(periodId, {
         include: "students",
       });
       setPeriod(periodRes.data);
 
-      // Carregar alunos da instituição
       const studentsRes = await repository.students.byInstitute(institutionId, {
         include: "discipline,institution",
       });
@@ -75,7 +76,6 @@ export default function EnrollmentManageInstitution() {
         ? studentsRes.data
         : studentsRes.data.items || [];
 
-      // Separar alunos vinculados e disponíveis
       const periodData = periodRes.data || {};
       const rawLinkedStudents =
         periodData.students ||
@@ -192,7 +192,6 @@ export default function EnrollmentManageInstitution() {
       setRegistering(true);
       const documentUrl = await uploadPdfToCloudinary(documentFile);
 
-      // Cadastrar aluno
       const { data: newStudent } = await api.post(API_ROUTES.GESTAO.STUDENTS, {
         ...registerForm,
         course_id: registerForm.course_id,
@@ -203,10 +202,8 @@ export default function EnrollmentManageInstitution() {
       });
       const studentId = newStudent.id;
 
-      // Vincular ao período
       await repository.periods.addStudent(periodId, studentId);
 
-      // Resetar formulário e fechar modal
       setRegisterForm({
         name: "",
         cpf: "",
@@ -224,7 +221,6 @@ export default function EnrollmentManageInstitution() {
       setDocumentFile(null);
       setShowRegisterModal(false);
 
-      // Recarregar dados
       await loadData();
     } catch (e) {
       setRegisterError(
@@ -264,7 +260,6 @@ export default function EnrollmentManageInstitution() {
         <div className="text-center p-4">Carregando...</div>
       ) : (
         <div className="grid">
-          {/* Coluna esquerda: Alunos já vinculados */}
           <div className="col-12 lg:col-6">
             <div className="surface-50 p-4 border-round h-full">
               <h3 className="text-lg font-bold mb-3">
@@ -301,7 +296,9 @@ export default function EnrollmentManageInstitution() {
                           severity="info"
                           size="small"
                           onClick={() => {
-                            setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: row.id });
+                            setRouteContext(ROUTE_CONTEXT_KEYS.student, {
+                              id: row.id,
+                            });
                             navigate("/students/details");
                           }}
                           title="Visualizar aluno"
@@ -313,7 +310,9 @@ export default function EnrollmentManageInstitution() {
                           severity="warning"
                           size="small"
                           onClick={() => {
-                            setRouteContext(ROUTE_CONTEXT_KEYS.student, { id: row.id });
+                            setRouteContext(ROUTE_CONTEXT_KEYS.student, {
+                              id: row.id,
+                            });
                             navigate(`/students/${row.id}`);
                           }}
                           title="Editar aluno"
@@ -336,7 +335,6 @@ export default function EnrollmentManageInstitution() {
             </div>
           </div>
 
-          {/* Coluna direita: Vincular novo aluno ou cadastrar */}
           <div className="col-12 lg:col-6">
             <div className="surface-50 p-4 border-round h-full">
               <h3 className="text-lg font-bold mb-3">Vincular Novo Aluno</h3>
@@ -361,7 +359,6 @@ export default function EnrollmentManageInstitution() {
         </div>
       )}
 
-      {/* Modal para cadastrar novo aluno */}
       <Dialog
         visible={showRegisterModal}
         onHide={() => {
@@ -422,7 +419,10 @@ export default function EnrollmentManageInstitution() {
             onChange={(file) => {
               if (file) {
                 const validationError = validatePdfFile(file);
-                if (validationError) { setRegisterError(validationError); return; }
+                if (validationError) {
+                  setRegisterError(validationError);
+                  return;
+                }
                 setRegisterError("");
               }
               setDocumentFile(file);

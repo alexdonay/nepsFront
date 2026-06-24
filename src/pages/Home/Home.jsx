@@ -183,7 +183,6 @@ export default function Home() {
       }
     } catch (_) {}
 
-    // Gráfico: vagas por região
     try {
       let items = [];
       try {
@@ -195,14 +194,12 @@ export default function Home() {
       if (items.length > 0) setVacanciesChartData(buildChartData(items));
     } catch (_) {}
 
-    // Gráfico: alunos alocados por região
     try {
       const { data } = await repository.dashboard.occupiedByRegion();
       const items = data?.items || data || [];
       if (items.length > 0) setOccupiedChartData(buildChartData(items));
     } catch (_) {}
 
-    // Gráfico: alunos vinculados por instituição (pizza)
     try {
       const { data } = await repository.dashboard.studentsByInstitution();
       let rawItems = data?.items || data || [];
@@ -218,13 +215,11 @@ export default function Home() {
       if (items.length > 0) setInstitutionChartData(buildChartData(items));
     } catch (_) {}
 
-    // Gráfico: alunos por região agrupado por instituição (barras)
     try {
       const { data } = await repository.dashboard.studentsByRegionInstitution();
       const items = data?.items || data || [];
       if (items.length === 0) return;
 
-      // items: [{ region_name, institutions: [{ institution_name, student_count }] }]
       const regions = items.map((r) => r.region_name || r.name);
       let institutionNames = [
         ...new Set(
@@ -262,7 +257,6 @@ export default function Home() {
       setRegionInstitutionChartData({ labels: regions, datasets });
     } catch (_) {}
 
-    // Gráfico: alunos alocados por campo de estágio
     try {
       const { data } = await repository.dashboard.occupiedByInternship();
       let items = (data?.items || data || []).filter(
@@ -290,7 +284,6 @@ export default function Home() {
       }
     } catch (_) {}
 
-    // Gráfico: capacidade vs ocupação por campo de estágio (barras empilhadas)
     try {
       const { data } = await repository.dashboard.capacityByInternship();
       let items = (data?.items || data || []).filter(

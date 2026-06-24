@@ -5,7 +5,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
 import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
+import {
+  clearRouteContext,
+  ROUTE_CONTEXT_KEYS,
+  setRouteContext,
+} from "../../utils/routeContext";
 
 const FILTER_CONFIG = [
   {
@@ -60,20 +64,21 @@ export default function StudentsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Se houver filtros na URL na primeira montagem, abrir drawer automaticamente
     const hasFilters = searchParams.toString().length > 0;
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadStudents = useCallback(async () => {
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
-      const params = { page, per_page: rows, include: "discipline,institution" };
+      const params = {
+        page,
+        per_page: rows,
+        include: "discipline,institution",
+      };
 
       searchParams.forEach((value, key) => {
         params[key] = value;
@@ -121,20 +126,35 @@ export default function StudentsList() {
 
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
-  const filterInitialValues = useMemo(() => ({
-    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
-    ...(searchParams.has("cpf") && { cpf: searchParams.get("cpf") }),
-    ...(searchParams.has("email_like") && { email: searchParams.get("email_like") }),
-    ...(searchParams.has("discipline_id") && { discipline_id: Number(searchParams.get("discipline_id")) }),
-    ...(searchParams.has("institution_id") && { institution_id: Number(searchParams.get("institution_id")) }),
-    ...(searchParams.has("semester") && { semester: Number(searchParams.get("semester")) }),
-  }), [searchParams]);
+  const filterInitialValues = useMemo(
+    () => ({
+      ...(searchParams.has("name_like") && {
+        name: searchParams.get("name_like"),
+      }),
+      ...(searchParams.has("cpf") && { cpf: searchParams.get("cpf") }),
+      ...(searchParams.has("email_like") && {
+        email: searchParams.get("email_like"),
+      }),
+      ...(searchParams.has("discipline_id") && {
+        discipline_id: Number(searchParams.get("discipline_id")),
+      }),
+      ...(searchParams.has("institution_id") && {
+        institution_id: Number(searchParams.get("institution_id")),
+      }),
+      ...(searchParams.has("semester") && {
+        semester: Number(searchParams.get("semester")),
+      }),
+    }),
+    [searchParams],
+  );
 
   const filters = useMemo(() => {
     const disciplinesOptions = Array.from(
       new Map(
         students
-          .filter((student) => student.discipline?.id && student.discipline?.name)
+          .filter(
+            (student) => student.discipline?.id && student.discipline?.name,
+          )
           .map((student) => [
             student.discipline.id,
             { label: student.discipline.name, value: student.discipline.id },

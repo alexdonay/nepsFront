@@ -13,7 +13,6 @@
   background: var(--surface-100);
 }
 
-/* ── Estado vazio ──────────────────────────────────────────────────────────── */
 .pdf-upload-empty {
   display: flex;
   flex-direction: column;
@@ -35,7 +34,6 @@
   color: var(--text-color-secondary);
 }
 
-/* ── Arquivo selecionado ────────────────────────────────────────────────────── */
 .pdf-upload-selected,
 .pdf-upload-existing {
   display: flex;
@@ -79,7 +77,6 @@
   flex-shrink: 0;
 }
 
-/* ── Ícones ─────────────────────────────────────────────────────────────────── */
 .pdf-upload-icon {
   font-size: 2rem;
   flex-shrink: 0;
@@ -97,7 +94,6 @@
   color: #2563eb;
 }
 
-/* ── Link "ver" ─────────────────────────────────────────────────────────────── */
 .pdf-upload-view {
   display: flex;
   align-items: center;

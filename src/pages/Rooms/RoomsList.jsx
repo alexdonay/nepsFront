@@ -4,13 +4,16 @@ import { DataTable } from "primereact/datatable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDrawer from "../../components/FilterDrawer";
-import { repository } from "../../services/repository";
-import { ROUTE_CONTEXT_KEYS, setRouteContext, clearRouteContext } from "../../utils/routeContext";
-import { getCurrentPermission } from "../../utils/auth";
 import PERMISSIONS from "../../constants/permissions";
+import { repository } from "../../services/repository";
+import { getCurrentPermission } from "../../utils/auth";
+import {
+  clearRouteContext,
+  ROUTE_CONTEXT_KEYS,
+  setRouteContext,
+} from "../../utils/routeContext";
 
 export default function RoomsList() {
-  // Detecta se o usuário tem a role "campo de estágio"
   const isInternship = getCurrentPermission() === PERMISSIONS.CAMPO_ESTAGIO;
   const [rooms, setRooms] = useState([]);
   const [internships, setInternships] = useState([]);
@@ -35,8 +38,6 @@ export default function RoomsList() {
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadRooms = useCallback(async () => {
@@ -76,29 +77,32 @@ export default function RoomsList() {
     }
   };
 
-  const filterConfig = useMemo(() => [
-    {
-      label: "Nome",
-      key: "name",
-      type: "text",
-      placeholder: "Buscar por nome...",
-    },
-    {
-      label: "Campo de Estágio",
-      key: "internship_id",
-      type: "dropdown",
-      options: internships,
-    },
-    {
-      label: "Possui Maca",
-      key: "has_gurney",
-      type: "dropdown",
-      options: [
-        { label: "Sim", value: "1" },
-        { label: "Não", value: "0" },
-      ],
-    },
-  ], [internships]);
+  const filterConfig = useMemo(
+    () => [
+      {
+        label: "Nome",
+        key: "name",
+        type: "text",
+        placeholder: "Buscar por nome...",
+      },
+      {
+        label: "Campo de Estágio",
+        key: "internship_id",
+        type: "dropdown",
+        options: internships,
+      },
+      {
+        label: "Possui Maca",
+        key: "has_gurney",
+        type: "dropdown",
+        options: [
+          { label: "Sim", value: "1" },
+          { label: "Não", value: "0" },
+        ],
+      },
+    ],
+    [internships],
+  );
 
   const handleApplyFilters = (appliedFilters) => {
     const params = new URLSearchParams();
@@ -127,9 +131,15 @@ export default function RoomsList() {
   const activeFilterCount = Array.from(searchParams.entries()).length;
 
   const filterInitialValues = {
-    ...(searchParams.has("name_like") && { name: searchParams.get("name_like") }),
-    ...(searchParams.has("internship_id") && { internship_id: Number(searchParams.get("internship_id")) }),
-    ...(searchParams.has("has_gurney") && { has_gurney: searchParams.get("has_gurney") }),
+    ...(searchParams.has("name_like") && {
+      name: searchParams.get("name_like"),
+    }),
+    ...(searchParams.has("internship_id") && {
+      internship_id: Number(searchParams.get("internship_id")),
+    }),
+    ...(searchParams.has("has_gurney") && {
+      has_gurney: searchParams.get("has_gurney"),
+    }),
   };
 
   const handleManage = (rowData) => {
@@ -159,7 +169,9 @@ export default function RoomsList() {
   );
 
   const serviceTemplate = (rowData) => {
-    const service = internships.find((item) => item.value === rowData.internship_id);
+    const service = internships.find(
+      (item) => item.value === rowData.internship_id,
+    );
     return service ? service.label : "-";
   };
 
@@ -204,7 +216,9 @@ export default function RoomsList() {
         <Column field="id" header="ID" sortable />
         <Column field="name" header="Nome" sortable />
         <Column field="room_capacity" header="Capacidade" />
-        { !isInternship && <Column header="Campo de Estágio" body={serviceTemplate} /> }
+        {!isInternship && (
+          <Column header="Campo de Estágio" body={serviceTemplate} />
+        )}
         <Column header="Possui Maca" body={gurneyTemplate} />
         <Column body={actionsTemplate} header="Ações" />
       </DataTable>

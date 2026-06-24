@@ -1,6 +1,4 @@
-/**
- * Utils de manipulação de telefone e CNPJ
- */
+
 
 export function normalizePhone(value) {
   if (value == null) return "";
@@ -43,11 +41,7 @@ export function formatCNPJDigits(chars) {
   return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 }
 
-/**
- * Calcula o dígito verificador de um CNPJ
- * @param {string} cnpj - Os 12 primeiros dígitos do CNPJ
- * @returns {string} Os 2 dígitos verificadores
- */
+
 export function calculateCNPJCheckDigits(cnpj) {
   const digits = cnpj.toString().replace(/\D/g, "").slice(0, 12);
 
@@ -75,11 +69,7 @@ export function calculateCNPJCheckDigits(cnpj) {
   return `${firstCheck}${secondCheck}`;
 }
 
-/**
- * Valida um CNPJ completo
- * @param {string} cnpj - CNPJ completo com 14 dígitos
- * @returns {boolean} True se o CNPJ é válido, false caso contrário
- */
+
 export function validateCNPJ(cnpj) {
   const digits = cnpj.toString().replace(/\D/g, "");
 

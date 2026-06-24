@@ -152,7 +152,6 @@ export default function CourseDetail() {
           </form>
         </TabPanel>
 
-        {/* ── Aba: Disciplinas ───────────────────────────────────────────── */}
         {courseId && (
           <TabPanel header="Disciplinas">
             <div className="flex justify-content-end mb-3">
@@ -187,7 +186,6 @@ export default function CourseDetail() {
         )}
       </TabView>
 
-      {/* ── Dialog: disciplina ─────────────────────────────────────────────── */}
       <Dialog
         header={editingDiscId ? "Editar Disciplina" : "Nova Disciplina"}
         visible={discDialog}

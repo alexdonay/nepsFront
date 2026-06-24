@@ -31,13 +31,11 @@ export default function InternshipsDetail() {
   const navigate = useNavigate();
   const isCampoEstagio = getCurrentPermission() === PERMISSIONS.CAMPO_ESTAGIO;
 
-  // CAMPO_ESTAGIO usa o próprio internship_id; ADMIN usa o routeContext
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.service, {});
   const internshipId = isCampoEstagio
     ? getCurrentInternshipId()
     : routeContext.id;
 
-  // ── Dados do campo ─────────────────────────────────────────────────────────
   const [form, setForm] = useState({
     name: "",
     region_id: null,
@@ -48,14 +46,12 @@ export default function InternshipsDetail() {
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
-  // ── Salas ──────────────────────────────────────────────────────────────────
   const [rooms, setRooms] = useState([]);
   const [roomsLoading, setRoomsLoading] = useState(false);
   const [roomPage, setRoomPage] = useState(0);
   const [roomRows] = useState(10);
   const [roomTotal, setRoomTotal] = useState(0);
 
-  // ── Dialog de sala ─────────────────────────────────────────────────────────
   const [roomDialog, setRoomDialog] = useState(false);
   const [roomForm, setRoomForm] = useState(EMPTY_ROOM_FORM);
   const [editingRoomId, setEditingRoomId] = useState(null);
@@ -137,7 +133,6 @@ export default function InternshipsDetail() {
     }
   };
 
-  // ── Room dialog ─────────────────────────────────────────────────────────────
   const openNewRoom = () => {
     setEditingRoomId(null);
     setRoomForm(EMPTY_ROOM_FORM);
@@ -211,7 +206,6 @@ export default function InternshipsDetail() {
       </div>
 
       <TabView>
-        {/* ── Aba: Dados — somente ADMIN ───────────────────────────────────── */}
         {!isCampoEstagio && (
           <TabPanel header="Dados">
             {formError && (
@@ -284,7 +278,6 @@ export default function InternshipsDetail() {
           </TabPanel>
         )}
 
-        {/* ── Aba: Salas ──────────────────────────────────────────────────────── */}
         {internshipId && (
           <TabPanel header="Salas">
             <div className="flex justify-content-end mb-3">
@@ -373,7 +366,6 @@ export default function InternshipsDetail() {
         )}
       </TabView>
 
-      {/* ── Dialog: Nova / Editar Sala ─────────────────────────────────────── */}
       <Dialog
         header={editingRoomId ? "Editar Sala" : "Nova Sala"}
         visible={roomDialog}

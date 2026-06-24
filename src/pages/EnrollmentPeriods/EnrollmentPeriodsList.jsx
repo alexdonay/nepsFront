@@ -35,10 +35,8 @@ export default function EnrollmentPeriodsList() {
 
     const now = new Date();
     return periodsList.filter((period) => {
-      // Verificar se está ativo
       if (!period.is_active) return false;
 
-      // Verificar se está na janela de prioridade
       const priorityStart = period.priority_start_date
         ? new Date(period.priority_start_date)
         : null;
@@ -46,7 +44,6 @@ export default function EnrollmentPeriodsList() {
         ? new Date(period.priority_end_date)
         : null;
 
-      // Se não houver datas de prioridade, considerar o período geral
       if (!priorityStart || !priorityEnd) {
         const periodStart = new Date(period.start_date);
         const periodEnd = new Date(period.end_date);
@@ -54,7 +51,6 @@ export default function EnrollmentPeriodsList() {
         return now >= periodStart && now <= periodEnd;
       }
 
-      // Verificar se está dentro da janela de prioridade (end = fim do dia)
       priorityEnd.setHours(23, 59, 59, 999);
       return now >= priorityStart && now <= priorityEnd;
     });
@@ -66,16 +62,12 @@ export default function EnrollmentPeriodsList() {
       const page = Math.floor(first / rows) + 1;
       const params = { page, per_page: rows };
 
-      // Diferenciar comportamento por permissão
       if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
-        // Instituição de Ensino: apenas períodos ativos
         params.is_active = "1";
-        // Se o backend suportar filtro por institution_id, enviar
         if (institutionId) {
           params.institution_id = institutionId;
         }
       }
-      // Admin: sem filtros automáticos, vê tudo
 
       searchParams.forEach((value, key) => {
         params[key] = value;
@@ -84,7 +76,6 @@ export default function EnrollmentPeriodsList() {
       const { data } = await repository.periods.get(params);
       let periodsList = data.items || data;
 
-      // Filtro no frontend para INSTITUICAO_ENSINO (apenas período prioritário)
       if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
         periodsList = filterPeriodsForEducationInstitute(periodsList);
       }
@@ -112,7 +103,6 @@ export default function EnrollmentPeriodsList() {
     const params = new URLSearchParams();
 
     if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
-      // Para instituições de ensino, apenas permitir filtro por nome
       const filteredFilters = Object.entries(appliedFilters).filter(([key]) => {
         return key.includes("name");
       });

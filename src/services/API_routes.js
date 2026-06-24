@@ -1,7 +1,3 @@
-/**
- * API Routes
- * Centraliza todas as rotas do backend
- */
 
 export const API_ROUTES = {
   AUTH: {

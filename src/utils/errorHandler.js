@@ -1,7 +1,4 @@
-/**
- * Error Handler Utility
- * Centralizes error message extraction from API responses
- */
+
 
 export function getErrorMessage(error, defaultMessage = "Erro") {
   // Check if it's an axios error response
@@ -22,7 +19,6 @@ export function getErrorMessage(error, defaultMessage = "Erro") {
       return data.detail;
     }
 
-    // Handle Pydantic validation errors (422 status) - array of error objects
     if (Array.isArray(data)) {
       return data
         .map((e) => {

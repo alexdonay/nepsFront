@@ -267,7 +267,6 @@ export default function ServiceScheduleAssignment() {
         throw new Error("period_id indisponível para vínculo");
       }
       for (const student of selectedStudents) {
-        // eslint-disable-next-line no-await-in-loop
         await repository.roomSchedules.addStudent(
           roomId,
           dayOfWeek,

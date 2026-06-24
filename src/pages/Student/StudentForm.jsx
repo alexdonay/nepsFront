@@ -1,6 +1,5 @@
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
-import PdfUpload from "../../components/PdfUpload/PdfUpload";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { Message } from "primereact/message";
@@ -8,7 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import CpfInput from "../../components/Cpf/CpfInput";
 import EmailInput from "../../components/Email/EmailInput";
+import PdfUpload from "../../components/PdfUpload/PdfUpload";
 import PhoneInput from "../../components/Phone/PhoneInput";
+import { PERMISSIONS } from "../../constants/permissions";
 import api from "../../services/api";
 import { API_ROUTES } from "../../services/API_routes";
 import {
@@ -16,17 +17,20 @@ import {
   validatePdfFile,
 } from "../../services/cloudinary";
 import { repository } from "../../services/repository";
+import {
+  getCurrentInstitutionId,
+  getCurrentPermission,
+} from "../../utils/auth";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { ROUTE_CONTEXT_KEYS, getRouteContext } from "../../utils/routeContext";
-import { getCurrentPermission, getCurrentInstitutionId } from "../../utils/auth";
-import { PERMISSIONS } from "../../constants/permissions";
 
 export default function StudentForm() {
   const routeContext = getRouteContext(ROUTE_CONTEXT_KEYS.student, {});
   const { id } = routeContext;
   const [searchParams] = useSearchParams();
   const periodId = searchParams.get("periodId");
-  const isInstitution = getCurrentPermission() === PERMISSIONS.INSTITUICAO_ENSINO;
+  const isInstitution =
+    getCurrentPermission() === PERMISSIONS.INSTITUICAO_ENSINO;
   const ownInstitutionId = isInstitution ? getCurrentInstitutionId() : null;
   const [form, setForm] = useState({
     name: "",
@@ -52,7 +56,6 @@ export default function StudentForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // listas em cascata
   const [institutions, setInstitutions] = useState([]);
   const [courses, setCourses] = useState([]);
   const [disciplines, setDisciplines] = useState([]);
@@ -62,7 +65,8 @@ export default function StudentForm() {
       if (ownInstitutionId) loadCourses(ownInstitutionId);
       return;
     }
-    repository.institutions.get({ per_page: 100 })
+    repository.institutions
+      .get({ per_page: 100 })
       .then(({ data }) => {
         const items = data?.items || data || [];
         setInstitutions(items.map((i) => ({ label: i.name, value: i.id })));
@@ -78,7 +82,9 @@ export default function StudentForm() {
       const { data } = await repository.institutions.getById(institutionId);
       const items = data?.courses || [];
       setCourses(items.map((c) => ({ label: c.name, value: c.id })));
-    } catch { setCourses([]); }
+    } catch {
+      setCourses([]);
+    }
   };
 
   const loadDisciplines = async (courseId) => {
@@ -86,9 +92,17 @@ export default function StudentForm() {
     if (!courseId) return;
     try {
       const { data } = await repository.courses.getById(courseId);
-      console.log("[loadDisciplines] courseId:", courseId, "response data:", data);
+      console.log(
+        "[loadDisciplines] courseId:",
+        courseId,
+        "response data:",
+        data,
+      );
       const items = data?.disciplines || [];
-      console.log("[loadDisciplines] disciplines found:", JSON.stringify(items));
+      console.log(
+        "[loadDisciplines] disciplines found:",
+        JSON.stringify(items),
+      );
       setDisciplines(items.map((d) => ({ label: d.name, value: d.id })));
     } catch (e) {
       console.error("[loadDisciplines] erro:", e);
@@ -112,14 +126,14 @@ export default function StudentForm() {
         discipline_id: data?.discipline_id ?? null,
         semester: data?.semester ?? null,
         institution_id: data?.institution_id ?? null,
-        institution_document_url: data?.document_url || data?.institution_document_url || "",
+        institution_document_url:
+          data?.document_url || data?.institution_document_url || "",
         internship_start_date: data?.internship_start_date || "",
         internship_expected_end_date: data?.internship_expected_end_date || "",
         professor_name: data?.professor_name || "",
         preceptor_name: data?.preceptor_name || "",
       });
       setDirectorSignedPdfUrl(data?.director_signed_pdf || "");
-      // pré-carrega cascata
       if (data?.institution_id) await loadCourses(data.institution_id);
       if (data?.course_id) await loadDisciplines(data.course_id);
     } catch (e) {}
@@ -172,7 +186,10 @@ export default function StudentForm() {
     setError("");
     setDirectorSignedPdfFile(file);
     directorSignedPdfFileRef.current = file;
-    console.log("handleDirectorSignedPdfChange - set directorSignedPdfFile state:", file.name);
+    console.log(
+      "handleDirectorSignedPdfChange - set directorSignedPdfFile state:",
+      file.name,
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -197,9 +214,7 @@ export default function StudentForm() {
       }
 
       if (currentDirectorFile) {
-        directorSignedPdf = await uploadPdfToCloudinary(
-          currentDirectorFile,
-        );
+        directorSignedPdf = await uploadPdfToCloudinary(currentDirectorFile);
         console.log("Director PDF uploaded to Cloudinary:", directorSignedPdf);
         setDirectorSignedPdfUrl(directorSignedPdf);
       } else if (!id) {
@@ -244,7 +259,6 @@ export default function StudentForm() {
         studentId = response.data?.id;
       }
 
-      // Se tem periodId, vincular o aluno ao período
       if (periodId && studentId) {
         await repository.periods.addStudent(periodId, studentId);
         console.log("✅ Aluno cadastrado e vinculado ao período com sucesso");
@@ -311,7 +325,10 @@ export default function StudentForm() {
           label={`PDF do documento${id ? "" : " *"}`}
           required={!id}
           value={documentFile}
-          onChange={(file) => { setDocumentFile(file); documentFileRef.current = file; }}
+          onChange={(file) => {
+            setDocumentFile(file);
+            documentFileRef.current = file;
+          }}
           existingUrl={id ? form.institution_document_url : null}
         />
 
@@ -319,7 +336,10 @@ export default function StudentForm() {
           <PdfUpload
             label="PDF assinado pelo diretor"
             value={directorSignedPdfFile}
-            onChange={(file) => { setDirectorSignedPdfFile(file); directorSignedPdfFileRef.current = file; }}
+            onChange={(file) => {
+              setDirectorSignedPdfFile(file);
+              directorSignedPdfFileRef.current = file;
+            }}
             existingUrl={id ? directorSignedPdfUrl : null}
             hint="PDF opcional, máximo 5MB"
           />
@@ -366,7 +386,12 @@ export default function StudentForm() {
               value={form.institution_id}
               options={institutions}
               onChange={(e) => {
-                setForm({ ...form, institution_id: e.value, course_id: null, discipline_id: null });
+                setForm({
+                  ...form,
+                  institution_id: e.value,
+                  course_id: null,
+                  discipline_id: null,
+                });
                 loadCourses(e.value);
               }}
               placeholder="Selecione uma instituição"
@@ -386,7 +411,11 @@ export default function StudentForm() {
               setForm({ ...form, course_id: e.value, discipline_id: null });
               loadDisciplines(e.value);
             }}
-            placeholder={form.institution_id ? "Selecione um curso" : "Selecione uma instituição primeiro"}
+            placeholder={
+              form.institution_id
+                ? "Selecione um curso"
+                : "Selecione uma instituição primeiro"
+            }
             className="w-full"
             filter
             disabled={!form.institution_id}
@@ -400,7 +429,11 @@ export default function StudentForm() {
             value={form.discipline_id}
             options={disciplines}
             onChange={(e) => setForm({ ...form, discipline_id: e.value })}
-            placeholder={form.course_id ? "Selecione uma disciplina" : "Selecione um curso primeiro"}
+            placeholder={
+              form.course_id
+                ? "Selecione uma disciplina"
+                : "Selecione um curso primeiro"
+            }
             className="w-full"
             filter
             disabled={!form.course_id}
@@ -421,7 +454,9 @@ export default function StudentForm() {
           <label>Professor</label>
           <InputText
             value={form.professor_name}
-            onChange={(e) => setForm({ ...form, professor_name: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, professor_name: e.target.value })
+            }
             className="w-full"
           />
         </div>
@@ -430,7 +465,9 @@ export default function StudentForm() {
           <label>Preceptor</label>
           <InputText
             value={form.preceptor_name}
-            onChange={(e) => setForm({ ...form, preceptor_name: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, preceptor_name: e.target.value })
+            }
             className="w-full"
           />
         </div>

@@ -2,16 +2,14 @@ import { Button } from "primereact/button";
 import { useRef } from "react";
 import "./PdfUpload.css";
 
-/**
- * Props:
- *   label        — rótulo do campo
- *   required     — asterisco e validação nativa
- *   value        — File | null  (arquivo selecionado)
- *   onChange     — (file: File | null) => void
- *   existingUrl  — URL já salva (mostra badge "Já enviado")
- *   hint         — texto de ajuda (default: "PDF, máximo 5MB")
- */
-export default function PdfUpload({ label, required, value, onChange, existingUrl, hint }) {
+export default function PdfUpload({
+  label,
+  required,
+  value,
+  onChange,
+  existingUrl,
+  hint,
+}) {
   const inputRef = useRef(null);
 
   const hintText = hint || "PDF, máximo 5MB";
@@ -36,7 +34,8 @@ export default function PdfUpload({ label, required, value, onChange, existingUr
     <div className="field mb-3">
       {label && (
         <label className="block font-medium mb-2">
-          {label}{required && <span className="text-red-500 ml-1">*</span>}
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
@@ -56,12 +55,13 @@ export default function PdfUpload({ label, required, value, onChange, existingUr
         />
 
         {value ? (
-          /* Arquivo selecionado */
           <div className="pdf-upload-selected">
             <i className="pi pi-file-pdf pdf-upload-icon pdf-upload-icon--ready" />
             <div className="pdf-upload-info">
               <span className="pdf-upload-filename">{value.name}</span>
-              <span className="pdf-upload-size">{(value.size / 1024).toFixed(0)} KB</span>
+              <span className="pdf-upload-size">
+                {(value.size / 1024).toFixed(0)} KB
+              </span>
             </div>
             <Button
               icon="pi pi-times"
@@ -75,7 +75,6 @@ export default function PdfUpload({ label, required, value, onChange, existingUr
             />
           </div>
         ) : existingUrl ? (
-          /* Arquivo já salvo */
           <div className="pdf-upload-existing">
             <i className="pi pi-check-circle pdf-upload-icon pdf-upload-icon--saved" />
             <div className="pdf-upload-info">
@@ -93,10 +92,11 @@ export default function PdfUpload({ label, required, value, onChange, existingUr
             </a>
           </div>
         ) : (
-          /* Estado vazio */
           <div className="pdf-upload-empty">
             <i className="pi pi-upload pdf-upload-icon pdf-upload-icon--empty" />
-            <span className="pdf-upload-cta">Arraste o PDF aqui ou clique para selecionar</span>
+            <span className="pdf-upload-cta">
+              Arraste o PDF aqui ou clique para selecionar
+            </span>
             <span className="pdf-upload-hint">{hintText}</span>
           </div>
         )}

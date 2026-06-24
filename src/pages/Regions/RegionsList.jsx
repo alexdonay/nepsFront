@@ -48,8 +48,6 @@ export default function RegionsList() {
     if (hasFilters) {
       setFilterVisible(true);
     }
-    // só rodar na montagem inicial
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadRegions = useCallback(async () => {

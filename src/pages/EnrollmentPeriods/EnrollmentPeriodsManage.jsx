@@ -649,7 +649,6 @@ export default function EnrollmentPeriodsManage() {
   };
 
   const isSlotAssignedToStudent = (slot) => {
-    // Checa assignedSlots primeiro
     if (Array.isArray(assignedSlots) && assignedSlots.length > 0) {
       return assignedSlots.some((as) => {
         const asRoom = as.room_id ?? as.roomId ?? as.room;
@@ -662,7 +661,6 @@ export default function EnrollmentPeriodsManage() {
       });
     }
 
-    // Fallback para `managingStudent.slot` quando não houver assignedSlots
     if (!managingStudent?.slot) return false;
     const matchRoom =
       Number(slot.room_id) === Number(managingStudent.slot.room_id);

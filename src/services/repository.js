@@ -1,8 +1,4 @@
-/**
- * Repository Pattern
- * Centraliza e abstrai todas as chamadas à API
- * Uso: repository.disciplines.get(), repository.students.post(data), etc.
- */
+
 
 import { API_ROUTES } from "./API_routes";
 import api from "./api";
