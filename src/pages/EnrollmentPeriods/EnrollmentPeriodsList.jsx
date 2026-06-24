@@ -22,74 +22,18 @@ export default function EnrollmentPeriodsList() {
   const [rows, setRows] = useState(10);
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [institutionPriority, setInstitutionPriority] = useState(null);
   const currentPermission = normalizePermission(getCurrentPermission());
   const canCreatePeriod = currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO;
   const institutionId = getCurrentInstitutionId();
 
-  useEffect(() => {
-    if (currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO || !institutionId) return;
-    repository.institutions.getById(institutionId)
-      .then(({ data }) => {
-        setInstitutionPriority(data?.priority ?? 1);
-      })
-      .catch(() => {
-        setInstitutionPriority(1);
-      });
-  }, [institutionId, currentPermission]);
-
-  const filterPeriodsForEducationInstitute = (periodsList) => {
-    if (currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO) {
-      return periodsList;
-    }
-
-    const now = new Date();
-    const isPriority = Number(institutionPriority) === 0;
-
-    return periodsList.filter((period) => {
-      if (!period.is_active) return false;
-
-      if (isPriority) {
-        const priorityStart = period.priority_start_date
-          ? new Date(period.priority_start_date)
-          : null;
-        const priorityEnd = period.priority_end_date
-          ? new Date(period.priority_end_date)
-          : null;
-
-        if (priorityStart && priorityEnd) {
-          priorityEnd.setHours(23, 59, 59, 999);
-          return now >= priorityStart && now <= priorityEnd;
-        }
-        // fallback para datas gerais se o período não tiver datas prioritárias
-        const periodStart = new Date(period.start_date);
-        const periodEnd = new Date(period.end_date);
-        periodEnd.setHours(23, 59, 59, 999);
-        return now >= periodStart && now <= periodEnd;
-      }
-
-      const periodStart = new Date(period.start_date);
-      const periodEnd = new Date(period.end_date);
-      periodEnd.setHours(23, 59, 59, 999);
-      return now >= periodStart && now <= periodEnd;
-    });
-  };
-
   const loadPeriods = useCallback(async () => {
-    if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO && institutionPriority === null) {
-      return;
-    }
-
     try {
       setLoading(true);
       const page = Math.floor(first / rows) + 1;
       const params = { page, per_page: rows };
 
-      if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
-        params.is_active = "1";
-        if (institutionId) {
-          params.institution_id = institutionId;
-        }
+      if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO && institutionId) {
+        params.institution_id = institutionId;
       }
 
       searchParams.forEach((value, key) => {
@@ -97,14 +41,10 @@ export default function EnrollmentPeriodsList() {
       });
 
       const { data } = await repository.periods.get(params);
-      let periodsList = data.items || data;
-
-      if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
-        periodsList = filterPeriodsForEducationInstitute(periodsList);
-      }
+      const periodsList = data.items || data;
 
       setPeriods(periodsList);
-      setTotalRecords(periodsList.length);
+      setTotalRecords(data.pagination?.total ?? periodsList.length);
     } catch (e) {
       if (e.response?.status === 401) {
         console.warn("Sessão expirada ou não autenticado. Faça login novamente.");
@@ -114,7 +54,7 @@ export default function EnrollmentPeriodsList() {
     } finally {
       setLoading(false);
     }
-  }, [first, rows, currentPermission, institutionId, searchParams, institutionPriority]);
+  }, [first, rows, currentPermission, institutionId, searchParams]);
 
   useEffect(() => {
     loadPeriods();
@@ -160,8 +100,6 @@ export default function EnrollmentPeriodsList() {
     ...(searchParams.has("is_active") && { is_active: searchParams.get("is_active") }),
   };
 
-  const isInstitutionPriority = Number(institutionPriority) === 0;
-
   return (
     <div className="surface-card p-4 shadow-2 border-round">
       <div className="flex justify-content-between align-items-center mb-3">
@@ -203,28 +141,15 @@ export default function EnrollmentPeriodsList() {
       >
         <Column field="name" header="Nome" />
         <Column
-          header={
-            currentPermission === PERMISSIONS.INSTITUICAO_ENSINO
-              ? (isInstitutionPriority ? "Período Prioritário" : "Período de Inscrição")
-              : "Início"
-          }
-          body={(row) => {
-            if (currentPermission === PERMISSIONS.INSTITUICAO_ENSINO) {
-              if (isInstitutionPriority) {
-                return `${new Date(row.priority_start_date).toLocaleDateString()} - ${new Date(row.priority_end_date).toLocaleDateString()}`;
-              }
-              return `${new Date(row.start_date).toLocaleDateString()} - ${new Date(row.end_date).toLocaleDateString()}`;
-            }
-            return new Date(row.start_date).toLocaleDateString();
-          }}
+          field="start_date"
+          header="Início"
+          body={(row) => new Date(row.start_date).toLocaleDateString()}
         />
-        {currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO && (
-          <Column
-            field="end_date"
-            header="Fim"
-            body={(row) => new Date(row.end_date).toLocaleDateString()}
-          />
-        )}
+        <Column
+          field="end_date"
+          header="Fim"
+          body={(row) => new Date(row.end_date).toLocaleDateString()}
+        />
         {currentPermission !== PERMISSIONS.INSTITUICAO_ENSINO && (
           <Column
             field="is_active"
