@@ -50,10 +50,12 @@ export default function EnrollmentPeriodsList() {
       if (!priorityStart || !priorityEnd) {
         const periodStart = new Date(period.start_date);
         const periodEnd = new Date(period.end_date);
+        periodEnd.setHours(23, 59, 59, 999);
         return now >= periodStart && now <= periodEnd;
       }
 
-      // Verificar se está dentro da janela de prioridade
+      // Verificar se está dentro da janela de prioridade (end = fim do dia)
+      priorityEnd.setHours(23, 59, 59, 999);
       return now >= priorityStart && now <= priorityEnd;
     });
   };
