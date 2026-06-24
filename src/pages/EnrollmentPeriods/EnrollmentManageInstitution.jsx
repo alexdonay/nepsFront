@@ -317,16 +317,6 @@ export default function EnrollmentManageInstitution() {
                           }}
                           title="Editar aluno"
                         />
-                        <Button
-                          icon="pi pi-trash"
-                          rounded
-                          text
-                          severity="danger"
-                          size="small"
-                          loading={unlinkingStudentId === row.id}
-                          onClick={() => handleRemoveStudent(row.id)}
-                          title="Desvincular aluno"
-                        />
                       </div>
                     )}
                   />
