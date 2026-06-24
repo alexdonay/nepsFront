@@ -33,7 +33,6 @@ export default function EnrollmentManageInstitution() {
 
   const [period, setPeriod] = useState(null);
   const [linkedStudents, setLinkedStudents] = useState([]);
-  const [availableStudents, setAvailableStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [linkingStudent, setLinkingStudent] = useState(false);
@@ -64,57 +63,16 @@ export default function EnrollmentManageInstitution() {
     try {
       setLoading(true);
 
-      const periodRes = await repository.periods.getById(periodId, {
-        include: "students",
-      });
-      setPeriod(periodRes.data);
+      const [periodRes, studentsRes] = await Promise.all([
+        repository.periods.getById(periodId),
+        repository.students.byInstituteAndPeriod(institutionId, periodId),
+      ]);
 
-      const studentsRes = await repository.students.byInstitute(institutionId, {
-        include: "discipline,institution",
-      });
-      const instituteStudents = Array.isArray(studentsRes.data)
+      setPeriod(periodRes.data);
+      const students = Array.isArray(studentsRes.data)
         ? studentsRes.data
         : studentsRes.data.items || [];
-
-      const periodData = periodRes.data || {};
-      const rawLinkedStudents =
-        periodData.students ||
-        periodData.student_ids ||
-        periodData.studentIds ||
-        [];
-
-      let linked = [];
-      let linkedIds = [];
-
-      if (
-        Array.isArray(rawLinkedStudents) &&
-        rawLinkedStudents.length > 0 &&
-        typeof rawLinkedStudents[0] === "object"
-      ) {
-        linked = rawLinkedStudents;
-        linkedIds = rawLinkedStudents.map((s) => String(s.id)).filter(Boolean);
-      } else {
-        linkedIds = Array.isArray(rawLinkedStudents)
-          ? rawLinkedStudents.map(String).filter(Boolean)
-          : [];
-
-        if (linkedIds.length > 0) {
-          const linkedResponses = await Promise.all(
-            linkedIds.map((studentId) =>
-              repository.students.getById(studentId),
-            ),
-          );
-          linked = linkedResponses.map((r) => r.data).filter(Boolean);
-        }
-      }
-
-      const linkedIdSet = new Set(linkedIds);
-      const available = instituteStudents.filter(
-        (student) => !linkedIdSet.has(String(student.id)),
-      );
-
-      setLinkedStudents(linked);
-      setAvailableStudents(available);
+      setLinkedStudents(students);
       setSelectedStudentId(null);
     } catch (e) {
       console.error("Erro ao carregar dados:", e);
@@ -338,12 +296,6 @@ export default function EnrollmentManageInstitution() {
                 />
               </div>
 
-              {availableStudents.length === 0 && (
-                <div className="mt-3 p-3 bg-orange-50 border-round text-orange-700 text-sm">
-                  💡 Todos os alunos da sua instituição já estão vinculados a
-                  este período. Cadastre um novo para vincular.
-                </div>
-              )}
             </div>
           </div>
         </div>

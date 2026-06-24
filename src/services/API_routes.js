@@ -47,6 +47,7 @@ export const API_ROUTES = {
     STUDENTS_BY_ID: () => "/v1/students/detail",
     STUDENTS_BY_COURSE: "/v1/students/by-discipline",
     STUDENTS_BY_INSTITUTE: "/v1/students/by-institute",
+    STUDENTS_BY_INSTITUTE_AND_PERIOD: "/v1/students/by-institute-period",
     LINK_STUDENT: "/v1/students/link-internship",
     PERIODS: "/v1/periods",
     PERIODS_DETAIL: "/v1/periods/detail",

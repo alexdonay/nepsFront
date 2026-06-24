@@ -179,6 +179,12 @@ export const repository = {
         ...params,
         institute_id: Number(instituteId),
       }),
+    byInstituteAndPeriod: (instituteId, periodId, params = {}) =>
+      api.post(API_ROUTES.GESTAO.STUDENTS_BY_INSTITUTE_AND_PERIOD, {
+        institute_id: Number(instituteId),
+        period_id: Number(periodId),
+        ...params,
+      }),
     linkToInternship: (studentId, internshipId) =>
       api.post(API_ROUTES.GESTAO.LINK_STUDENT, {
         student_id: Number(studentId),
